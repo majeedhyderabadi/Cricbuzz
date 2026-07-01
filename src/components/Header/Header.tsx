@@ -1,6 +1,9 @@
 import "./Header.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Header() {
+
+    const navigate = useNavigate();
 
     return (
 
@@ -36,11 +39,21 @@ function Header() {
 
             <nav className="header__nav">
 
-                <button className="header__nav-btn active">
+                <button
+                    className={`header__nav-btn ${
+                        location.pathname === "/" ? "active" : ""
+                    }`}
+                    onClick={() => navigate("/")}
+                >
                     Live Dashboard
                 </button>
 
-                <button className="header__nav-btn">
+                <button
+                    className={`header__nav-btn ${
+                        location.pathname === "/nvian" ? "active" : ""
+                    }`}
+                    onClick={() => navigate("/nvian")}
+                >
                     NVian
                 </button>
 
