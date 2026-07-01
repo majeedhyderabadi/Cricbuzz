@@ -15,12 +15,10 @@ function Dashboard() {
             <SportTabs />
 
             <MatchGrid />
-
-            <section className="section">
-                <LiveCommentary />
-            </section>
-
-            <TopPerformers />
+            <div className="Commentry_Performers">
+               <LiveCommentary />
+               <TopPerformers />
+            </div>
 
         </main>
 

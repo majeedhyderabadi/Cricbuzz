@@ -81,3 +81,8 @@ body{
     background:var(--color-blue);
 
 }
+.Commentry_Performers {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  grid-column-gap: 20px;
+}
