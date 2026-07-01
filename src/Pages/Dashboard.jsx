@@ -1,14 +1,20 @@
 import Header from "../components/Header/Header";
+import SportTabs from "../components/SportTabs/SportTabs";
+import MatchGrid from "../components/MatchGrid/MatchGrid";
 
 function Dashboard() {
 
     return (
 
-        <div className="container">
+        <main className="container">
 
             <Header />
 
-        </div>
+            <SportTabs />
+
+            <MatchGrid />
+
+        </main>
 
     );
 
