@@ -1,0 +1,64 @@
+.top-performers-card {
+  width: 360px;
+  background: #181c24;
+  border: 1px solid #2b3140;
+  border-radius: 16px;
+  overflow: hidden;
+  color: white;
+  float: right;
+  height: fit-content;
+}
+
+.tp-header {
+  padding: 14px;
+  border-bottom: 1px solid #2b3140;
+}
+
+.tp-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tp-body {
+  padding: 10px 0;
+}
+
+.tp-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.tp-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 16px;
+  font-size: 14px;
+}
+
+.tp-player {
+  flex: 1;
+}
+
+.tp-name {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.tp-team {
+  font-size: 12px;
+  margin-top: 0px;
+}
+
+.tp-score {
+  font-size: 25px;
+  font-weight: bold;
+}

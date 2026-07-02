@@ -1,9 +1,10 @@
 import "./Header.css";
-import { useNavigate} from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 
 function Header() {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     return (
 
