@@ -40,21 +40,18 @@ function Header() {
             <nav className="header__nav">
 
                 <button
-                    className={`header__nav-btn ${
-                        location.pathname === "/" ? "active" : ""
-                    }`}
+                    className={`header__nav-btn ${location.pathname === "/nvian" ? "active" : ""
+                        }`}
+                    onClick={() => navigate("/nvian")}
+                >
+                    NVian Dashboard
+                </button>
+                <button
+                    className={`header__nav-btn ${location.pathname === "/" ? "active" : ""
+                        }`}
                     onClick={() => navigate("/")}
                 >
                     Live Dashboard
-                </button>
-
-                <button
-                    className={`header__nav-btn ${
-                        location.pathname === "/nvian" ? "active" : ""
-                    }`}
-                    onClick={() => navigate("/nvian")}
-                >
-                    NVian
                 </button>
 
                 <button className="header__nav-btn">
