@@ -11,7 +11,6 @@ function Dashboard() {
         <main className="container">
 
             <Header />
-            <RecentEntries />
 
             <SportTabs />
 
@@ -21,6 +20,7 @@ function Dashboard() {
                 <LiveCommentary />
             </section>
 
+            <RecentEntries />
 
         </main>
 
