@@ -1,39 +1,33 @@
-import "./SportTabs.css";
+import '../SportTabs/SportTabs.css';
 
-function SportTabs() {
+const SportTabs = () => {
+
+    // Store all sports in a constant array
+    const sportsCategories = [
+        "All Sports",
+        "Cricket",
+        "Football",
+        "Cycling",
+        "Chess",
+        "Carrom",
+    ];
 
     return (
+        <section className='sports-tabs'>
 
-        <section className="sports-tabs">
-
-            <button className="sports-tabs__button active">
-                All Sports
-            </button>
-
-            <button className="sports-tabs__button">
-                Cricket
-            </button>
-
-            <button className="sports-tabs__button">
-                Football
-            </button>
-
-            <button className="sports-tabs__button">
-                Cycling
-            </button>
-
-            <button className="sports-tabs__button">
-                Chess
-            </button>
-
-            <button className="sports-tabs__button">
-                Carrom
-            </button>
+            
+            {sportsCategories.map((sport, index) => (
+                <button
+                    key={index}
+                    className={`sports-tabs__button ${index === 0 ? "active" : ""}`}
+                >
+                    {sport}
+                </button>
+            ))}
 
         </section>
-
     );
-
 }
 
 export default SportTabs;
+
