@@ -1,4 +1,3 @@
-import React from "react";
 import "./TopPerformers.css";
 
 export interface Performer {
@@ -10,7 +9,7 @@ export interface Performer {
 }
 
 
-const TopPerformers: React.FC = () => {
+function TopPerformers() {
     const performers: Performer[] = [
     {
       rank: 1,
