@@ -1,5 +1,4 @@
 import "./Header.css";
-import "./Header.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 

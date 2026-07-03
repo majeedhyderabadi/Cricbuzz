@@ -1,7 +1,20 @@
 import "./MatchGrid.css";
-import type { Match } from "../types/Match";
 
-function MatchCard({ Match }: { Match: Match | null }) {
+type MatchProps = {
+    match: {
+        id: number;
+        sport: string;
+        team1: string;
+        team2: string;
+        score1: string;
+        score2: string;
+        innings: string;
+        over: string;
+    };
+};
+
+
+function MatchCard({match}: MatchProps) {
 
     return (
 
@@ -11,7 +24,7 @@ function MatchCard({ Match }: { Match: Match | null }) {
 
                 <span className="match-card__sport">
 
-                    CRICKET
+                    {match.sport}
 
                 </span>
 
@@ -33,13 +46,13 @@ function MatchCard({ Match }: { Match: Match | null }) {
 
                         <span className="orange-dot"></span>
 
-                        <span>{Match?.teamInfo[0].name}</span>
+                        <span>{match.team1}</span>
 
                     </div>
 
                     <span className="match-card__score">
 
-                      {Match?.score[0].r}/{Match?.score[0].w}
+                        {match.score1}
 
                     </span>
 
@@ -51,13 +64,13 @@ function MatchCard({ Match }: { Match: Match | null }) {
 
                         <span className="blue-dot"></span>
 
-                        <span>{Match?.teamInfo[1].name}</span>
+                        <span>{match.team2}</span>
 
                     </div>
 
                     <span className="match-card__score">
 
-                       {Match?.score[1].r}/{Match?.score[1].w}
+                        {match.score2}
 
                     </span>
 
@@ -69,13 +82,13 @@ function MatchCard({ Match }: { Match: Match | null }) {
 
                 <span>
 
-                    {Match?.score[1].inning}
+                    {match.innings}
 
                 </span>
 
                 <span>
 
-               Over: {Match?.score[1].o}
+                    {match.over}
 
                 </span>
 
