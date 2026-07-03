@@ -1,33 +1,36 @@
 // import Dashboard from "./Pages/Dashboard";
-
-// function App() {
-
-//     return (
-
-//         <div className="app">
-
-//             <Dashboard />
-
-//         </div>
-
-//     );
-
-// }
-
-// export default App;
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Dashboard from "./Pages/Dashboard";
 import NVianDashboard from "./Pages/NVianDashboard.tsx";
+import Admin from "./Pages/Admin.tsx";
+import Login from "./Pages/Login.tsx";
+import AccessDenied from "./Pages/AccessDenied.tsx";
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/nvian" element={<NVianDashboard />} />
-            </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/nvian" element={<NVianDashboard />} />
+                    <Route 
+                        path="/admin" 
+                        element={
+                            <ProtectedRoute 
+                                element={<Admin />} 
+                                requireAdmin={true}
+                            />
+                        } 
+                    />
+                    <Route path="/access-denied" element={<AccessDenied />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
     );
 }
 

@@ -1,10 +1,18 @@
 import "./Header.css";
+import "./Header.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function Header() {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAuthenticated, isAdmin, logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
 
@@ -55,9 +63,29 @@ function Header() {
                     Live Dashboard
                 </button>
 
-                <button className="header__nav-btn">
-                    Admin Console
-                </button>
+                {isAdmin && (
+                    <button
+                        className={`header__nav-btn ${location.pathname === "/admin" ? "active" : ""
+                            }`}
+                        onClick={() => navigate("/admin")}
+                    >
+                        Admin Console
+                    </button>
+                )}
+
+                {isAuthenticated && (
+                    <div className="header__auth">
+                        <span className="header__role">
+                            {isAdmin ? ' Admin' : ' User'}
+                        </span>
+                        <button
+                            className="header__logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                )}
 
             </nav>
 
