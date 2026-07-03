@@ -156,6 +156,62 @@
 
 }
 
+.header__auth{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-left:12px;
+
+    padding-left:12px;
+
+    border-left:1px solid #293344;
+
+}
+
+.header__role{
+
+    color:#d9dde5;
+
+    font-size:.88rem;
+
+    font-weight:500;
+
+}
+
+.header__logout-btn{
+
+    padding:10px 16px;
+
+    border-radius:10px;
+
+    background:#ff365e;
+
+    color:white;
+
+    border:none;
+
+    font-size:.88rem;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.header__logout-btn:hover{
+
+    background:#e6254a;
+
+    opacity:0.9;
+
+}
+
 @media(max-width:900px){
 
     .header{
