@@ -1,10 +1,13 @@
 import "./Admin.css";
 import Header from "../components/Header/Header";
+import FeedingMatch from "../components/FeedingMatch/FeedingMatch";
 
 function Admin() {
     return (
         <main className="container">
             <Header />
+            <br />
+            <FeedingMatch />
             <section className="section admin-panel">
                 <div className="admin-panel__header">
                     <h1 className="admin-panel__title">Admin Console</h1>
