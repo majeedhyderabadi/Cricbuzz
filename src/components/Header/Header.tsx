@@ -71,6 +71,15 @@ function Header() {
                         Admin Console
                     </button>
                 )}
+                {isAdmin && (
+                    <button
+                        className={`header__nav-btn ${location.pathname === "/superadmin" ? "active" : ""
+                            }`}
+                        onClick={() => navigate("/superadmin")}
+                    >
+                        Super Admin
+                    </button>
+                )}
 
                 {isAuthenticated && (
                     <div className="header__auth">

@@ -8,6 +8,7 @@ import NVianDashboard from "./Pages/NVianDashboard.tsx";
 import Admin from "./Pages/Admin.tsx";
 import Login from "./Pages/Login.tsx";
 import AccessDenied from "./Pages/AccessDenied.tsx";
+import SuperAdmin from "./Pages/SuperAdmin.tsx";
 
 function App() {
     return (
@@ -22,6 +23,15 @@ function App() {
                         element={
                             <ProtectedRoute 
                                 element={<Admin />} 
+                                requireAdmin={true}
+                            />
+                        } 
+                    />
+                    <Route 
+                        path="/superadmin" 
+                        element={
+                            <ProtectedRoute 
+                                element={<SuperAdmin />} 
                                 requireAdmin={true}
                             />
                         } 
