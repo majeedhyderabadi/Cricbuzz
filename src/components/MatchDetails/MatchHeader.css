@@ -1,0 +1,65 @@
+.match-header{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    padding:24px;
+
+    border-radius:16px;
+
+    background:#1b2232;
+}
+
+.match-header__top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+}
+
+.match-header__sport{
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    background:#2b3448;
+}
+
+.match-header__status{
+
+    color:#ff4d6d;
+
+    font-size:14px;
+
+    font-weight:700;
+}
+
+.match-header__title{
+
+    font-size:32px;
+
+    font-weight:700;
+}
+
+.match-header__meta{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    font-size:14px;
+
+    opacity:.75;
+}

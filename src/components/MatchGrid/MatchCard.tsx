@@ -1,4 +1,5 @@
 import "./MatchGrid.css";
+import { Link } from "react-router-dom";
 
 type MatchProps = {
     match: {
@@ -17,8 +18,11 @@ type MatchProps = {
 function MatchCard({match}: MatchProps) {
 
     return (
-
-        <article className="match-card">
+<Link
+    to={`/match/${match.id}`}
+    style={{ textDecoration: "none", color: "inherit" }}
+>
+<article className="match-card">
 
             <div className="match-card__header">
 
@@ -95,6 +99,8 @@ function MatchCard({match}: MatchProps) {
             </div>
 
         </article>
+</Link>
+        
 
     );
 

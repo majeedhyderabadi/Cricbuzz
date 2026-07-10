@@ -5,10 +5,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Dashboard from "./Pages/Dashboard";
 import NVianDashboard from "./Pages/NVianDashboard.tsx";
+import MatchDetailsPage from "./Pages/MatchDetailsPage/MatchDetailsPage.tsx";
 import Admin from "./Pages/Admin.tsx";
 import Login from "./Pages/Login.tsx";
 import AccessDenied from "./Pages/AccessDenied.tsx";
 import SuperAdmin from "./Pages/SuperAdmin.tsx";
+
+
 
 function App() {
     return (
@@ -18,6 +21,7 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/nvian" element={<NVianDashboard />} />
+                    <Route path="/match/:id" element={<MatchDetailsPage/>} />
                     <Route 
                         path="/admin" 
                         element={
