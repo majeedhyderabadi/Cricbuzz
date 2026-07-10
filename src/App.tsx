@@ -19,6 +19,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Dashboard from "./Pages/Dashboard";
 import NVianDashboard from "./Pages/NVianDashboard.tsx";
+import MatchDetailsPage from "./Pages/MatchDetailsPage/MatchDetailsPage.tsx";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/nvian" element={<NVianDashboard />} />
+                <Route path="/match/:id" element={<MatchDetailsPage/>} />
             </Routes>
         </BrowserRouter>
     );
