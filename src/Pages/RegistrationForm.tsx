@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./RegistrationForm.css";
+import axios from "axios";
 
 function RegistrationForm() {
     
@@ -85,7 +86,7 @@ function RegistrationForm() {
         return isValid;
     };
 
-    const handleSubmit = (
+    const handleSubmit = async (
         e: React.FormEvent<HTMLFormElement>
     ) => {
         e.preventDefault();
@@ -94,17 +95,39 @@ function RegistrationForm() {
             return;
         }
 
-        console.log("Registration Data:", formData);
+        try {
 
-        alert("Admin Registered Successfully");
+            const response = await axios.post(
+                "https://localhost:62965/api/admin/register",
+                {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    password: formData.password
+                }
+            );
 
-        setFormData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            confirmPassword: ""
-        });
+            alert(response.data.message);
+
+            setFormData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                confirmPassword: ""
+            });
+
+        } catch (error: any) {
+
+            console.error(error);
+
+            if (error.response) {
+  
+              alert(error.response.data.message);
+            } else {
+                alert("Unable to connect to server.");
+            }
+        }
     };
 
     return (
