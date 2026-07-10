@@ -1,0 +1,182 @@
+.create-team-card {
+    width: 100%;
+    background: #171c26;
+    border: 1px solid #2b3142;
+    border-radius: 18px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.create-team-card h2 {
+    margin: 0;
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.sub-title {
+   margin-top: 8px;
+    color: #7d869b;
+    font-size: 13px;
+    margin-bottom: 21px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    color: #7b86a2;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0px;
+    margin-bottom: 10px;
+}
+
+.form-group input,
+.form-group select {
+   width: 100%;
+    height: 47px;
+    border-radius: 18px;
+    border: 1px solid #31384a;
+    background: #202533;
+    color: white;
+    padding: 0 16px;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.label-container {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group input::placeholder {
+    color: #5c6377;
+}
+.sport-color-header {
+    display: flex;
+    gap: 16rem;
+    align-items: center;
+}
+
+.sport-color-header label {
+    color: #7b86a2;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0px;
+}
+.sport-color-row {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+}
+
+.sport-color-row select {
+    flex: 1;
+}
+
+.color-section {
+    width: 198px;
+    padding: 0px 0px 8px 0px;
+}
+
+.color-section span {
+    display: block;
+    margin-bottom: 10px;
+    color: #7b86a2;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.color-list {
+    display: flex;
+    gap: 10px;
+}
+
+.color-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: .2s;
+}
+
+.color-circle:hover {
+    transform: scale(1.05);
+}
+
+.color-circle.active {
+    border: 2px solid white;
+}
+
+.create-btn {
+    width: 100%;
+    height: 47px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 12px;
+    background: #d8d8d8;
+    color: #111;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.create-btn:hover {
+    background: white;
+}
+
+.sport-container {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+}
+
+.sport-select {
+    flex: 1;
+    height: 46px;
+    background: #232838;
+    color: #fff;
+    border: 1px solid #3a4257;
+    border-radius: 14px;
+    padding: 0 16px;
+    font-size: 14px;
+    outline: none;
+}
+
+.add-sport-btn {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.add-sport-btn:hover {
+    background: #2563eb;
+}
+
+.add-sport-btn:active {
+    transform: scale(0.96);
+}
