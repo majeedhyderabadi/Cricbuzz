@@ -11,7 +11,7 @@ import AccessDenied from "./Pages/AccessDenied.tsx";
 import SuperAdmin from "./Pages/SuperAdmin.tsx";
 import Fixtures from "./Pages/Admin/Fixtures.tsx";
 import Commentary from "./Pages/Admin/Commentary.tsx";
-import TeamsPlayers from "./Pages/Admin/TeamsPlayers.tsx";
+import TeamsPlayers from "./Pages/Admin/TeamAndPlayersTab/TeamsPlayers.tsx";
 
 
 
