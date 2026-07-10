@@ -1,3 +1,4 @@
+
 .mainComponent {
     width: 35%;
     min-width: 360px;
@@ -39,10 +40,17 @@
 .mainHeader h3 {
     font-size: 12px;
     letter-spacing: 1px;
+    margin: 0;
 }
 
 .mainHeader p {
     color: #777;
+    margin: 0;
+    background: #1b1f29;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .divider {
@@ -74,35 +82,11 @@
 
 .entry {
     border-bottom: 1px solid #262b34;
+    transition: background 0.2s;
 }
 
-.playerBall {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* Blue glow */
-.playerBall.blue {
-    background: #2f80ff;
-    box-shadow:
-        0 0 6px #2f80ff,
-        0 0 12px rgba(47, 128, 255, 0.5);
-}
-
-/* Orange glow */
-.playerBall.orange {
-    background: #ffb400;
-    box-shadow:
-        0 0 6px #ffb400,
-        0 0 12px rgba(255, 180, 0, 0.5);
-}
-
-.mainContent {
-    justify-content: center;
-    align-items: center;
-    border: 1px solid cyan
+.entry:hover {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .content {
@@ -113,12 +97,65 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 .contentHeader {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: 1;
+}
+
+.playerBall {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+
+.playerBall.blue {
+    background: #2f80ff;
+    box-shadow:
+        0 0 6px #2f80ff,
+        0 0 12px rgba(47, 128, 255, 0.5);
+}
+
+
+.playerBall.orange {
+    background: #ffb400;
+    box-shadow:
+        0 0 6px #ffb400,
+        0 0 12px rgba(255, 180, 0, 0.5);
+}
+
+
+.playerBall.green {
+    background: #34c759;
+    box-shadow:
+        0 0 6px #34c759,
+        0 0 12px rgba(52, 199, 89, 0.5);
+}
+
+.playerBall.red {
+    background: #ff3b30;
+    box-shadow:
+        0 0 6px #ff3b30,
+        0 0 12px rgba(255, 59, 48, 0.5);
+}
+
+.playerBall.purple {
+    background: #af52de;
+    box-shadow:
+        0 0 6px #af52de,
+        0 0 12px rgba(175, 82, 222, 0.5);
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .playerText {
@@ -128,10 +165,42 @@
     line-height: 1.2;
 }
 
+.playerText strong {
+    font-weight: 600;
+}
+
+.comment {
+    color: #8d96aa;
+    font-weight: 400;
+    font-size: 14px;
+}
+
 .time {
     margin-top: 4px;
     color: #8d96aa;
     font-size: 13px;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    color: #8d96aa;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.edit-btn:hover {
+    background: #1b1f29;
+    color: white;
 }
 
 .close-btn {
@@ -147,13 +216,392 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.2s;
 }
 
 .close-btn:hover {
     color: white;
+    border-color: #3a4357;
+    background: #2c3342;
 }
 
-.textContainer {
+.editModeContainer {
+    width: 100%;
+    padding: 4px 0;
+}
+
+.editHeader {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.editPlayerInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.editTextContainer {
+    flex: 1;
+}
+
+.editPlayerInput {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.editPlayerNameInput {
+    border: none;
+    border-bottom: 2px solid #2f80ff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 2px 4px;
+    width: 120px;
+    background: transparent;
+    color: white;
+    transition: all 0.2s;
+}
+
+.editPlayerNameInput:focus {
+    outline: none;
+    border-bottom-color: #ffb400;
+}
+
+.editPlayerNameInput::placeholder {
+    color: #50596d;
+}
+
+.editSeparator {
+    color: #8d96aa;
+    font-weight: 300;
+    margin: 0 2px;
+}
+
+.editEventSelect {
+    border: none;
+    border-bottom: 2px solid #2f80ff;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 2px 4px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editEventSelect:focus {
+    outline: none;
+    border-bottom-color: #ffb400;
+}
+
+.editEventSelect option {
+    background: #171c24;
+    color: white;
+}
+
+.editTime {
+    font-size: 13px;
+    color: #8d96aa;
+    display: block;
+    margin-top: 2px;
+}
+
+
+.editCommentSection {
+    margin: 10px 0 14px 0;
+    padding-left: 22px;
+}
+
+.editCommentInput {
+    width: 100%;
+    border: 1px solid #2c3342;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #8d96aa;
+    background: #1b1f29;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.editCommentInput:focus {
+    outline: none;
+    border-color: #2f80ff;
+    background: #171c24;
+    box-shadow: 0 0 0 2px rgba(47, 128, 255, 0.1);
+    color: white;
+}
+
+.editCommentInput::placeholder {
+    color: #50596d;
+    font-style: italic;
+}
+
+/* Actions Row */
+.editActionsRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-left: 22px;
+}
+
+/* Quick Action Buttons */
+.quickActions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.quickActionBtn {
+    padding: 5px 14px;
+    border: 1px solid #2c3342;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: #8d96aa;
+}
+
+.quickActionBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: #1b1f29;
+}
+
+.quickActionBtn.orange {
+    border-color: #ffb400;
+    color: #ffb400;
+}
+
+.quickActionBtn.orange:hover {
+    background: #ffb400;
+    color: #171c24;
+    box-shadow: 0 4px 12px rgba(255, 180, 0, 0.3);
+}
+
+.quickActionBtn.blue {
+    border-color: #2f80ff;
+    color: #2f80ff;
+}
+
+.quickActionBtn.blue:hover {
+    background: #2f80ff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(47, 128, 255, 0.3);
+}
+
+.quickActionBtn.green {
+    border-color: #34c759;
+    color: #34c759;
+}
+
+.quickActionBtn.green:hover {
+    background: #34c759;
+    color: #171c24;
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+}
+
+.quickActionBtn.red {
+    border-color: #ff3b30;
+    color: #ff3b30;
+}
+
+.quickActionBtn.red:hover {
+    background: #ff3b30;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+}
+
+.quickActionBtn.purple {
+    border-color: #af52de;
+    color: #af52de;
+}
+
+.quickActionBtn.purple:hover {
+    background: #af52de;
+    color: white;
+    box-shadow: 0 4px 12px rgba(175, 82, 222, 0.3);
+}
+
+/* Edit Buttons */
+.editButtons {
+    display: flex;
+    gap: 6px;
+}
+
+.cancelEditBtn, .saveEditBtn {
+    padding: 6px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.cancelEditBtn {
+    background: #2c3342;
+    color: #8d96aa;
+}
+
+.cancelEditBtn:hover {
+    background: #3a4357;
+    color: white;
+}
+
+.saveEditBtn {
+    background: #2f80ff;
+    color: white;
+}
+
+.saveEditBtn:hover {
+    background: #1a6bff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(47, 128, 255, 0.3);
+}
+
+
+@media (max-width: 768px) {
+    .mainComponent {
+        width: 90%;
+        min-width: unset;
+        max-width: 500px;
+        height: 500px;
+        max-height: 600px;
+    }
+}
+
+@media (max-width: 600px) {
+    .mainComponent {
+        width: 95%;
+        height: 450px;
+        max-height: 550px;
+        border-radius: 12px;
+    }
+
+    .content {
+        padding: 10px 14px;
+    }
+
+    .editActionsRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .quickActions {
+        justify-content: center;
+    }
+    
+    .editButtons {
+        justify-content: center;
+    }
+    
+    .editPlayerInput {
+        flex-wrap: wrap;
+    }
+    
+    .editPlayerNameInput {
+        width: 100px;
+    }
+
+    .editCommentSection {
+        padding-left: 0;
+    }
+
+    .editActionsRow {
+        padding-left: 0;
+    }
+
+    .close-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    .playerText {
+        font-size: 14px;
+    }
+
+    .editPlayerNameInput,
+    .editEventSelect {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    .mainComponent {
+        width: 98%;
+        height: 400px;
+        max-height: 500px;
+        min-width: unset;
+        border-radius: 8px;
+    }
+
+    .mainHeader {
+        height: 45px;
+        padding: 0 12px;
+    }
+
+    .mainHeader h3 {
+        font-size: 11px;
+    }
+
+    .content {
+        padding: 8px 12px;
+    }
+
+    .playerText {
+        font-size: 13px;
+    }
+
+    .time {
+        font-size: 11px;
+    }
+
+    .quickActionBtn {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+
+    .editPlayerNameInput {
+        width: 80px;
+        font-size: 13px;
+    }
+
+    .editEventSelect {
+        font-size: 13px;
+    }
+
+    .cancelEditBtn, .saveEditBtn {
+        padding: 4px 12px;
+        font-size: 12px;
+    }
+}
+
+
+.recentList {
+    scrollbar-width: thin;
+    scrollbar-color: #50596d #171c25;
+}
+
+::selection {
+    background: #2f80ff;
+    color: white;
+}
+
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #2f80ff;
+    outline-offset: 2px;
 }

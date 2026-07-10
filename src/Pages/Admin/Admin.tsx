@@ -1,8 +1,8 @@
-import Header from "../components/Header/Header";
-import FeedingMatch from "../components/FeedingMatch/FeedingMatch";
-import AdminTabs from "../components/AdminTabs/AdminTabs";
-import FixtureForm from "../components/FixtureForm/FixtureForm";
-import FixtureList from "../components/FixtureList/FixtureList";
+import Header from "../../components/Header/Header";
+import FeedingMatch from "../../components/FeedingMatch/FeedingMatch";
+import AdminTabs from "../../components/AdminTabs/AdminTabs";
+import FixtureForm from "../../components/FixtureForm/FixtureForm";
+import FixtureList from "../../components/FixtureList/FixtureList";
 import "./Admin.css";
 
 function Admin() {
@@ -17,12 +17,12 @@ function Admin() {
                 <AdminTabs />
 
                 <div className="fixtures-layout">
-
+{/* 
                     <FixtureForm />
 
-                    <FixtureList />
+                    <FixtureList /> */}
 
-                </div>
+                </div> 
 
             </section>
         </main>
