@@ -7,6 +7,7 @@ function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const { isAuthenticated, isAdmin, logout } = useAuth();
+    const isAdminRoute = location.pathname === "/admin" || location.pathname.startsWith("/admin/");
 
     const handleLogout = () => {
         logout();
@@ -64,9 +65,8 @@ function Header() {
 
                 {isAdmin && (
                     <button
-                        className={`header__nav-btn ${location.pathname === "/admin" ? "active" : ""
-                            }`}
-                        onClick={() => navigate("/admin")}
+                        className={`header__nav-btn ${isAdminRoute ? "active" : ""}`}
+                        onClick={() => navigate("/admin/fixtures")}
                     >
                         Admin Console
                     </button>

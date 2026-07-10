@@ -55,8 +55,6 @@ function Dashboard() {
                     ]}
                     />
             </div>
-        
-            <RecentEntries />
 
         </main>
 
