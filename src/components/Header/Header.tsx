@@ -3,24 +3,21 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Header() {
-
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAuthenticated, isAdmin, logout } = useAuth();
+    const { isAuthenticated, isAdmin,isSuperAdmin, logout } = useAuth();
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        navigate("/login");
     };
 
     return (
-
         <header className="header card">
 
             <div className="header__left">
 
                 <div className="header__logo">
-
                     <span className="header__live-dot"></span>
 
                     <span className="header__live-text">
@@ -30,17 +27,11 @@ function Header() {
                     <h2 className="header__title">
                         MATCHCAST
                     </h2>
-
                 </div>
 
                 <div className="header__time">
-
                     <span className="header__time-dot"></span>
-
-                    <span>
-                        19:29
-                    </span>
-
+                    <span>19:29</span>
                 </div>
 
             </div>
@@ -48,44 +39,71 @@ function Header() {
             <nav className="header__nav">
 
                 <button
-                    className={`header__nav-btn ${location.pathname === "/nvian" ? "active" : ""
-                        }`}
+                    className={`header__nav-btn ${
+                        location.pathname === "/nvian" ? "active" : ""
+                    }`}
                     onClick={() => navigate("/nvian")}
                 >
                     NVian Dashboard
                 </button>
+
                 <button
-                    className={`header__nav-btn ${location.pathname === "/" ? "active" : ""
-                        }`}
+                    className={`header__nav-btn ${
+                        location.pathname === "/" ? "active" : ""
+                    }`}
                     onClick={() => navigate("/")}
                 >
                     Live Dashboard
                 </button>
 
-                {isAdmin && (
+                {(isAdmin || isSuperAdmin)  && (
                     <button
-                        className={`header__nav-btn ${location.pathname === "/admin" ? "active" : ""
-                            }`}
+                        className={`header__nav-btn ${
+                            location.pathname === "/admin" ? "active" : ""
+                        }`}
                         onClick={() => navigate("/admin")}
                     >
                         Admin Console
                     </button>
                 )}
-                {isAdmin && (
+
+                {isSuperAdmin && (
                     <button
-                        className={`header__nav-btn ${location.pathname === "/superadmin" ? "active" : ""
-                            }`}
+                        className={`header__nav-btn ${
+                            location.pathname === "/superadmin" ? "active" : ""
+                        }`}
                         onClick={() => navigate("/superadmin")}
                     >
                         Super Admin
                     </button>
                 )}
 
+                {/* User is not logged in*/}
+                {!isAuthenticated && (
+                    <div className="header__auth">
+                        <button
+                            className="header__login-btn"
+                            onClick={() => navigate("/login")}
+                        >
+                            Login
+                        </button>
+
+                        <button
+                            className="header__register-btn"
+                            onClick={() => navigate("/register")}
+                        >
+                            Register
+                        </button>
+                    </div>
+                )}
+
+                {/* User is logged in  */}
                 {isAuthenticated && (
                     <div className="header__auth">
                         <span className="header__role">
-                            {isAdmin ? ' Admin' : ' User'}
+                          {isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : "User"}
                         </span>
+
                         <button
                             className="header__logout-btn"
                             onClick={handleLogout}
@@ -98,9 +116,7 @@ function Header() {
             </nav>
 
         </header>
-
     );
-
 }
 
 export default Header;

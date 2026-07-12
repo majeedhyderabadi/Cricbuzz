@@ -10,6 +10,7 @@ import Admin from "./Pages/Admin.tsx";
 import Login from "./Pages/Login.tsx";
 import AccessDenied from "./Pages/AccessDenied.tsx";
 import SuperAdmin from "./Pages/SuperAdmin.tsx";
+import RegistrationForm from "./Pages/RegistrationForm.tsx";
 
 
 
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/nvian" element={<NVianDashboard />} />
                     <Route path="/match/:id" element={<MatchDetailsPage/>} />
+                    <Route path="/register" element={<RegistrationForm />} />
                     <Route 
                         path="/admin" 
                         element={

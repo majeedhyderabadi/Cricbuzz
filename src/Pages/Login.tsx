@@ -1,62 +1,127 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import '../styles/Login.css';
+import { useState } from "react";
+import { loginAdmin } from "../services/adminservice";
+import { useAuth } from "../context/AuthContext";
+import "./Login.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const [role, setRole] = useState<'admin' | 'user'>('user');
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: "",
+        password: ""
+    });
 
-    const handleLogin = () => {
-        login(role);
-        navigate('/');
+    const {login} = useAuth()
+    const navigate= useNavigate()
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+
+        setError("");
+    };
+
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
+        e.preventDefault();
+
+        if (!formData.email.trim() || !formData.password.trim()) {
+            setError("Email and password are required");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError("");
+
+            const response = await loginAdmin({
+                email: formData.email,
+                password: formData.password
+            });
+
+            console.log("Login Response:", response);
+
+            //alert("Login successful");
+            login(response.role)
+
+             navigate("/");
+         
+        } catch (error) {
+            console.error("Login Error:", error);
+            setError("Invalid email or password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <main className="login-container">
-            <section className="login-card card">
-                <div className="login-card__header">
-                    <h1 className="login-card__title">Login</h1>
-                    <p className="login-card__subtitle">Select your role to continue</p>
-                </div>
+            <section className="login-card">
 
-                <div className="login-card__content">
-                    <div className="login-card__role-selector">
-                        {/*<label className="login-card__role-option">*/}
-                        {/*    <input*/}
-                        {/*        type="radio"*/}
-                        {/*        name="role"*/}
-                        {/*        value="user"*/}
-                        {/*        checked={role === 'user'}*/}
-                        {/*        onChange={(e) => setRole(e.target.value as 'user' | 'admin')}*/}
-                        {/*        className="login-card__radio"*/}
-                        {/*    />*/}
-                        {/*    <span className="login-card__role-label">User</span>*/}
-                        {/*    <span className="login-card__role-description">Regular user access</span>*/}
-                        {/*</label>*/}
+                <h1 className="login-title">
+                    Login
+                </h1>
 
-                        <label className="login-card__role-option">
-                            <input
-                                type="radio"
-                                name="role"
-                                value="admin"
-                                checked={role === 'admin'}
-                                onChange={(e) => setRole(e.target.value as 'user' | 'admin')}
-                                className="login-card__radio"
-                            />
-                            <span className="login-card__role-label">Admin</span>
-                            <span className="login-card__role-description">Administrator access</span>
+                <p className="login-subtitle">
+                    Login to your Admin Account
+                </p>
+
+                <form onSubmit={handleSubmit}>
+
+                    <div className="login-form-group">
+                        <label className="login-form-label">
+                            Email
                         </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="login-form-input"
+                            placeholder="Enter your email"
+                        />
                     </div>
 
+                    <div className="login-form-group">
+                        <label className="login-form-label">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className="login-form-input"
+                            placeholder="Enter your password"
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="login-error">
+                            {error}
+                        </p>
+                    )}
+
                     <button
-                        className="login-card__button"
-                        onClick={handleLogin}
+                        type="submit"
+                        className="login-btn"
+                        disabled={loading}
                     >
-                        Login as {role === 'admin' ? 'Admin' : 'User'}
+                        {loading ? "Logging in..." : "Login"}
                     </button>
-                </div>
+
+                </form>
+
             </section>
         </main>
     );

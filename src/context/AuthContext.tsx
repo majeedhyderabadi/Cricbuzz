@@ -10,13 +10,15 @@ import {
 interface AuthContextType {
     isAuthenticated: boolean;
     isAdmin: boolean;
-    login: (role: 'admin' | 'user') => void;
+    isSuperAdmin: boolean;
+    login: (role: string) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return localStorage.getItem('isAuthenticated') === 'true';
     });
@@ -25,16 +27,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return localStorage.getItem('userRole') === 'admin';
     });
 
-    const login = useCallback((role: 'admin' | 'user') => {
-        setIsAuthenticated(true);
-        setIsAdmin(role === 'admin');
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('userRole', role);
-    }, []);
+    const [isSuperAdmin, setIsSuperAdmin] = useState(() => {
+        return localStorage.getItem('userRole') === 'superadmin';
+    });
+
+    const login = useCallback((role: string) => {
+    const normalizedRole = role.toLowerCase();
+
+    setIsAuthenticated(true);
+    setIsAdmin(normalizedRole === "admin");
+    setIsSuperAdmin(normalizedRole==="superadmin")
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("userRole", normalizedRole);
+}, []);
 
     const logout = useCallback(() => {
         setIsAuthenticated(false);
         setIsAdmin(false);
+        setIsSuperAdmin(false);
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('userRole');
     }, []);
@@ -43,10 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         () => ({
             isAuthenticated,
             isAdmin,
+            isSuperAdmin,
             login,
             logout,
         }),
-        [isAuthenticated, isAdmin, login, logout]
+        [isAuthenticated, isAdmin,isSuperAdmin, login, logout]
     );
 
     return (
