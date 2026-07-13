@@ -12,6 +12,7 @@ import SuperAdmin from "./Pages/SuperAdmin.tsx";
 import Fixtures from "./Pages/Admin/Fixtures.tsx";
 import Commentary from "./Pages/Admin/Commentary.tsx";
 import TeamsPlayers from "./Pages/Admin/TeamsPlayers.tsx";
+import RegistrationForm from "./Pages/RegistrationForm.tsx";
 
 
 
@@ -22,6 +23,7 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/" element={<Dashboard />} />
+                    <Route path="/register" element={<RegistrationForm />} />
                     <Route path="/nvian" element={<NVianDashboard />} />
                     <Route path="/match/:id" element={<MatchDetailsPage/>} />
                     <Route 
