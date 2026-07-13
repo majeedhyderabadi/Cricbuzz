@@ -89,42 +89,42 @@ function RegistrationForm() {
         return isValid;
     };
 
-   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-) => {
-    e.preventDefault();
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
+        e.preventDefault();
 
-    if (!validateForm()) {
-        return;
-    }
+        if (!validateForm()) {
+            return;
+        }
 
-    try {
-        const registrationData = {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            password: formData.password
-        };
+        try {
+            const registrationData = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                password: formData.password
+            };
 
-        const result = await registerAdmin(registrationData);
+            const result = await registerAdmin(registrationData);
 
-        console.log("Registration response:", result);
+            console.log("Registration response:", result);
 
-        alert("Registration successful. Waiting for Super Admin approval.");
+            alert("Registration successful. Waiting for Super Admin approval.");
 
-        setFormData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            confirmPassword: ""
-        });
+            setFormData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                confirmPassword: ""
+            });
 
-    } catch (error) {
-        console.error("Registration error:", error);
-        alert("Registration failed");
-    }
-};
+        } catch (error) {
+            console.error("Registration error:", error);
+            alert("Registration failed");
+        }
+    };
 
     return (
         <div className="registration-container">
@@ -251,10 +251,18 @@ function RegistrationForm() {
                     >
                         Register
                     </button>
-                        <p className="registration-login-link">
-                                 Already registered?{" "}
-                         <button type="button" className="registration-login-btn" onClick={() => navigate("/login")}>Login </button>
-                        </p>
+
+                    <p className="registration-login-link">
+                        Already registered?{" "}
+                        <button
+                            type="button"
+                            className="registration-login-btn"
+                            onClick={() => navigate("/login")}
+                        >
+                            Login
+                        </button>
+                    </p>
+
                 </form>
 
             </div>

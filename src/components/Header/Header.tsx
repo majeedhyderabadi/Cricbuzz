@@ -5,7 +5,17 @@ import { useAuth } from "../../context/AuthContext";
 function Header() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAuthenticated, isAdmin,isSuperAdmin, logout } = useAuth();
+
+    const {
+        isAuthenticated,
+        isAdmin,
+        isSuperAdmin,
+        logout
+    } = useAuth();
+
+    const isAdminRoute =
+        location.pathname === "/admin" ||
+        location.pathname.startsWith("/admin/");
 
     const handleLogout = () => {
         logout();
@@ -56,12 +66,12 @@ function Header() {
                     Live Dashboard
                 </button>
 
-                {(isAdmin || isSuperAdmin)  && (
+                {(isAdmin || isSuperAdmin) && (
                     <button
                         className={`header__nav-btn ${
-                            location.pathname === "/admin" ? "active" : ""
+                            isAdminRoute ? "active" : ""
                         }`}
-                        onClick={() => navigate("/admin")}
+                        onClick={() => navigate("/admin/fixtures")}
                     >
                         Admin Console
                     </button>
@@ -78,7 +88,7 @@ function Header() {
                     </button>
                 )}
 
-                {/* User is not logged in*/}
+                {/* User is not logged in */}
                 {!isAuthenticated && (
                     <div className="header__auth">
                         <button
@@ -97,11 +107,15 @@ function Header() {
                     </div>
                 )}
 
-                {/* User is logged in  */}
+                {/* User is logged in */}
                 {isAuthenticated && (
                     <div className="header__auth">
                         <span className="header__role">
-                          {isSuperAdmin ? "Super Admin" : isAdmin ? "Admin" : "User"}
+                            {isSuperAdmin
+                                ? "Super Admin"
+                                : isAdmin
+                                    ? "Admin"
+                                    : "User"}
                         </span>
 
                         <button
