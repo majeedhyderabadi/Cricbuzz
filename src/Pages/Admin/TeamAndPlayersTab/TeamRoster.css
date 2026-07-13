@@ -1,0 +1,223 @@
+.roster-container{
+    background:#171c24;
+    border-radius:18px;
+    padding:24px;
+    color:white;
+    border:1px solid #2b3142;
+}
+
+.roster-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.roster-title h2{
+    margin:0;
+    font-size:26px;
+}
+
+.roster-title span{
+    color:#8792aa;
+    font-size:14px;
+}
+.team-card {
+    position: relative;
+    background: #1b202d;
+    border: 1px solid #343b52;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.team-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 5px;
+    background: var(--team-color);
+    border-radius: 0 4px 4px 0;
+}
+
+/* ================= HEADER ================= */
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 22px;
+    background: #23293a;
+}
+
+.team-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.expand-icon {
+    cursor: pointer;
+    color: white;
+    width: 18px;
+    font-size: 14px;
+}
+
+.team-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.team-name {
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.team-header-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.sport-badge {
+    background: #36405a;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.player-count {
+    color: #9ea8c7;
+    font-size: 13px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ================= BUTTON ================= */
+
+.icon-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 10px;
+    background: #313852;
+    color: white;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.icon-btn:hover {
+    background: #497ef7;
+}
+
+/* ================= PLAYERS ================= */
+
+.players-list {
+    width: 100%;
+}
+
+.roster-player-row {
+    height:62px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 18px;
+    border-top:1px solid #2D3547;
+}
+
+.player-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.player-index {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #313852;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.player-name {
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.player-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.roster-player-role {
+    color: #9ea8c7;
+    text-align: right;
+    font-size: smaller;
+}
+
+.player-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ================ EMPTY ================= */
+
+.empty-roster {
+    padding: 24px;
+    text-align: center;
+    color: #8c94ab;
+    font-size: 15px;
+    border-top: 1px solid #2f364b;
+}
+
+/* ================ RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+.team-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.team-header-right{
+    width:100%;
+    justify-content:space-between;
+}
+
+.roster-player-row{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:18px;
+    gap:15px;
+}
+
+.player-right{
+    width:100%;
+    justify-content:space-between;
+}
+
+.roster-player-role{
+    text-align:left;
+    width:auto;
+}
+
+}

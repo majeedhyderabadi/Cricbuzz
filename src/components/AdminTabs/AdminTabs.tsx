@@ -1,9 +1,17 @@
+import type { TabType } from "../../Pages/Admin/Admin";
 import "./AdminTabs.css";
 import { useNavigate, useLocation } from "react-router-dom";
 
+interface Props {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+}
 
 
-function AdminTabs() {
+export default function AdminTabs({
+  activeTab,
+  onTabChange,
+}: Props) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -15,17 +23,33 @@ function AdminTabs() {
 
     return (
         <div className="admin-tabs">
-            <button onClick={() => handleTabClick("/admin/commentary")} className={isActivePath("/admin/commentary") ? "active" : ""}>
+            <button 
+              onClick={() => {
+                 handleTabClick("/admin/commentary")
+                 onTabChange("commentary");
+                }}
+                className={activeTab === "commentary" ? "active" : ""}
+            >
                 Commentary
             </button>
-            <button onClick={() => handleTabClick("/admin/teams-players")} className={isActivePath("/admin/teams-players") ? "active" : ""}>
+            <button 
+                onClick={() => {
+                     handleTabClick("/admin/teams-players")
+                     onTabChange("teams");
+                    }}
+                className={activeTab === "teams" ? "active" : ""}
+            >
                 Teams & Players
             </button>
-            <button onClick={() => handleTabClick("/admin/fixtures")} className={isActivePath("/admin/fixtures") ? "active" : ""}>
+            <button 
+                 onClick={() => {
+                 handleTabClick("/admin/fixtures")
+                 onTabChange("fixtures");
+                }}
+                className={activeTab === "fixtures" ? "active" : ""}
+            >
                 Fixtures
             </button>
         </div>
     );
 }
-
-export default AdminTabs;
