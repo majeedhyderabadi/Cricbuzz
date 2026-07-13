@@ -6,12 +6,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./Pages/Dashboard";
 import NVianDashboard from "./Pages/NVianDashboard.tsx";
 import MatchDetailsPage from "./Pages/MatchDetailsPage/MatchDetailsPage.tsx";
+import Admin from "./Pages/Admin/Admin.tsx";
 import Login from "./Pages/Login.tsx";
 import AccessDenied from "./Pages/AccessDenied.tsx";
 import SuperAdmin from "./Pages/SuperAdmin.tsx";
-import Fixtures from "./Pages/Admin/Fixtures.tsx";
-import Commentary from "./Pages/Admin/Commentary.tsx";
-import TeamsPlayers from "./Pages/Admin/TeamsPlayers.tsx";
+import RegistrationForm from "./Pages/RegistrationForm.tsx";
 
 
 
@@ -24,38 +23,12 @@ function App() {
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/nvian" element={<NVianDashboard />} />
                     <Route path="/match/:id" element={<MatchDetailsPage/>} />
-                    <Route 
-                        path="/admin/fixtures" 
-                        element={
-                            <ProtectedRoute 
-                                element={<Fixtures />} 
-                                requireAdmin={true}
-                            />
-                        } 
-                    />
-                    <Route 
-                        path="/admin/teams-players" 
-                        element={
-                            <ProtectedRoute 
-                                element={<TeamsPlayers />} 
-                                requireAdmin={true}
-                            />
-                        } 
-                    />
-                    <Route 
-                        path="/admin/commentary" 
-                        element={
-                            <ProtectedRoute 
-                                element={<Commentary />} 
-                                requireAdmin={true}
-                            />
-                        } 
-                    />
+                    <Route path="/register" element={<RegistrationForm />} />
                     <Route 
                         path="/admin" 
                         element={
                             <ProtectedRoute 
-                                element={<Navigate to="/admin/fixtures" replace />} 
+                                element={<Admin />} 
                                 requireAdmin={true}
                             />
                         } 
