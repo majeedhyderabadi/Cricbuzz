@@ -1,21 +1,12 @@
 import "./MatchGrid.css";
 import { Link } from "react-router-dom";
+import type { CurrentMatch } from "../types/Matches";
 
-type MatchProps = {
-    match: {
-        id: number;
-        sport: string;
-        team1: string;
-        team2: string;
-        score1: string;
-        score2: string;
-        innings: string;
-        over: string;
-    };
+type MatchCardProps = {
+  match: CurrentMatch;
 };
 
-
-function MatchCard({match}: MatchProps) {
+function MatchCard({ match }: MatchCardProps) {
 
     return (
 <Link
@@ -28,7 +19,7 @@ function MatchCard({match}: MatchProps) {
 
                 <span className="match-card__sport">
 
-                    {match.sport}
+                    {match.matchType}
 
                 </span>
 
@@ -50,13 +41,13 @@ function MatchCard({match}: MatchProps) {
 
                         <span className="orange-dot"></span>
 
-                        <span>{match.team1}</span>
+                        <span>{match.teams[0]}</span>
 
                     </div>
 
                     <span className="match-card__score">
 
-                        {match.score1}
+                        {match.score[0]?.r}
 
                     </span>
 
@@ -68,13 +59,13 @@ function MatchCard({match}: MatchProps) {
 
                         <span className="blue-dot"></span>
 
-                        <span>{match.team2}</span>
+                        <span>{match.teams[1]}</span>
 
                     </div>
 
                     <span className="match-card__score">
 
-                        {match.score2}
+                        {match.score[1]?.r}
 
                     </span>
 
@@ -86,13 +77,13 @@ function MatchCard({match}: MatchProps) {
 
                 <span>
 
-                    {match.innings}
+                {match.score.at(-1)?.inning}
 
                 </span>
 
                 <span>
 
-                    {match.over}
+                   {match.score.at(-1)?.o} Overs
 
                 </span>
 

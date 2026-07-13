@@ -4,27 +4,34 @@ import MatchSummary from "../../components/MatchDetails/MatchSummary";
 import MatchTabs from "../../components/MatchDetails/MatchTabs";
 import ScoreCard from "../../components/MatchDetails/ScoreCard";
 import MatchInfo from "../../components/MatchDetails/MatchInfo";
-import { matches } from "../../components/Data/MatchesData";
 import { useParams } from "react-router-dom";
+import { useEffect,useState } from "react";
+import { getMatchDetails } from "../../services/MatchDataService";
+import type { MatchDetailsResponse } from "../../components/types/Matches";
 
 function MatchDetailsPage() {
+  const { id } = useParams<{ id: string }>();
 
- 
+  const [match, setMatch] = useState<MatchDetailsResponse["data"] | null>(null);
 
+  useEffect(() => {
+    const loadMatchDetails = async () => {
+      if (!id) return;
 
-const { id } = useParams();
+      try {
+        const response = await getMatchDetails(id);
+        setMatch(response.data);
+      } catch (error) {
+        console.error("Failed to load match details", error);
+      }
+    };
 
-console.log("URL Id:", id);
-console.log("Matches:", matches);
-
-const match = matches.find((m) => m.id === Number(id));
-
-console.log("Found Match:", match);
-
- if (!match) {
-        return <h2>Match Not Found</h2>;
-    }
-
+    loadMatchDetails();
+  }, [id]);
+    console.log(match)
+  if (!match) {
+    return <h2>Loading...</h2>;
+  }
     return (
         
         <main className="match-details-page">
@@ -39,7 +46,7 @@ console.log("Found Match:", match);
 
                 <div className="match-details-page__left">
 
-                    <ScoreCard innings={""} />
+                  <ScoreCard scorecards={match.scorecard} />
 
                   
 
@@ -47,7 +54,7 @@ console.log("Found Match:", match);
 
                 <aside className="match-details-page__right">
 
-                    <MatchInfo sport={""} venue={""} tournament={""} date={""} toss={""} officials={""} />
+                   <MatchInfo match={match} />
 
                 </aside>
 

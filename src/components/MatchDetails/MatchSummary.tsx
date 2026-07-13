@@ -1,97 +1,58 @@
 import "./MatchSummary.css";
+import type { MatchDetails } from "../types/Matches";
 
 type MatchSummaryProps = {
-
-    match: Match;
-
+  match: MatchDetails;
 };
- interface Match {
 
-    id: number;
+function MatchSummary({ match }: MatchSummaryProps) {
 
-    sport: string;
+  const team1Score = match.score[0];
+  const team2Score = match.score[1];
 
-    team1: string;
+  return (
+    <section className="match-summary">
 
-    team2: string;
+      <div className="match-summary__teams">
 
-    score1: string;
+        <div className="match-summary__team">
+          <span className="match-summary__team-name">
+            {match.teams[0]}
+          </span>
 
-    score2: string;
+          <span className="match-summary__score">
+            {team1Score
+              ? `${team1Score.r}/${team1Score.w} (${team1Score.o})`
+              : "Yet to bat"}
+          </span>
+        </div>
 
-    innings: string;
+        <div className="match-summary__team">
+          <span className="match-summary__team-name">
+            {match.teams[1]}
+          </span>
 
-    over: string;
+          <span className="match-summary__score">
+            {team2Score
+              ? `${team2Score.r}/${team2Score.w} (${team2Score.o})`
+              : "Yet to bat"}
+          </span>
+        </div>
 
-}
-function MatchSummary({match}: MatchSummaryProps) {
+      </div>
 
-    return (
+      <div className="match-summary__footer">
+        <span>{match.status}</span>
+      </div>
 
-        <section className="match-summary">
+      <div className="match-summary__result">
+        {match.matchWinner
+          ? `Winner: ${match.matchWinner}`
+          : match.status}
+      </div>
 
-            <div className="match-summary__teams">
-
-                <div className="match-summary__team">
-
-                    <span className="match-summary__team-name">
-
-                        {match.team1}
-
-                    </span>
-
-                    <span className="match-summary__score">
-
-                        {match.score1}
-
-                    </span>
-
-                </div>
-
-                <div className="match-summary__team">
-
-                    <span className="match-summary__team-name">
-
-                        {match.team2}
-
-                    </span>
-
-                    <span className="match-summary__score">
-
-                        {match.score2}
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div className="match-summary__footer">
-
-                <span>
-
-                    matchState
-
-                </span>
-
-                <span>
-
-                    {match.over}
-
-                </span>
-
-            </div>
-
-            <div className="match-summary__result">
-
-               result
-
-            </div>
-
-        </section>
-
-    );
-
+    </section>
+  );
 }
 
 export default MatchSummary;

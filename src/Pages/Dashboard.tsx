@@ -4,16 +4,30 @@ import MatchGrid from "../components/MatchGrid/MatchGrid";
 import TopPerformers from "../components/TopPerformers/TopPerformers";
 import LiveCommentary from "../components/Commentary/LiveCommentary";
 import SearchBar from "../components/Search/SearchBar";
-import {useState} from "react";
+import {useState,useEffect} from "react";
+import { getCurrentMatches } from "../services/MatchDataService";
 import RecentEntries from "../components/RecentEntries/RecentEntries";
 import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
+import type { CurrentMatch } from "../components/types/Matches";
 
 
 function Dashboard() {
 
     const [searchTerm, setSearchTerm] = useState("");
+    const [matches, setMatches] = useState<CurrentMatch[]>([]);
 
-   
+     useEffect(() => {
+         const loadMatches = async () => {
+        try {
+          const response = await getCurrentMatches(0);
+         setMatches(response.data);
+          } catch (error) {
+          console.error("Failed to load matches", error);
+           }
+       };
+
+  loadMatches();
+}, []);
 
 
     return (
@@ -28,7 +42,7 @@ function Dashboard() {
 
             <SportTabs />
 
-            <MatchGrid searchTerm={searchTerm}/>
+            <MatchGrid searchTerm={searchTerm} matches={matches}/>
             <div className="Commentry_Performers">
                <LiveCommentary />
                <TopPerformers />
