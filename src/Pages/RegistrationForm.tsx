@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./RegistrationForm.css";
-import axios from "axios";
+import { registerAdmin } from "../services/adminservice";
+import { useNavigate } from "react-router-dom";
 
 function RegistrationForm() {
     
@@ -19,6 +20,8 @@ function RegistrationForm() {
         password: "",
         confirmPassword: ""
     });
+
+    const navigate = useNavigate();
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -96,18 +99,18 @@ function RegistrationForm() {
         }
 
         try {
+            const registrationData = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                password: formData.password
+            };
 
-            const response = await axios.post(
-                "https://localhost:62965/api/admin/register",
-                {
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
-                    email: formData.email,
-                    password: formData.password
-                }
-            );
+            const result = await registerAdmin(registrationData);
 
-            alert(response.data.message);
+            console.log("Registration response:", result);
+
+            alert("Registration successful. Waiting for Super Admin approval.");
 
             setFormData({
                 firstName: "",
@@ -117,16 +120,9 @@ function RegistrationForm() {
                 confirmPassword: ""
             });
 
-        } catch (error: any) {
-
-            console.error(error);
-
-            if (error.response) {
-  
-              alert(error.response.data.message);
-            } else {
-                alert("Unable to connect to server.");
-            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            alert("Registration failed");
         }
     };
 
@@ -255,6 +251,17 @@ function RegistrationForm() {
                     >
                         Register
                     </button>
+
+                    <p className="registration-login-link">
+                        Already registered?{" "}
+                        <button
+                            type="button"
+                            className="registration-login-btn"
+                            onClick={() => navigate("/login")}
+                        >
+                            Login
+                        </button>
+                    </p>
 
                 </form>
 
