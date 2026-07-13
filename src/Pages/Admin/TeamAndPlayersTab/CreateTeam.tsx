@@ -163,6 +163,7 @@ const handleCreateTeam = async () => {
     <select
         value={selectedSport}
         onChange={(e) => setSelectedSport(e.target.value)}
+        disabled={team !== null}
     >
         <option value="" disabled>
             Select Sport
