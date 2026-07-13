@@ -1,107 +1,55 @@
 import "./MatchInfo.css";
+import type { MatchDetails } from "../types/Matches";
 
 type MatchInfoProps = {
-
-    sport: string;
-
-    venue: string;
-
-    tournament: string;
-
-    date: string;
-
-    toss: string;
-
-    officials: string;
-
+  match: MatchDetails;
 };
 
-function MatchInfo({
+function MatchInfo({ match }: MatchInfoProps) {
+  return (
+    <section className="match-info">
 
-    sport,
+      <div className="match-info__header">
+        <h2>Match Information</h2>
+      </div>
 
-    venue,
+      <div className="match-info__body">
 
-    tournament,
+        <div className="match-info__row">
+          <span>Sport</span>
+          <span>{match.matchType.toUpperCase()}</span>
+        </div>
 
-    date,
+        <div className="match-info__row">
+          <span>Match</span>
+          <span>{match.name}</span>
+        </div>
 
-    toss,
+        <div className="match-info__row">
+          <span>Venue</span>
+          <span>{match.venue}</span>
+        </div>
 
-    officials
+        <div className="match-info__row">
+          <span>Date</span>
+          <span>{match.date}</span>
+        </div>
 
-}: MatchInfoProps) {
+        <div className="match-info__row">
+          <span>Toss</span>
+          <span>
+            {match.tossWinner} chose to {match.tossChoice}
+          </span>
+        </div>
 
-    return (
+        <div className="match-info__row">
+          <span>Winner</span>
+          <span>{match.matchWinner || "TBD"}</span>
+        </div>
 
-        <section className="match-info">
-
-            <div className="match-info__header">
-
-                <h2>
-
-                    Match Information
-
-                </h2>
-
-            </div>
-
-            <div className="match-info__body">
-
-                <div className="match-info__row">
-
-                    <span>Sport</span>
-
-                    <span>{sport}</span>
-
-                </div>
-
-                <div className="match-info__row">
-
-                    <span>Tournament</span>
-
-                    <span>{tournament}</span>
-
-                </div>
-
-                <div className="match-info__row">
-
-                    <span>Venue</span>
-
-                    <span>{venue}</span>
-
-                </div>
-
-                <div className="match-info__row">
-
-                    <span>Date</span>
-
-                    <span>{date}</span>
-
-                </div>
-
-                <div className="match-info__row">
-
-                    <span>Toss</span>
-
-                    <span>{toss}</span>
-
-                </div>
-
-                <div className="match-info__row">
-
-                    <span>Officials</span>
-
-                    <span>{officials}</span>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    );
-
+      </div>
+    </section>
+  );
 }
 
 export default MatchInfo;
