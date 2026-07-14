@@ -1,55 +1,50 @@
 import "./MatchTabs.css";
 
+export type MatchTab =
+  | "Live"
+  | "Scorecard"
+  | "Commentary"
+  | "Stats"
+  | "Squads";
+
 type MatchTabsProps = {
-
-    activeTab: string;
-
+  activeTab: MatchTab;
+  onTabChange: (tab: MatchTab) => void;
 };
 
 function MatchTabs({
-
-    activeTab
-
+  activeTab,
+  onTabChange
 }: MatchTabsProps) {
 
-    return (
+  const tabs: MatchTab[] = [
+    "Live",
+    "Scorecard",
+    "Commentary",
+    "Stats",
+    "Squads"
+  ];
 
-        <nav className="match-tabs">
+  return (
+    <nav className="match-tabs">
 
-            <button
-                className={`match-tabs__item ${activeTab === "Live" ? "match-tabs__item--active" : ""}`}
-            >
-                Live
-            </button>
+      {tabs.map((tab) => (
+        <button
+          key={tab}
+          type="button"
+          onClick={() => onTabChange(tab)}
+          className={`match-tabs__item ${
+            activeTab === tab
+              ? "match-tabs__item--active"
+              : ""
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
 
-            <button
-                className={`match-tabs__item ${activeTab === "Scorecard" ? "match-tabs__item--active" : ""}`}
-            >
-                Scorecard
-            </button>
-
-            <button
-                className={`match-tabs__item ${activeTab === "Commentary" ? "match-tabs__item--active" : ""}`}
-            >
-                Commentary
-            </button>
-
-            <button
-                className={`match-tabs__item ${activeTab === "Stats" ? "match-tabs__item--active" : ""}`}
-            >
-                Stats
-            </button>
-
-            <button
-                className={`match-tabs__item ${activeTab === "Squads" ? "match-tabs__item--active" : ""}`}
-            >
-                Squads
-            </button>
-
-        </nav>
-
-    );
-
+    </nav>
+  );
 }
 
 export default MatchTabs;

@@ -1,34 +1,40 @@
 import "./MatchHeader.css";
-import type { MatchDetails } from "../types/Matches";
+import type { CricbuzzMatchHeader } from "../types/CricbuzzLiveMatchInfo";
 
 type MatchHeaderProps = {
-  match: MatchDetails;
+  matchHeader: CricbuzzMatchHeader;
 };
 
-function MatchHeader({ match }: MatchHeaderProps) {
+function MatchHeader({ matchHeader }: MatchHeaderProps) {
   return (
     <section className="match-header">
 
       <div className="match-header__top">
         <span className="match-header__sport">
-          {match.matchType.toUpperCase()}
+          {matchHeader.matchFormat.toUpperCase()}
         </span>
 
         <span className="match-header__status">
-          {match.matchEnded ? "ENDED" : "LIVE"}
+          {matchHeader.complete ? "ENDED" : "LIVE"}
         </span>
       </div>
 
       <h1 className="match-header__title">
-        {match.teams[0]} vs {match.teams[1]}
+        {matchHeader.team1.name} vs {matchHeader.team2.name}
       </h1>
 
       <div className="match-header__meta">
-        <span>{match.name}</span>
+        <span>{matchHeader.matchDescription}</span>
+
         <span>•</span>
-        <span>{match.venue}</span>
+
+        <span>{matchHeader.seriesName}</span>
+
         <span>•</span>
-        <span>{match.date}</span>
+
+        <span>
+          {new Date(matchHeader.matchStartTimestamp).toLocaleDateString()}
+        </span>
       </div>
 
     </section>

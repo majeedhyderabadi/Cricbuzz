@@ -1,68 +1,219 @@
 import "./MatchDetailsPage.css";
+
 import MatchHeader from "../../components/MatchDetails/MatchHeader";
 import MatchSummary from "../../components/MatchDetails/MatchSummary";
-import MatchTabs from "../../components/MatchDetails/MatchTabs";
-import ScoreCard from "../../components/MatchDetails/ScoreCard";
+import MatchStats from "../../components/MatchDetails/MatchStats";
+import MatchTabs, {
+  type MatchTab
+} from "../../components/MatchDetails/MatchTabs";
 import MatchInfo from "../../components/MatchDetails/MatchInfo";
+import MatchCommentary from "../../components/MatchDetails/MatchCommentary";
 import { useParams } from "react-router-dom";
-import { useEffect,useState } from "react";
-import { getMatchDetails } from "../../services/MatchDataService";
-import type { MatchDetailsResponse } from "../../components/types/Matches";
+import { useEffect, useState } from "react";
+
+import { getCricbuzzMatchInfo } from "../../services/MatchDataService";
+import LiveMatchDetails from "../../components/MatchDetails/LiveMatchDetails";
+import type { CricbuzzMatchDetailsResponse } from "../../components/types/CricbuzzLiveMatchInfo";
+
 
 function MatchDetailsPage() {
-  const { id } = useParams<{ id: string }>();
 
-  const [match, setMatch] = useState<MatchDetailsResponse["data"] | null>(null);
+  const { matchId } = useParams();
+
+  const [matchDetails, setMatchDetails] =
+    useState<CricbuzzMatchDetailsResponse | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [activeTab, setActiveTab] =
+    useState<MatchTab>("Live");
+
 
   useEffect(() => {
+
     const loadMatchDetails = async () => {
-      if (!id) return;
+
+      if (!matchId) {
+        setError("Match ID not found");
+        setLoading(false);
+        return;
+      }
 
       try {
-        const response = await getMatchDetails(id);
-        setMatch(response.data);
+
+        setLoading(true);
+        setError(null);
+  console.log(matchId)
+        const response = await getCricbuzzMatchInfo(
+          Number(matchId)
+        );
+
+        setMatchDetails(response);
+
       } catch (error) {
-        console.error("Failed to load match details", error);
+
+        console.error(
+          "Failed to load match details",
+          error
+        );
+
+        setError("Failed to load match details");
+
+      } finally {
+
+        setLoading(false);
+
       }
     };
 
+
     loadMatchDetails();
-  }, [id]);
-    console.log(match)
-  if (!match) {
-    return <h2>Loading...</h2>;
+
+  }, [matchId]);
+
+
+  if (loading) {
+    return <div>Loading match details...</div>;
   }
-    return (
-        
-        <main className="match-details-page">
 
-            <MatchHeader match={match} />
 
-            <MatchSummary match={match} />
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-            <MatchTabs activeTab={""} />
 
-            <section className="match-details-page__content">
+  if (!matchDetails) {
+    return <div>Match details not found.</div>;
+  }
 
-                <div className="match-details-page__left">
 
-                  <ScoreCard scorecards={match.scorecard} />
+  return (
 
-                  
+    <main className="match-details-page">
 
-                </div>
+      <MatchHeader
+        matchHeader={matchDetails.matchHeader}
+      />
 
-                <aside className="match-details-page__right">
 
-                   <MatchInfo match={match} />
+      <MatchSummary
+        matchHeader={matchDetails.matchHeader}
+        miniscore={matchDetails.miniscore}
+      />
 
-                </aside>
 
-            </section>
+      <MatchTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-        </main>
 
-    );
+      {/* LIVE TAB */}
+
+      {activeTab === "Live" && (
+
+        <section className="match-details-page__content">
+
+        <div className="match-details-page__left">
+
+            <LiveMatchDetails
+                miniscore={matchDetails.miniscore}
+                            />
+
+            </div>
+
+
+          <aside className="match-details-page__right">
+
+            <MatchInfo
+              matchHeader={matchDetails.matchHeader}
+            />
+
+          </aside>
+
+        </section>
+
+      )}
+
+
+      {/* SCORECARD TAB */}
+
+      {activeTab === "Scorecard" && (
+
+        <section className="match-details-page__content">
+
+          <div className="match-details-page__left">
+            Scorecard coming next...
+          </div>
+
+        </section>
+
+      )}
+
+
+      {/* COMMENTARY TAB */}
+{activeTab === "Commentary" && (
+
+  <section className="match-details-page__content">
+
+    <div className="match-details-page__left">
+
+      <MatchCommentary
+        commentary={matchDetails.matchCommentary}
+      />
+
+    </div>
+
+    <aside className="match-details-page__right">
+
+      <MatchInfo
+        matchHeader={matchDetails.matchHeader}
+      />
+
+    </aside>
+
+  </section>
+
+)}
+
+
+      {/* STATS TAB */}
+
+    {activeTab === "Stats" && (
+  <section className="match-details-page__content">
+
+    <div className="match-details-page__left">
+      <MatchStats miniscore={matchDetails.miniscore} />
+    </div>
+
+    <aside className="match-details-page__right">
+      <MatchInfo matchHeader={matchDetails.matchHeader} />
+    </aside>
+
+  </section>
+)}
+
+
+      {/* SQUADS TAB */}
+
+      {activeTab === "Squads" && (
+
+        <section className="match-details-page__content">
+
+          <div className="match-details-page__left">
+            Squads coming next...
+          </div>
+
+        </section>
+
+      )}
+
+    </main>
+
+  );
 
 }
 
