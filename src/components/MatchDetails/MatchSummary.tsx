@@ -1,14 +1,40 @@
 import "./MatchSummary.css";
-import type { MatchDetails } from "../types/Matches";
+import type { CricbuzzMatchHeader,CricbuzzMiniScore } from "../types/CricbuzzLiveMatchInfo";
 
 type MatchSummaryProps = {
-  match: MatchDetails;
+  matchHeader: CricbuzzMatchHeader;
+  miniscore: CricbuzzMiniScore;
 };
 
-function MatchSummary({ match }: MatchSummaryProps) {
+function MatchSummary({
+  matchHeader,
+  miniscore
+}: MatchSummaryProps) {
 
-  const team1Score = match.score[0];
-  const team2Score = match.score[1];
+  const innings = miniscore.matchScoreDetails.inningsScoreList;
+
+  const team1Scores = innings.filter(
+    (inning) => inning.batTeamId === matchHeader.team1.id
+  );
+
+  const team2Scores = innings.filter(
+    (inning) => inning.batTeamId === matchHeader.team2.id
+  );
+
+  const formatScore = (
+    teamInnings: typeof innings
+  ) => {
+    if (teamInnings.length === 0) {
+      return "Yet to bat";
+    }
+
+    return teamInnings
+      .map(
+        (inning) =>
+          `${inning.score}/${inning.wickets} (${inning.overs})`
+      )
+      .join(" & ");
+  };
 
   return (
     <section className="match-summary">
@@ -17,38 +43,34 @@ function MatchSummary({ match }: MatchSummaryProps) {
 
         <div className="match-summary__team">
           <span className="match-summary__team-name">
-            {match.teams[0]}
+            {matchHeader.team1.name}
           </span>
 
           <span className="match-summary__score">
-            {team1Score
-              ? `${team1Score.r}/${team1Score.w} (${team1Score.o})`
-              : "Yet to bat"}
+            {formatScore(team1Scores)}
           </span>
         </div>
 
         <div className="match-summary__team">
           <span className="match-summary__team-name">
-            {match.teams[1]}
+            {matchHeader.team2.name}
           </span>
 
           <span className="match-summary__score">
-            {team2Score
-              ? `${team2Score.r}/${team2Score.w} (${team2Score.o})`
-              : "Yet to bat"}
+            {formatScore(team2Scores)}
           </span>
         </div>
 
       </div>
 
       <div className="match-summary__footer">
-        <span>{match.status}</span>
+        <span>{matchHeader.status}</span>
       </div>
 
       <div className="match-summary__result">
-        {match.matchWinner
-          ? `Winner: ${match.matchWinner}`
-          : match.status}
+        {matchHeader.result.winningTeam
+          ? `Winner: ${matchHeader.result.winningTeam}`
+          : matchHeader.status}
       </div>
 
     </section>
