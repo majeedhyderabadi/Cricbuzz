@@ -2,10 +2,10 @@ import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } fro
 
 export function createCommentaryHubConnection(): HubConnection {
 
-    return new HubConnectionBuilder()
+     return new HubConnectionBuilder()
         .withUrl(import.meta.env.VITE_SIGNALR_HUB_URL)
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Warning)
+        .configureLogging(LogLevel.Debug)
         .build();
 
 }
