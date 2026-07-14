@@ -3,9 +3,10 @@ import { HubConnectionState } from "@microsoft/signalr";
 import { createCommentaryHubConnection } from "../lib/signalrClient";
 import type { CommentaryUpdate } from "../types/commentary";
 
-const COMMENTARY_EVENT = "ReceiveCommentary";
 
-export function useCommentaryFeed() {
+const COMMENTARY_EVENT = "CommentaryReceived";
+
+export function useCommentaryFeed(fixtureId: string) {
 
     const [commentaryByMatch, setCommentaryByMatch] = useState<Record<string, CommentaryUpdate>>({});
     const [connectionState, setConnectionState] = useState<HubConnectionState>(HubConnectionState.Disconnected);
@@ -15,7 +16,7 @@ export function useCommentaryFeed() {
         const connection = createCommentaryHubConnection();
 
         connection.on(COMMENTARY_EVENT, (update: CommentaryUpdate) => {
-
+        console.log(update);
             setCommentaryByMatch((previous) => ({
                 ...previous,
                 [update.matchId]: update,
@@ -24,26 +25,34 @@ export function useCommentaryFeed() {
         });
 
         connection.onreconnecting(() => setConnectionState(HubConnectionState.Reconnecting));
-        connection.onreconnected(() => setConnectionState(HubConnectionState.Connected));
+
+        connection.onreconnected(() => {
+            setConnectionState(HubConnectionState.Connected);
+            connection.invoke("JoinFixtureGroup", fixtureId);
+        });
+
         connection.onclose(() => setConnectionState(HubConnectionState.Disconnected));
 
         connection
             .start()
-            .then(() => setConnectionState(HubConnectionState.Connected))
+            .then(() => {
+                setConnectionState(HubConnectionState.Connected);
+                return connection.invoke("JoinFixtureGroup", fixtureId);
+            })
             .catch((error) => {
 
                 console.error("Failed to connect to commentary hub", error);
-                setConnectionState(HubConnectionState.Disconnected);
+                //setConnectionState(HubConnectionState.Disconnected);
 
             });
 
         return () => {
 
-            connection.stop();
+            //connection.stop();
 
         };
 
-    }, []);
+    }, [fixtureId]);
 
     return { commentaryByMatch, connectionState };
 

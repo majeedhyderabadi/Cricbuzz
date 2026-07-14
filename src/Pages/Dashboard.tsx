@@ -9,13 +9,13 @@ import { getCurrentMatches } from "../services/MatchDataService";
 import RecentEntries from "../components/RecentEntries/RecentEntries";
 import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
 import type { CurrentMatch } from "../components/types/Matches";
-
+import { useCommentaryFeed } from "../hooks/useCommentaryFeed";
 
 function Dashboard() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [matches, setMatches] = useState<CurrentMatch[]>([]);
-
+const { commentaryByMatch } = useCommentaryFeed("5A89597A-817B-4B38-B22C-75DCDA108BE8");
      useEffect(() => {
          const loadMatches = async () => {
         try {
