@@ -28,3 +28,11 @@ export const getCricbuzzMatchInfo = async (matchId: number) => {
   return response.data;
 };
 
+export const getCricbuzzScorecard = async (matchId: number) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/matches/cricbuzz/${matchId}/scorecard`
+  );
+
+  return response.data;
+};
+
