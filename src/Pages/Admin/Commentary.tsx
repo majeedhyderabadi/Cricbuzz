@@ -6,7 +6,6 @@ import Header from '../../components/Header/Header'
 import RecentEntries from '../../components/RecentEntries/RecentEntries'
 import './Admin.css'
 import type { TabType } from './Admin'
-import AddCommentary from '../../components/Commentary/AddCommentary'
 
 function Commentary() {
     const [activeTab, setActiveTab] = useState<TabType>("commentary");
@@ -19,7 +18,7 @@ function Commentary() {
                  <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}/>
                <div className="fixtures-layout">
                     
-                    <AddCommentary />
+                    <LiveCommentary />
                     <RecentEntries />
                 </div>
             </section>
