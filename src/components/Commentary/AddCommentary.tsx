@@ -313,7 +313,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
             setNote('');
             setPostStatus('success');
             alert(`Commentary posted successfully! (${selectedActionType})`);
-            
+            setSelectedActionType(null);
             setTimeout(() => setPostStatus('idle'), 3000);
         } catch (error) {
             console.error('AddCommentary: Error posting commentary:', error);
