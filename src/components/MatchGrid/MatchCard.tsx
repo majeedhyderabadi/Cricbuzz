@@ -1,69 +1,96 @@
 import "./MatchGrid.css";
 import { Link } from "react-router-dom";
-import type { CricbuzzMatch } from "../types/Matches";
+import type { MatchCardModel } from "../types/MatchCardModel";
 
 type MatchCardProps = {
-  match: CricbuzzMatch;
+  match: MatchCardModel;
 };
 
 function MatchCard({ match }: MatchCardProps) {
-  const { matchInfo, matchScore } = match;
 
-  const team1Score = matchScore?.team1Score?.inngs1;
-  const team2Score = matchScore?.team2Score?.inngs1;
+  const route =
+    match.source === "cricbuzz"
+      ? `/match/${match.id}`
+      : `/fixture/${match.id}`;
 
   return (
     <Link
-      to={`/match/${matchInfo.matchId}`}
-      style={{ textDecoration: "none", color: "inherit" }}
+      to={route}
+      style={{
+        textDecoration: "none",
+        color: "inherit"
+      }}
     >
       <article className="match-card">
+
         <div className="match-card__header">
+
           <span className="match-card__sport">
-            {matchInfo.matchFormat}
+            {match.sport}
           </span>
 
           <span className="match-card__live">
-            <span className="match-card__live-dot"></span>
-            {matchInfo.state === "In Progress" ? "LIVE" : matchInfo.state}
+
+            {match.status === "In Progress" && (
+              <span className="match-card__live-dot" />
+            )}
+
+            {match.status === "In Progress"
+              ? "LIVE"
+              : match.status}
+
           </span>
+
         </div>
 
         <div className="match-card__teams">
+
           <div className="match-card__team">
+
             <div className="match-card__team-info">
-              <span className="orange-dot"></span>
-              <span>{matchInfo.team1.teamName}</span>
+              <span className="orange-dot" />
+              <span>{match.team1Name}</span>
             </div>
 
             <span className="match-card__score">
-              {team1Score
-                ? `${team1Score.runs}/${team1Score.wickets ?? 0}`
+              {match.team1Score !== null
+                ? `${match.team1Score}/${match.team1Wickets ?? 0}`
                 : "-"}
             </span>
+
           </div>
 
           <div className="match-card__team">
+
             <div className="match-card__team-info">
-              <span className="blue-dot"></span>
-              <span>{matchInfo.team2.teamName}</span>
+              <span className="blue-dot" />
+              <span>{match.team2Name}</span>
             </div>
 
             <span className="match-card__score">
-              {team2Score
-                ? `${team2Score.runs}/${team2Score.wickets ?? 0}`
+              {match.team2Score !== null
+                ? `${match.team2Score}/${match.team2Wickets ?? 0}`
                 : "-"}
             </span>
+
           </div>
+
         </div>
 
         <div className="match-card__footer">
-          <span>{matchInfo.shortStatus}</span>
 
           <span>
-            {team2Score?.overs ?? team1Score?.overs ?? 0} Overs
+            {match.shortStatus}
           </span>
+
+          {match.overs !== null && (
+            <span>
+              {match.overs} Overs
+            </span>
+          )}
+
         </div>
+
       </article>
     </Link>
   );

@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import AdminTabs from '../../components/AdminTabs/AdminTabs'
 import FeedingMatch from '../../components/FeedingMatch/FeedingMatch'
 import Header from '../../components/Header/Header'
 import './Admin.css'
-import type { TabType } from './Admin'
 
 function TeamsPlayers() {
-    const [activeTab, setActiveTab] = useState<TabType>("fixtures");
     return (
         <main className="container">
             <Header />
@@ -14,7 +12,7 @@ function TeamsPlayers() {
             <FeedingMatch />
             <section className="admin-page">
 
-                <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
+                <AdminTabs />
             </section>
         </main>
     )
