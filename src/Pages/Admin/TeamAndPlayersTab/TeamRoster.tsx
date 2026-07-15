@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { type Team, getTeams, type Player, deleteTeam, deletePlayer } from "../../../services/TeamService";
+import { type Team, getTeams, type Player, deleteTeam, deletePlayer, getPlayers } from "../../../services/TeamService";
 import "./TeamRoster.css";
 import TeamCard from "./TeamCard";
 import EditTeamDialog from "./EditTeamDialog";
 import EditPlayerDialog from "./EditPlayerDialog"
+import { showSuccess, showError, showConfirm } from "../../../services/common/AlertService";
 
 const TeamRoster = () => {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -24,20 +25,56 @@ const loadTeams = async () => {
     const data = await getTeams();
     setTeams(data);
 };
+const loadPlayers = async (teamId?:string) => {
+    const data = await getPlayers(teamId);
+        setTeams(prevTeams =>
+        prevTeams.map(team =>
+            team.id === teamId
+                ? { ...team, players: data }
+                : team
+        )
+    );
+};
+
+const handleTeamSaved = () => {
+    setShowEditTeamDialog(false);
+
+    // Reload teams if needed
+    loadTeams();
+};
+const handlePlayerSaved = (teamId?:string) => {
+    setShowEditPlayer(false);
+
+    // Reload players if needed
+    loadPlayers(teamId);
+};
+
 const handleEditTeam = async (team: Team) => {
       setSelectedEditTeam(team);
       setShowEditTeamDialog(true);
 };
 
 const handleDeleteTeam = async (teamId: string) => {
-        const confirmed = window.confirm(
+    const result = await showConfirm(
+        "Delete Team?",
         "Are you sure you want to delete this team?"
     );
-
-    if (!confirmed) return;
+       if (!result) {
+        return;
+    }
 
     try {
-        await deleteTeam(teamId);
+        var response = await deleteTeam(teamId);
+        if(response.success)
+           await showSuccess(
+             "Success",
+             response.message
+           );
+        else
+           showError(
+             "Error",
+             response.message || response.error?.message
+           );
 
         // reload teams
         await loadTeams();
@@ -55,13 +92,29 @@ const handleEditPlayer = async (player: Player) => {
 };
 
 const handleDeletePlayer = async (playerId: string) => {
-    if (!window.confirm("Delete this player?"))
+    const result = await showConfirm(
+        "Delete Player?",
+        "Are you sure you want to delete this player?"
+    );
+       if (!result) {
         return;
+    }
 
     try {
-        await deletePlayer(playerId);
+            var response = await deletePlayer(playerId);
+            if(response.success)
+               await showSuccess(
+                 "Success",
+                 response.message
+               );
+            else
+               showError(
+                 "Error",
+                 response.message || response.error?.message
+               );
 
-        loadTeams(); // refresh roster
+            loadTeams(); // refresh roster
+            
     } catch (error) {
         console.error(error);
     }
@@ -98,15 +151,20 @@ const handleDeletePlayer = async (playerId: string) => {
     team={selectedEditTeam}
     onClose={() => setShowEditTeamDialog(false)}
     onSaved={loadTeams}
+    onSaveSuccess={handleTeamSaved}
+
 />
 <EditPlayerDialog
     open={showEditPlayer}
     player={editingPlayer}
     onClose={() => setShowEditPlayer(false)}
     onSaved={loadTeams}
+    onSaveSuccess={() => handlePlayerSaved(editingPlayer?.teamId)}
+
 />
     </div>
   );
 };
 
 export default TeamRoster;
+
