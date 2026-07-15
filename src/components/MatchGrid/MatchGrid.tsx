@@ -1,42 +1,60 @@
-
 import "./MatchGrid.css";
 import MatchCard from "./MatchCard";
 
-
-import { useState,useEffect } from "react";
-import { matches } from "../Data/MatchesData";
-import type { CricbuzzMatchItem } from "../types/Matches";
+import type {
+  MatchCardModel
+} from "../types/MatchCardModel";
 
 type MatchGridProps = {
-   matches: CricbuzzMatchItem[];
+  matches: MatchCardModel[];
   searchTerm?: string;
 };
 
-function MatchGrid({ matches, searchTerm = "" }: MatchGridProps) {
-  const term = searchTerm.toLowerCase().trim();
+function MatchGrid({
+  matches,
+  searchTerm = ""
+}: MatchGridProps) {
 
-  const filteredMatches = matches.filter((item) => {
-  const info = item.match.matchInfo;
+  const term =
+    searchTerm.toLowerCase().trim();
 
-  return (
-    info.seriesName.toLowerCase().includes(term) ||
-    info.matchDesc.toLowerCase().includes(term) ||
-    info.team1.teamName.toLowerCase().includes(term) ||
-    info.team2.teamName.toLowerCase().includes(term)
-  );
-});
+  const filteredMatches =
+    matches.filter((match) => {
+
+      return (
+        match.team1Name
+          .toLowerCase()
+          .includes(term) ||
+
+        match.team2Name
+          .toLowerCase()
+          .includes(term) ||
+
+        match.sport
+          .toLowerCase()
+          .includes(term) ||
+
+        match.shortStatus
+          .toLowerCase()
+          .includes(term)
+      );
+
+    });
 
   return (
     <section className="match-grid">
-      {filteredMatches.map((item) => (
-  <MatchCard
-    key={item.match.matchInfo.matchId}
-    match={item.match}
-  />
-))}
+
+      {filteredMatches.map((match) => (
+
+        <MatchCard
+          key={match.id}
+          match={match}
+        />
+
+      ))}
+
     </section>
   );
 }
 
 export default MatchGrid;
-

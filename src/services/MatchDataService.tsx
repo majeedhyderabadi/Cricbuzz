@@ -36,3 +36,11 @@ export const getCricbuzzScorecard = async (matchId: number) => {
   return response.data;
 };
 
+export const getLiveFixtures = async () => {
+  const response = await axios.get(
+    `${API_BASE_URL}/fixtures/live`
+  );
+
+  return response.data;
+};
+

@@ -93,7 +93,7 @@ function MatchDetailsPage() {
         const response =
           await getCricbuzzMatchInfo(numericMatchId);
 
-
+  
         // Prevent old request from updating state
 
         if (!ignore) {
