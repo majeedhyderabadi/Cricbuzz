@@ -11,6 +11,7 @@ import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
 
 import type { CricbuzzMatchItem } from "../components/types/Matches";
 import { useCommentaryFeed } from "../hooks/useCommentaryFeed";
+import { mapCricbuzzMatchToCard } from "../components/MatchGrid/cricbuzzMatchCardMapper";
 
 function Dashboard() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -19,9 +20,6 @@ function Dashboard() {
     const { commentaryByMatch } = useCommentaryFeed(
         "5A89597A-817B-4B38-B22C-75DCDA108BE8"
     );
-
-
-
 
      useEffect(() => {
          const loadMatches = async () => {
@@ -36,6 +34,7 @@ function Dashboard() {
   loadMatches();
 }, []);
 
+const matchCards = matches.map(mapCricbuzzMatchToCard);
 
     return (
 
@@ -49,7 +48,7 @@ function Dashboard() {
 
             <SportTabs />
 
-            <MatchGrid searchTerm={searchTerm} matches={matches}/>
+            <MatchGrid searchTerm={searchTerm} matches={matchCards}/>
             <div className="Commentry_Performers">
                <LiveCommentary />
                <TopPerformers />

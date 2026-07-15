@@ -46,11 +46,121 @@ function MatchCommentary({
 
           const separator = item.overSeparator;
 
+          const isOverComplete =
+            separator != null &&
+            item.event?.includes("over-break");
+
           return (
             <div
               className="match-commentary__entry"
               key={`${item.timestamp}-${index}`}
             >
+
+              {/* OVER SUMMARY CARD */}
+              {isOverComplete && separator && (
+
+                <div className="match-commentary__over-card">
+
+                  <div className="match-commentary__over-top">
+
+                    <div className="match-commentary__over-title">
+
+                      <strong>
+                        Over {separator.overNumber}
+                      </strong>
+
+                      <span className="match-commentary__over-divider" />
+
+                      <strong>
+                        {separator.batTeamObj.teamScore}
+                      </strong>
+
+                    </div>
+
+                    <div className="match-commentary__over-summary">
+
+                      <div className="match-commentary__over-balls">
+
+                        {separator.overSummary
+                          .trim()
+                          .split(/\s+/)
+                          .map((ball, ballIndex) => (
+
+                            <span
+                              key={ballIndex}
+                              className={
+                                ball === "W"
+                                  ? "match-commentary__over-ball match-commentary__over-ball--wicket"
+                                  : ball === "4" ||
+                                    ball === "6" ||
+                                    ball === "B4"
+                                  ? "match-commentary__over-ball match-commentary__over-ball--boundary"
+                                  : "match-commentary__over-ball"
+                              }
+                            >
+                              {ball}
+                            </span>
+
+                          ))}
+
+                      </div>
+
+                      <span className="match-commentary__over-runs">
+                        ({separator.overRuns} runs)
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  <div className="match-commentary__over-body">
+
+                    <div className="match-commentary__batters">
+
+                      <div className="match-commentary__player-row">
+
+                        <span>
+                          {separator.batStrikerObj.playerName}
+                        </span>
+
+                        <strong>
+                          {separator.batStrikerObj.playerScore}
+                        </strong>
+
+                      </div>
+
+                      <div className="match-commentary__player-row">
+
+                        <span>
+                          {separator.batNonStrikerObj.playerName}
+                        </span>
+
+                        <strong>
+                          {separator.batNonStrikerObj.playerScore}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                    <div className="match-commentary__bowler">
+
+                      <span>
+                        {separator.bowlerObj.playerName}
+                      </span>
+
+                      <strong>
+                        {separator.bowlerObj.playerScore}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              )}
+
 
               {/* NORMAL BALL COMMENTARY */}
               {item.ballMetric != null ? (
@@ -102,116 +212,6 @@ function MatchCommentary({
                     }}
                   />
                 </article>
-
-              )}
-
-
-              {/* OVER SUMMARY CARD */}
-              {separator && (
-
-                <div className="match-commentary__over-card">
-
-                  <div className="match-commentary__over-top">
-
-                    <div className="match-commentary__over-title">
-
-                      <strong>
-                        Over {separator.overNumber}
-                      </strong>
-
-                      <span className="match-commentary__over-divider" />
-
-                      <strong>
-                        {separator.batTeamObj.teamScore}
-                      </strong>
-
-                    </div>
-
-
-                    <div className="match-commentary__over-summary">
-
-                      <div className="match-commentary__over-balls">
-
-                        {separator.overSummary
-                          .trim()
-                          .split(/\s+/)
-                          .map((ball, ballIndex) => (
-
-                            <span
-                              key={ballIndex}
-                              className={
-                                ball === "W"
-                                  ? "match-commentary__over-ball match-commentary__over-ball--wicket"
-                                  : ball === "4" ||
-                                    ball === "6" ||
-                                    ball === "B4"
-                                  ? "match-commentary__over-ball match-commentary__over-ball--boundary"
-                                  : "match-commentary__over-ball"
-                              }
-                            >
-                              {ball}
-                            </span>
-
-                          ))}
-
-                      </div>
-
-                      <span className="match-commentary__over-runs">
-                        ({separator.overRuns} runs)
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <div className="match-commentary__over-body">
-
-                    <div className="match-commentary__batters">
-
-                      <div className="match-commentary__player-row">
-
-                        <span>
-                          {separator.batStrikerObj.playerName}
-                        </span>
-
-                        <strong>
-                          {separator.batStrikerObj.playerScore}
-                        </strong>
-
-                      </div>
-
-
-                      <div className="match-commentary__player-row">
-
-                        <span>
-                          {separator.batNonStrikerObj.playerName}
-                        </span>
-
-                        <strong>
-                          {separator.batNonStrikerObj.playerScore}
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-
-                    <div className="match-commentary__bowler">
-
-                      <span>
-                        {separator.bowlerObj.playerName}
-                      </span>
-
-                      <strong>
-                        {separator.bowlerObj.playerScore}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-                </div>
 
               )}
 
