@@ -18,7 +18,7 @@ export interface SportRole {
     sportId: string;
 }
 
-const API_BASE_URL = "https://localhost:62965/api"; 
+const API_BASE_URL = `${import.meta.env.VITE_CRICBUZZ_BACKEND_BASE_URL}/api/sports`; 
 
 export const getSports = async (): Promise<Sport[]> => {
   try {

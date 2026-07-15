@@ -21,7 +21,7 @@ export interface AdminLoginResponse {
     role: string;
 }
 
-const API_URL = "https://localhost:62965/api/admin";
+const API_URL = "http://localhost:5000/api/admin";
 
 export async function registerAdmin(data: RegisterAdminRequest) {
     const response = await fetch(`${API_URL}/register`, {

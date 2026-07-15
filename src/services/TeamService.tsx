@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:62965/api"; 
+const API_BASE_URL = "http://localhost:5000/api"; 
 export interface CreateTeamRequest {
     name: string;
     sportId: string;

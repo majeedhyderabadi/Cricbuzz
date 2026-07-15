@@ -1,33 +1,66 @@
-import '../SportTabs/SportTabs.css';
+import { useEffect, useState } from "react";
+import "../SportTabs/SportTabs.css";
+
+
+interface Sport {
+    id: string;
+    name: string;
+}
 
 const SportTabs = () => {
 
-    // Store all sports in a constant array
-    const sportsCategories = [
-        "All Sports",
-        "Cricket",
-        "Football",
-        "Cycling",
-        "Chess",
-        "Carrom",
-    ];
+    const [sportsCategories, setSportsCategories] = useState<Sport[]>([]);
+    const [selectedSportId, setSelectedSportId] = useState<string>("all");
+
+    useEffect(() => {
+        loadSports();
+    }, []);
+
+    const loadSports = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_CRICBUZZ_BACKEND_BASE_URL}/api/sports`);
+
+            if (!response.ok) {
+                throw new Error("Unable to fetch sports.");
+            }
+
+            const data: Sport[] = await response.json();
+
+            console.log("Sports API Response:", data);
+
+            setSportsCategories([
+                {
+                    id: "all",
+                    name: "All Sports"
+                },
+                ...data
+            ]);
+        }
+        catch (error) {
+            console.error("Error loading sports:", error);
+        }
+    };
 
     return (
-        <section className='sports-tabs'>
+        <section className="sports-tabs">
 
-            
-            {sportsCategories.map((sport, index) => (
+            {sportsCategories.map((sport) => (
+
                 <button
-                    key={index}
-                    className={`sports-tabs__button ${index === 0 ? "active" : ""}`}
+                    key={sport.id}
+                    className={`sports-tabs__button ${
+                        selectedSportId === sport.id ? "active" : ""
+                    }`}
+                    onClick={() => setSelectedSportId(sport.id)}
                 >
-                    {sport}
+                    {sport.name}
                 </button>
+
             ))}
 
         </section>
     );
-}
+};
 
 export default SportTabs;
 
