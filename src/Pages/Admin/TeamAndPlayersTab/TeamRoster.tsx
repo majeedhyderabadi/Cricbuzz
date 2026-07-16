@@ -80,7 +80,10 @@ const handleDeleteTeam = async (teamId: string) => {
         await loadTeams();
     } catch (error) {
         console.error("Failed to delete team", error);
-        alert("Unable to delete team.");
+                   showError(
+             "Error",
+            "Unable to delete team."
+           );
     }
 };
 

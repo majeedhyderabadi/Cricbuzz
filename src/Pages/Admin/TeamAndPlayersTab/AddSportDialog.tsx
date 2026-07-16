@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AddSportDialog.css";
+import { showWarning } from "../../../services/common/AlertService";
 
 interface AddSportDialogProps {
   open: boolean;
@@ -19,7 +20,10 @@ function AddSportDialog({
 
   const handleSave = () => {
     if (!name.trim()) {
-      alert("Sport name is required.");
+        showWarning(
+          "Error",
+          "Sport name is required."
+        );
       return;
     }
 
@@ -94,3 +98,7 @@ function AddSportDialog({
 }
 
 export default AddSportDialog;
+
+function showError(arg0: string, arg1: any) {
+  throw new Error("Function not implemented.");
+}
