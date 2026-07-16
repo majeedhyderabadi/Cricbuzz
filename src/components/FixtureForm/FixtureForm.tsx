@@ -1,78 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import "./FixtureForm.css";
 
-interface Sport {
-    id: number;
-    sport: string;
-    teams: string[];
-}
+import { getTeams, type Team } from "../../services/TeamService";
+import { sportService, type Sport } from "../../services/fixturesservice";
+
 
 interface Fixture {
     sport: string;
     home: string;
     away: string;
-    status: string;
+    scheduledAtUtc: string;
 }
 
-const sportsData: Sport[] = [
-    {
-        id: 1,
-        sport: "Cricket",
-        teams: [
-            "NVian Strikers",
-            "NVian Warriors",
-            "NVian Titans",
-        ],
-    },
-    {
-        id: 2,
-        sport: "Football",
-        teams: [
-            "NVian United",
-            "NVian Rangers",
-            "NVian Eagles",
-        ],
-    },
-    {
-        id: 3,
-        sport: "Badminton",
-        teams: [
-            "NVian Smashers",
-            "NVian Aces",
-            "NVian Racquets",
-        ],
-    },
-];
-
 function FixtureForm() {
+    const [sports, setSports] = useState<Sport[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [sportswiseteams, setTeams] = useState<Team[]>([]);
+
+    useEffect(() => {
+        const loadSports = async () => {
+            try {
+                const data = await sportService.getSports();
+                setSports(data);
+            } catch (error) {
+                console.error("Failed to fetch sports:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadSports();
+        loadTeams();
+    }, []);
+    
+   
     const [fixture, setFixture] = useState<Fixture>({
-        sport: sportsData[0].sport,
+        sport: "",
         home: "",
         away: "",
-        status: "",
+        scheduledAtUtc: "",
     });
-
-    // Get teams based on selected sport
-    const selectedSport = sportsData.find(
-        (item) => item.sport === fixture.sport
+    
+    const selectedSport = sports.find(
+        (item) => item.name === fixture.sport
     );
 
-    const teams = selectedSport?.teams ?? [];
-
+    //const teams = selectedSport?.sportRoles ?? [];
+    const filteredTeams = sportswiseteams.filter(
+        (team) => team.sportId === selectedSport?.id
+    );
     const handleChange = (
         e: ChangeEvent<HTMLSelectElement | HTMLInputElement>
     ) => {
         const { name, value } = e.target;
 
-        // Reset team selections whenever sport changes
         if (name === "sport") {
-            setFixture((prev) => ({
-                ...prev,
+            setFixture({
                 sport: value,
                 home: "",
                 away: "",
-            }));
+                scheduledAtUtc: "",
+            });
             return;
         }
 
@@ -82,10 +70,59 @@ function FixtureForm() {
         }));
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const loadTeams = async (): Promise<Team[]> => {
+        try {
+            const data = await getTeams();
 
-        console.log("Fixture Details:", fixture);
+            setTeams(data);
+
+            return data;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+        
+    };
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        debugger
+        console.log(fixture.scheduledAtUtc);
+        console.log(new Date(fixture.scheduledAtUtc).toISOString());
+
+        const payload = {
+            homeTeamId: fixture.home,
+            awayTeamId: fixture.away,
+            scheduledAtUtc: new Date(fixture.scheduledAtUtc).toISOString(),
+        };
+        debugger
+        try {
+            const response = await fetch("https://localhost:62965/api/fixtures", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.detail || "Failed to create fixture");
+                return;
+            }
+          
+            alert("Fixture scheduled successfully!");
+
+            setFixture({
+                sport: sports[0].name,
+                home: "",
+                away: "",
+                scheduledAtUtc: "",
+            });
+        } catch (error) {
+            
+            console.error(error);
+            alert("Something went wrong.");
+        }
     };
 
     return (
@@ -93,8 +130,7 @@ function FixtureForm() {
             <h2>Create Fixture</h2>
 
             <p>
-                Match two NVian teams against each other.
-                Both must play the same sport.
+                Match two NVian teams against each other. Both must play the same sport.
             </p>
 
             <form onSubmit={handleSubmit}>
@@ -102,12 +138,11 @@ function FixtureForm() {
 
                 <select
                     name="sport"
-                    value={fixture.sport}
                     onChange={handleChange}
                 >
-                    {sportsData.map((sport) => (
-                        <option key={sport.id} value={sport.sport}>
-                            {sport.sport}
+                    {sports.map((sport) => (
+                        <option key={sport.id} value={sport.name}>
+                            {sport.name}
                         </option>
                     ))}
                 </select>
@@ -123,15 +158,16 @@ function FixtureForm() {
                         >
                             <option value="">Select Team A</option>
 
-                            {teams
-                                .filter((team) => team !== fixture.away)
-                                .map((team) => (
-                                    <option key={team} value={team}>
-                                        {team}
+                            {filteredTeams
+                                .filter(team => team.id !== fixture.away)
+                                .map(team => (
+                                    <option key={team.id} value={team.id}>
+                                        {team.teamName}
                                     </option>
                                 ))}
                         </select>
                     </div>
+
                     <div>
                         <label>Team B (Away)</label>
 
@@ -142,30 +178,33 @@ function FixtureForm() {
                         >
                             <option value="">Select Team B</option>
 
-                            {teams
-                                .filter((team) => team !== fixture.home)
-                                .map((team) => (
-                                    <option key={team} value={team}>
-                                        {team}
+                            {filteredTeams
+                                .filter(team => team.id !== fixture.away)
+                                .map(team => (
+                                    <option key={team.id} value={team.id}>
+                                        {team.teamName}
                                     </option>
                                 ))}
                         </select>
                     </div>
                 </div>
 
-                <label>Status</label>
+                <label>Scheduled Date & Time</label>
 
                 <input
-                    type="text"
-                    name="status"
-                    placeholder="e.g. 1st Innings - Over 2.1"
-                    value={fixture.status}
+                    type="datetime-local"
+                    name="scheduledAtUtc"
+                    value={fixture.scheduledAtUtc}
                     onChange={handleChange}
                 />
 
                 <button
                     type="submit"
-                    disabled={!fixture.home || !fixture.away}
+                    disabled={
+                        !fixture.home ||
+                        !fixture.away ||
+                        !fixture.scheduledAtUtc
+                    }
                 >
                     + Schedule Fixture
                 </button>

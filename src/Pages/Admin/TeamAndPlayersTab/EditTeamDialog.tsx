@@ -7,13 +7,15 @@ interface Props {
     team: Team | null;
     onClose: () => void;
     onSaved: () => void;
+    onSaveSuccess: () => void;
 }
 
 const EditTeamDialog = ({
     open,
     team,
     onClose,
-    onSaved
+    onSaved,
+    onSaveSuccess
 }: Props) => {
 
     if (!open) return null;
@@ -35,6 +37,7 @@ const EditTeamDialog = ({
                     isDialog
                     onClose={onClose}
                     onSaved={onSaved}
+                    onSaveSuccess={onSaveSuccess}
                 />
 
             </div>

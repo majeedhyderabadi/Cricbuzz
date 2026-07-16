@@ -7,13 +7,15 @@ interface Props {
     player: Player | null;
     onClose: () => void;
     onSaved: () => void;
+    onSaveSuccess: () => void;
 }
 
 const EditPlayerDialog = ({
     open,
     player,
     onClose,
-    onSaved
+    onSaved,
+    onSaveSuccess
 }: Props) => {
 
     if (!open)
@@ -36,6 +38,7 @@ const EditPlayerDialog = ({
                     isDialog
                     onClose={onClose}
                     onSaved={onSaved}
+                    onSaveSuccess={onSaveSuccess}
                 />
 
             </div>

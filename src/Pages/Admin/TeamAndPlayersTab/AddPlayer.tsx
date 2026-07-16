@@ -3,19 +3,22 @@ import { type Team, getTeams, createPlayer, type Player, updatePlayer } from "..
 import "./AddPlayer.css";
 import AddRoleDialog from "./AddRoleDialog";
 import { createSportRole, getSportRolesBySportId, getSports, type Sport, type SportRole } from "../../../services/SportService";
+import { showSuccess, showError } from "../../../services/common/AlertService";
 
 interface AddPlayerProps {
     player?: Player | null;
     isDialog?: boolean;
     onClose?: () => void;
     onSaved?: () => void;
+    onSaveSuccess?: () => void;
 }
 
 const AddPlayer: React.FC<AddPlayerProps> = ({
     player,
     isDialog = false,
     onClose,
-    onSaved
+    onSaved,
+    onSaveSuccess
 }) => {
     const [playerName, setPlayerName] = useState("");
     const [showRoleDialog, setShowRoleDialog] = useState(false);
@@ -112,14 +115,22 @@ const loadRoles = async (
         description: string
     ) => {
         try {
-            await createSportRole({
+            var response = await createSportRole({
                 roleName,
                 description,
                 sportId: sportId
             });
 
-            alert("Role added successfully");
-            //await loadRoles(sportId);
+           if(response.success)
+              await showSuccess(
+                "Success",
+                response.message
+              );
+           else
+              showError(
+                "Error",
+                response.message || response.error?.message
+              );
 
             setShowRoleDialog(false);
         } catch (err) {
@@ -128,72 +139,97 @@ const loadRoles = async (
     };
     const handleAddPlayer = async () => {
         if (!selectedTeam) {
-            alert("Please select a team.");
+             showWarning(
+                "Error",
+                "Please select a team."
+              );
             return;
         }
 
         if (!playerName.trim()) {
-            alert("Please enter player name.");
+            showWarning(
+                "Error",
+                "Please enter player name."
+              );
             return;
         }
 
         if (!selectedRole) {
-            alert("Please select a role.");
+            showWarning(
+                "Error",
+                "Please select a role."
+              );
             return;
         }
 
         try {
-
             if (player) {
-
-                await updatePlayer({
+                var response = await updatePlayer({
                     playerId: player.playerId,
                     playerName: playerName,
                     teamId: selectedTeam,
                     sportRoleId: selectedRole
-
                 });
 
-                alert("Player updated successfully.");
+                 if(response.success)
+                    await showSuccess(
+                        "Success",
+                        response.message
+                    );
+                 else
+                    showError(
+                      "Error",
+                      response.message || response.error?.message
+                    );
+
                 onSaved?.();
+                onSaveSuccess?.();  
 
                 if (isDialog)
                     onClose?.();
 
             }
             else {
-
-                await createPlayer({
+                var playerResponse = await createPlayer({
                     playerName: playerName,
                     teamId: selectedTeam,
                     sportRoleId: selectedRole,
                 });
 
-                alert("Player created successfully.");
+                if(playerResponse.success)
+                   await showSuccess(
+                     "Success",
+                     playerResponse.message
+                   );
+                else
+                   showError(
+                     "Error",
+                     playerResponse.message || playerResponse.error?.message
+                   );
+
                 // Clear form
                 setPlayerName("");
                 setSelectedRole("");
                 setSelectedTeam("");
-
             }
 
             // Reload teams/players if required
             loadTeams();
         } catch (error) {
             console.error("Error adding player:", error);
-            alert("Failed to add player.");
+            showError(
+                     "Error",
+                     "Failed to add player."
+                   );
         }
     };
+
 const handleTeamChange = async (
     e: React.ChangeEvent<HTMLSelectElement>
 ) => {
-
     const teamId = e.target.value;
-
     setSelectedTeam(teamId);
-
     setSelectedRole("");
-
     await loadRoles(teamId, teams);
 };
 
@@ -280,6 +316,7 @@ useEffect(() => {
                             type="button"
                             className="add-role-btn"
                             onClick={() => setShowRoleDialog(true)}
+                           disabled={player !== null}
                         >
                             +
                         </button>
@@ -304,3 +341,7 @@ useEffect(() => {
 };
 
 export default AddPlayer;
+
+function showWarning(arg0: string, arg1: string) {
+    throw new Error("Function not implemented.");
+}

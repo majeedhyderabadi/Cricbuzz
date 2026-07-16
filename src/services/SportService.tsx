@@ -1,5 +1,18 @@
 import axios from "axios";
 
+
+export interface ErrorResponse {
+  message: string;
+  statusCode: number;
+}
+
+export interface ResponseResult<T> {
+  success: boolean;
+  data: T;
+  message: string;
+  error?: ErrorResponse;
+}
+
 export interface Sport {
   id: string;
   name: string;
@@ -16,6 +29,12 @@ export interface SportRole {
     roleName: string;
     description: string;
     sportId: string;
+}
+
+export interface CreateSportRoleRequest{
+  roleName: string;
+  description: string;
+  sportId: string;
 }
 
 const API_BASE_URL = "https://localhost:62965/api"; 
@@ -41,27 +60,21 @@ export const getSports = async (): Promise<Sport[]> => {
 };
 
 export const createSport = async (
-    request: CreateSportRequest
-): Promise<void> => {
+  request: CreateSportRequest
+): Promise<ResponseResult<string>> => {
 
-    try {
+  const response = await fetch(`${API_BASE_URL}/sports`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
 
-        const response = await fetch(`${API_BASE_URL}/sports`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(request)
-        });
+  const result: ResponseResult<string> =
+    await response.json();
 
-        if (!response.ok) {
-            throw new Error("Failed to create sport.");
-        }
-
-    } catch (error) {
-        console.error("Error creating sport:", error);
-        throw error;
-    }
+  return result;
 };
 
 export const getSportRoles = async (): Promise<SportRole[]> => {
@@ -94,16 +107,21 @@ export const getSportRolesBySportId = async (
   return response.data;
 };
 
-export const createSportRole = async (data: {
-  roleName: string;
-  description: string;
-  sportId: string;
-}) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/sports/roles`,
-    data
-  );
+export const createSportRole = async (
+  request: CreateSportRoleRequest
+): Promise<ResponseResult<string>> => {
 
-  return response.data;
+  const response = await fetch(`${API_BASE_URL}/sports/roles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  const result: ResponseResult<string> =
+    await response.json();
+
+  return result;
 };
 
