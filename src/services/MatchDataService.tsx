@@ -44,3 +44,16 @@ export const getLiveFixtures = async () => {
   return response.data;
 };
 
+export const searchCurrentMatches = async (searchTerm: string) => {
+    const response = await axios.get(
+        `${API_BASE_URL}/fixtures/search`,
+        {
+            params: {
+                searchTerm
+            }
+        }
+    );
+
+    return response.data;
+};
+
