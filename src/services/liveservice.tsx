@@ -144,7 +144,7 @@ export const fetchLiveTeams = async() =>{
         return response.data;
 
     } catch (e) {
-        console.log("Error fetching live teams:", e?.response);
+        console.log("Error fetching live teams:", axios.isAxiosError(e) ? e.response : undefined);
         console.log("Error fetching live teams data:", e);
     }
 }
@@ -155,7 +155,7 @@ export const liveFixtures = async() =>{
         console.log("Fetched live fixtures:", response.data);
         return response.data;
     } catch (e) {
-        console.log("Error fetching live fixtures:", e?.response);
+        console.log("Error fetching live fixtures:", axios.isAxiosError(e) ? e.response : undefined);
         console.log("Error fetching live fixtures data:", e);
     }
 }
