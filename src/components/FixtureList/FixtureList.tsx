@@ -1,13 +1,27 @@
-import type { ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import "./FixtureList.css";
+import { fixtureService, type Fixture } from "../../services/fixturesservice";
 
-interface Fixture {
-  home: string;
-  away: string;
-}
 
 function FixtureList(): ReactElement {
-  const fixtures: Fixture[] = [];
+    const [fixtures, setFixtures] = useState<Fixture[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFixtures = async () => {
+            try {
+                const data = await fixtureService.getLiveFixtures();
+                setFixtures(data);
+            } catch (error) {
+                console.error("Failed to load fixtures:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFixtures();
+    }, []);
+
 
   return (
     <div className="card fixture-list">
@@ -23,7 +37,7 @@ function FixtureList(): ReactElement {
       ) : (
         fixtures.map((fixture: Fixture, index: number) => (
           <div key={index}>
-            {fixture.home} vs {fixture.away}
+            {fixture.homeTeamName} vs {fixture.awayTeamName}
           </div>
         ))
       )}
