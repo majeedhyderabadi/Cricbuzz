@@ -3,19 +3,22 @@ import { createTeam, type Team, updateTeam} from "../../../services/TeamService"
 import AddSportDialog from "./AddSportDialog";
 import "./CreateTeam.css";
 import { type Sport, getSports, createSport } from "../../../services/SportService";
+import { showError, showSuccess, showWarning } from "../../../services/common/AlertService";
 
 interface CreateTeamProps {
     team?: Team | null;
     isDialog?: boolean;
     onClose?: () => void;
     onSaved?: () => void;
+    onSaveSuccess?: () => void;
 }
 
 const CreateTeam: React.FC<CreateTeamProps> = ({
     team,
     isDialog = false,
     onClose,
-    onSaved
+    onSaved,
+    onSaveSuccess
 }) => {
 const [teamName, setTeamName] = useState("");
 const [selectedColor, setSelectedColor] = useState("#9B5DE5");
@@ -61,61 +64,105 @@ const handleAddSport = async (
 
     try {
 
-        await createSport({
+        var response = await createSport({
             name,
             description
         });
 
-        alert("Sport added successfully.");
+        if(response.success)
+           await showSuccess(
+             "Success",
+             response.message
+           );
+        else
+           showError(
+             "Error",
+             response.message || response.error?.message
+           );
 
         // Reload dropdown
         await loadSports();
 
         setShowSportDialog(false);
 
-    } catch (error) {
-
-        alert("Unable to add sport.");
-
-        console.error(error);
+    } catch (err) {
+    if (err instanceof Error) {
+        showError(
+           "Error",
+           err.message
+        );
+    } else {
+        showError(
+           "Error",
+           "Something went wrong."
+        );
     }
+  }
 };
 const handleCreateTeam = async () => {
 
     if (!teamName.trim()) {
-        alert("Please enter team name.");
+        showWarning(
+           "Error",
+           "Please enter team name."
+        );
         return;
     }
 
     if (!selectedSport) {
-        alert("Please select a sport.");
+        showWarning(
+           "Error",
+           "Please select a sport."
+        );
         return;
     }
 
     if (!selectedColor) {
-        alert("Please select a team color.");
+        showWarning(
+           "Error",
+           "Please select a team color."
+        );
         return;
     }
     try {
         if (team) {
-            await updateTeam({
+            var response = await updateTeam({
                 id: team.id,
                 name: teamName,
                 sportId: selectedSport,
                 colorHex: selectedColor
             });
 
-            alert("Team updated successfully");
+            if(response.success)
+               await showSuccess(
+                 "Success",
+                 response.message
+               );
+            else
+               showError(
+                 "Error",
+                 response.message || response.error?.message
+               );
 
         } else {
-
-            await createTeam({
+            var teamResponse = await createTeam({
                 name: teamName,
                 sportId: selectedSport,
                 colorHex: selectedColor
             });
 
-            alert("Team created successfully");
+           if(teamResponse.success)
+              await showSuccess(
+                "Success",
+                teamResponse.message
+              );
+           else
+              showError(
+                "Error",
+                teamResponse.message || teamResponse.error?.message
+              );
+
+              onSaveSuccess?.();  
 
             // Clear form
             setTeamName("");
@@ -128,7 +175,10 @@ const handleCreateTeam = async () => {
             onClose?.();
 
     } catch (error) {
-        alert("Unable to create team.");
+        showError(
+          "Error",
+          "Unable to create team."
+        );
         console.error(error);
     }
 };
@@ -181,6 +231,7 @@ const handleCreateTeam = async () => {
       className="add-sport-btn"
       onClick={() => setShowSportDialog(true)}
       title="Add Sport"
+      disabled={team !== null}
     >
       + 
     </button>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { ResponseResult } from "./SportService";
 
 const API_BASE_URL = "https://localhost:62965/api"; 
 export interface CreateTeamRequest {
@@ -40,27 +41,23 @@ export interface UpdateTeamRequest {
     colorHex: string;
 }
 export const createTeam = async (
-    team: CreateTeamRequest
-): Promise<void> => {
+  request: CreateTeamRequest
+): Promise<ResponseResult<string>> => {
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/teams`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(team),
-        });
+  const response = await fetch(`${API_BASE_URL}/teams`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
 
-        if (!response.ok) {
-            throw new Error("Failed to create team.");
-        }
+  const result: ResponseResult<string> =
+    await response.json();
 
-    } catch (error) {
-        console.error("Error creating team:", error);
-        throw error;
-    }
+  return result;
 };
+
 export const getTeams = async (): Promise<Team[]> => {
     const response = await axios.get(`${API_BASE_URL}/teams`);
     return response.data.map((item: any) => ({
@@ -79,40 +76,78 @@ export const getTeams = async (): Promise<Team[]> => {
     }));
 };
 
-export const createPlayer = async (
-  request: CreatePlayerRequest
-) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/players`,
-    request
-  );
-
-  return response.data;
+export const getPlayers = async (teamId?: string): Promise<Player[]> => {
+    const response = await axios.get(`${API_BASE_URL}/players/team/${teamId}`);
+    return response.data.map((item: any) => ({
+        playerId: item.id,
+        playerName: item.playerName,
+        role: item.sportRole.roleName,
+        roleId: item.sportRoleId,
+        teamId: item.teamId 
+    }));
 };
 
-export const deleteTeam = async (teamId: string): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/teams/${teamId}`);
+export const createPlayer = async (
+  request: CreatePlayerRequest
+): Promise<ResponseResult<string>> => {
+
+  const response = await fetch(`${API_BASE_URL}/players`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  const result: ResponseResult<string> =
+    await response.json();
+
+  return result;
+};
+
+export const deleteTeam = async (teamId: string): Promise<ResponseResult<boolean>> => {
+      const response = await axios.delete(`${API_BASE_URL}/teams/${teamId}`);
+      return response.data;
 };
 
 export const deletePlayer = async (
     playerId: string
-): Promise<void> => {
-    await axios.delete(`${API_BASE_URL}/players/${playerId}`);
+): Promise<ResponseResult<boolean>> => {
+      const response = await axios.delete(`${API_BASE_URL}/players/${playerId}`);
+      return response.data;
+    
 };
 
 export const updateTeam = async (
-    team: UpdateTeamRequest
-): Promise<void> => {
+  request: UpdateTeamRequest
+): Promise<ResponseResult<boolean>> => {
 
-    await axios.put(`${API_BASE_URL}/teams/${team.id}`, team);
+  const response = await fetch(`${API_BASE_URL}/teams/${request.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  const result: ResponseResult<boolean> =
+    await response.json();
+  return result;
 };
+
 export const updatePlayer = async (
   request: UpdatelayerRequest
-) => {
-  const response = await axios.put(
-    `${API_BASE_URL}/players/${request.playerId}`,
-    request
-  );
+): Promise<ResponseResult<boolean>> => {
 
-  return response.data;
+  const response = await fetch(`${API_BASE_URL}/players/${request.playerId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  const result: ResponseResult<boolean> =
+    await response.json();
+  return result;
 };

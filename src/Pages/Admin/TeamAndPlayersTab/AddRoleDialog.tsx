@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./AddRoleDialog.css";
+import { showWarning } from "../../../services/common/AlertService";
 
 interface Sport {
   id: string;
@@ -27,12 +28,18 @@ function AddRoleDialog({
 
   const handleSave = () => {
     if (!roleName.trim()) {
-      alert("Role Name is required");
+        showWarning(
+          "Error",
+          "Role Name is required"
+        );
       return;
     }
 
     if (!sportId) {
-      alert("Please select a sport");
+        showWarning(
+          "Error",
+          "Please select a sport"
+        );
       return;
     }
 
