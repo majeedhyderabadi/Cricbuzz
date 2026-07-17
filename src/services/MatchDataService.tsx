@@ -21,7 +21,18 @@ export const getMatchDetails = async (matchId: string) => {
   return response.data;
 };
 
-
+export const searchLiveFixtures = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/fixtures/search`,
+    {
+      params: {
+        searchText,
+      },
+    }
+  );
+ 
+  return response.data;
+};
 
 export const getCricbuzzMatchInfo = async (
   matchId: number
@@ -33,6 +44,7 @@ export const getCricbuzzMatchInfo = async (
 
   return response.data;
 };
+
 export const getCricbuzzScorecard = async (matchId: number) => {
   const response = await axios.get(
     `${API_BASE_URL}/matches/cricbuzz/${matchId}/scorecard`
@@ -41,17 +53,17 @@ export const getCricbuzzScorecard = async (matchId: number) => {
   return response.data;
 };
 
+
+
 export const getLiveFixtures = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/fixtures/live`
   );
-
+ 
   return response.data;
 };
 
-export const searchLiveFixtures = async (searchText: string) => {
-  const response = await axios.get(
-    `${API_BASE_URL}/fixtures/search`,
+
 export const searchCurrentMatches = async (searchText: string) => {
   const response = await axios.get(
     `${API_BASE_URL}/matches/search`,
