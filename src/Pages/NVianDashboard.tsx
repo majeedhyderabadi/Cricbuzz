@@ -16,16 +16,6 @@ function NVianDashboard() {
        
     
 
-         useEffect(() => {
-             const loadMatches = async () => {
-            try {
-             const response = await getLiveFixtures();
-           
-                setMatches(response);
-              } catch (error) {
-              console.error("Failed to load matches", error);
-               }
-           };
     
 useEffect(() => {
     const loadMatches = async () => {

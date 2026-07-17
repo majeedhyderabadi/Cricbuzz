@@ -46,7 +46,7 @@ function Dashboard() {
 
     return () => clearTimeout(timer);
 }, [searchTerm]);
-
+console.log(matches)
 const matchCards = matches.map(mapCricbuzzMatchToCard);
 
     return (
