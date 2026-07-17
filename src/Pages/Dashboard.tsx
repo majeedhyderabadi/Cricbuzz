@@ -61,7 +61,7 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
 
             <SportTabs />
 
-            <MatchGrid searchTerm={searchTerm} matches={matchCards}/>
+            <MatchGrid matches={matchCards}/>
             <div className="Commentry_Performers">
                <LiveCommentary />
                <TopPerformers />

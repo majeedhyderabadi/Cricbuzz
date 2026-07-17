@@ -7,7 +7,7 @@ import MatchGrid from "../components/MatchGrid/MatchGrid";
 import {useState,useEffect} from "react";
 import type { Fixture } from "../components/types/Fixture";
 import  { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
-import { getLiveFixtures } from "../services/MatchDataService";
+import { getLiveFixtures,  searchLiveFixtures, } from "../services/MatchDataService";
 
 function NVianDashboard() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +15,7 @@ function NVianDashboard() {
      const [matches, setMatches] =useState<Fixture[]>([]);
        
     
+
          useEffect(() => {
              const loadMatches = async () => {
             try {
@@ -26,8 +27,27 @@ function NVianDashboard() {
                }
            };
     
-      loadMatches();
-    }, []);
+useEffect(() => {
+    const loadMatches = async () => {
+        try {
+            let response;
+
+            if (searchTerm.trim() === "") {
+                response = await getLiveFixtures();
+            } else {
+                response = await searchLiveFixtures(searchTerm);
+            }
+
+            setMatches(response);
+        } catch (error) {
+            console.error("Failed to load matches", error);
+        }
+    };
+
+    const timer = setTimeout(loadMatches, 500);
+
+    return () => clearTimeout(timer);
+}, [searchTerm]);
 
     const matchCards = matches.map(mapFixtureToMatchCard);
 
@@ -39,7 +59,7 @@ function NVianDashboard() {
             />
             <SportTabs />
 
-            <MatchGrid searchTerm={searchTerm} matches={matchCards}/>
+            <MatchGrid matches={matchCards}/>
             <NVianCommentary />
         </main>
     );
