@@ -1,4 +1,6 @@
 import axios from "axios";
+import type { CricbuzzMatchDetailsResponse } from "../components/types/CricbuzzLiveMatchInfo";
+import type { FixtureDetailsDto } from "../components/types/FixtureDetails";
 
 
 const API_BASE_URL = "https://localhost:62965/api";
@@ -19,15 +21,18 @@ export const getMatchDetails = async (matchId: string) => {
   return response.data;
 };
 
-export const getCricbuzzMatchInfo = async (matchId: number) => {
-    console.log(`${API_BASE_URL}/matches/cricbuzz/${matchId}/info`)
-  const response = await axios.get(
+
+
+export const getCricbuzzMatchInfo = async (
+  matchId: number
+): Promise<CricbuzzMatchDetailsResponse> => {
+
+  const response = await axios.get<CricbuzzMatchDetailsResponse>(
     `${API_BASE_URL}/matches/cricbuzz/${matchId}/info`
   );
 
   return response.data;
 };
-
 export const getCricbuzzScorecard = async (matchId: number) => {
   const response = await axios.get(
     `${API_BASE_URL}/matches/cricbuzz/${matchId}/scorecard`
@@ -47,11 +52,25 @@ export const getLiveFixtures = async () => {
 export const searchLiveFixtures = async (searchText: string) => {
   const response = await axios.get(
     `${API_BASE_URL}/fixtures/search`,
+export const searchCurrentMatches = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/matches/search`,
     {
       params: {
         searchText,
       },
     }
+  );
+
+  return response.data;
+};
+
+export const getFixtureMatchDetails = async (
+  fixtureId: string
+): Promise<FixtureDetailsDto> => {
+
+  const response = await axios.get<FixtureDetailsDto>(
+    `${API_BASE_URL}/fixtures/${fixtureId}`
   );
 
   return response.data;

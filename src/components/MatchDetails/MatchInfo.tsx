@@ -1,11 +1,14 @@
 import "./MatchInfo.css";
-import type { CricbuzzMatchHeader } from "../types/CricbuzzLiveMatchInfo";
+
+import type {
+  MatchHeaderModel
+} from "../types/MatchDetailsModel";
 
 type MatchInfoProps = {
-  matchHeader: CricbuzzMatchHeader;
+  header: MatchHeaderModel;
 };
 
-function MatchInfo({ matchHeader }: MatchInfoProps) {
+function MatchInfo({ header }: MatchInfoProps) {
   return (
     <section className="match-info">
 
@@ -17,49 +20,50 @@ function MatchInfo({ matchHeader }: MatchInfoProps) {
 
         <div className="match-info__row">
           <span>Format</span>
-          <span>{matchHeader.matchFormat.toUpperCase()}</span>
+          <span>{header.matchFormat.toUpperCase()}</span>
         </div>
 
         <div className="match-info__row">
           <span>Match</span>
-          <span>{matchHeader.matchDescription}</span>
+          <span>{header.matchDescription}</span>
         </div>
 
         <div className="match-info__row">
           <span>Series</span>
-          <span>{matchHeader.seriesName}</span>
+          <span>{header.seriesName}</span>
         </div>
 
         <div className="match-info__row">
           <span>Date</span>
           <span>
             {new Date(
-              matchHeader.matchStartTimestamp
+              header.matchStartTimestamp
             ).toLocaleDateString()}
           </span>
         </div>
 
         <div className="match-info__row">
           <span>Time</span>
-          <span>{matchHeader.matchStartTimeIST}</span>
+          <span>{header.matchStartTimeIST}</span>
         </div>
 
         <div className="match-info__row">
           <span>Toss</span>
           <span>
-            {matchHeader.tossResults.tossWinnerName} chose to{" "}
-            {matchHeader.tossResults.decision}
+            {header.tossResults.tossWinnerName} chose to{" "}
+            {header.tossResults.decision}
           </span>
         </div>
 
         <div className="match-info__row">
           <span>Winner</span>
           <span>
-            {matchHeader.result.winningTeam || "TBD"}
+            {header.result.winningTeam || "TBD"}
           </span>
         </div>
 
       </div>
+
     </section>
   );
 }
