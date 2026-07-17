@@ -1,11 +1,14 @@
 import "./LiveMatchDetails.css";
-import type { CricbuzzMiniScore } from "../types/CricbuzzLiveMatchInfo";
+
+import type {
+  MatchLiveModel
+} from "../types/MatchDetailsModel";
 
 type LiveMatchDetailsProps = {
-  miniscore: CricbuzzMiniScore;
+  live: MatchLiveModel;
 };
 
-function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
+function LiveMatchDetails({ live }: LiveMatchDetailsProps) {
 
   const {
     batTeam,
@@ -19,7 +22,7 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
     lastWicket,
     recentOvsStats,
     status
-  } = miniscore;
+  } = live;
 
   return (
     <section className="live-match-details">
@@ -59,12 +62,10 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
 
       </div>
 
-
       {/* Match Status */}
       <div className="live-match-details__status">
         {status}
       </div>
-
 
       {/* Current Batsmen */}
       <div className="live-match-details__section">
@@ -82,9 +83,7 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
             <span>SR</span>
           </div>
 
-
           {batsmanStriker && (
-
             <div className="live-match-details__table-row">
 
               <span>
@@ -92,22 +91,15 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
               </span>
 
               <span>{batsmanStriker.runs}</span>
-
               <span>{batsmanStriker.balls}</span>
-
               <span>{batsmanStriker.fours}</span>
-
               <span>{batsmanStriker.sixes}</span>
-
               <span>{batsmanStriker.strikeRate}</span>
 
             </div>
-
           )}
 
-
           {batsmanNonStriker && (
-
             <div className="live-match-details__table-row">
 
               <span>
@@ -115,23 +107,17 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
               </span>
 
               <span>{batsmanNonStriker.runs}</span>
-
               <span>{batsmanNonStriker.balls}</span>
-
               <span>{batsmanNonStriker.fours}</span>
-
               <span>{batsmanNonStriker.sixes}</span>
-
               <span>{batsmanNonStriker.strikeRate}</span>
 
             </div>
-
           )}
 
         </div>
 
       </div>
-
 
       {/* Current Bowler */}
       {bowlerStriker && (
@@ -154,15 +140,10 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
             <div className="live-match-details__bowling-row">
 
               <span>{bowlerStriker.name}</span>
-
               <span>{bowlerStriker.overs}</span>
-
               <span>{bowlerStriker.maidens}</span>
-
               <span>{bowlerStriker.runs}</span>
-
               <span>{bowlerStriker.wickets}</span>
-
               <span>{bowlerStriker.economy}</span>
 
             </div>
@@ -172,7 +153,6 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
         </div>
 
       )}
-
 
       {/* Partnership */}
       {partnerShip && (
@@ -189,7 +169,6 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
 
       )}
 
-
       {/* Last Wicket */}
       {lastWicket && (
 
@@ -202,7 +181,6 @@ function LiveMatchDetails({ miniscore }: LiveMatchDetailsProps) {
         </div>
 
       )}
-
 
       {/* Recent Overs */}
       {recentOvsStats && (

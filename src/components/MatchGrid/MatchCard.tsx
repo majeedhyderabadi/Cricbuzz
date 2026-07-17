@@ -8,10 +8,10 @@ type MatchCardProps = {
 
 function MatchCard({ match }: MatchCardProps) {
 
-  const route =
-    match.source === "cricbuzz"
-      ? `/match/${match.id}`
-      : `/fixture/${match.id}`;
+const route =
+  match.source === "cricbuzz"
+    ? `/match/${match.id}`
+    : `/fixture/${match.id}`;
 
   return (
     <Link

@@ -19,7 +19,7 @@ function NVianDashboard() {
              const loadMatches = async () => {
             try {
              const response = await getLiveFixtures();
-           console.log(response)
+           
                 setMatches(response);
               } catch (error) {
               console.error("Failed to load matches", error);
