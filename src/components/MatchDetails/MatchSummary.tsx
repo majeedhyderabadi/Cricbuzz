@@ -1,24 +1,28 @@
 import "./MatchSummary.css";
-import type { CricbuzzMatchHeader,CricbuzzMiniScore } from "../types/CricbuzzLiveMatchInfo";
+
+import type {
+  MatchHeaderModel,
+  MatchLiveModel
+} from "../types/MatchDetailsModel";
 
 type MatchSummaryProps = {
-  matchHeader: CricbuzzMatchHeader;
-  miniscore: CricbuzzMiniScore;
+  header: MatchHeaderModel;
+  live: MatchLiveModel;
 };
 
 function MatchSummary({
-  matchHeader,
-  miniscore
+  header,
+  live
 }: MatchSummaryProps) {
 
-  const innings = miniscore.matchScoreDetails.inningsScoreList;
+  const innings = live.matchScoreDetails.inningsScoreList;
 
   const team1Scores = innings.filter(
-    (inning) => inning.batTeamId === matchHeader.team1.id
+    (inning) => inning.batTeamId === header.team1.id
   );
 
   const team2Scores = innings.filter(
-    (inning) => inning.batTeamId === matchHeader.team2.id
+    (inning) => inning.batTeamId === header.team2.id
   );
 
   const formatScore = (
@@ -43,7 +47,7 @@ function MatchSummary({
 
         <div className="match-summary__team">
           <span className="match-summary__team-name">
-            {matchHeader.team1.name}
+            {header.team1.name}
           </span>
 
           <span className="match-summary__score">
@@ -53,7 +57,7 @@ function MatchSummary({
 
         <div className="match-summary__team">
           <span className="match-summary__team-name">
-            {matchHeader.team2.name}
+            {header.team2.name}
           </span>
 
           <span className="match-summary__score">
@@ -64,13 +68,13 @@ function MatchSummary({
       </div>
 
       <div className="match-summary__footer">
-        <span>{matchHeader.status}</span>
+        <span>{header.status}</span>
       </div>
 
       <div className="match-summary__result">
-        {matchHeader.result.winningTeam
-          ? `Winner: ${matchHeader.result.winningTeam}`
-          : matchHeader.status}
+        {header.result.winningTeam
+          ? `Winner: ${header.result.winningTeam}`
+          : header.status}
       </div>
 
     </section>

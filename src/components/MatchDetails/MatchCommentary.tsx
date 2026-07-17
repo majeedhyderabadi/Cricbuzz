@@ -1,11 +1,11 @@
 import "./MatchCommentary.css";
 
 import type {
-  CricbuzzMatchCommentary
-} from "../types/CricbuzzLiveMatchInfo";
+  MatchCommentaryModel
+} from "../types/MatchDetailsModel";
 
 type MatchCommentaryProps = {
-  commentary: Record<string, CricbuzzMatchCommentary>;
+  commentary: Record<string, MatchCommentaryModel>;
 };
 
 function MatchCommentary({
@@ -204,7 +204,6 @@ function MatchCommentary({
 
               ) : (
 
-                /* NON-BALL NOTE */
                 <article className="match-commentary__note">
                   <div
                     dangerouslySetInnerHTML={{
