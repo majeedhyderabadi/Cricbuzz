@@ -5,7 +5,7 @@ import TopPerformers from "../components/TopPerformers/TopPerformers";
 import LiveCommentary from "../components/Commentary/LiveCommentary";
 import SearchBar from "../components/Search/SearchBar";
 import {useState,useEffect} from "react";
-import { getCurrentMatches } from "../services/MatchDataService";
+import { getCurrentMatches, searchCurrentMatches } from "../services/MatchDataService";
 import RecentEntries from "../components/RecentEntries/RecentEntries";
 import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
 
@@ -22,17 +22,30 @@ function Dashboard() {
     );
 
      useEffect(() => {
-         const loadMatches = async () => {
+    const loadMatches = async () => {
         try {
-         const response = await getCurrentMatches();
-            setMatches(response.matches);
-          } catch (error) {
-          console.error("Failed to load matches", error);
-           }
-       };
+            let response;
 
-  loadMatches();
-}, []);
+            if (searchTerm.trim() === "") {
+                response = await getCurrentMatches();
+                setMatches(response.matches);
+            } else {
+                response = await searchCurrentMatches(searchTerm);
+
+                
+                setMatches(response.matches);
+
+               
+            }
+        } catch (error) {
+            console.error("Failed to load matches", error);
+        }
+    };
+
+    const timer = setTimeout(loadMatches, 500);
+
+    return () => clearTimeout(timer);
+}, [searchTerm]);
 
 const matchCards = matches.map(mapCricbuzzMatchToCard);
 
