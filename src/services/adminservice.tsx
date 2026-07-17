@@ -31,7 +31,7 @@ export async function registerAdmin(data: RegisterAdminRequest) {
         },
         body: JSON.stringify(data),
     });
-     console.log(response)
+   
     if (!response.ok) {
         throw new Error("Admin registration failed");
     }

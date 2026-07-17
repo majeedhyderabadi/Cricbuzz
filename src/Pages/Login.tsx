@@ -47,7 +47,6 @@ function Login() {
                 password: formData.password
             });
 
-            console.log("Login Response:", response);
 
             //alert("Login successful");
             login(response.role)

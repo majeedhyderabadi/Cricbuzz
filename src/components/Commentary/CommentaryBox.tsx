@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import "./CommentaryBox.css";
 import Comments from "../Comments/Comments";
 
-interface Comment {
-    id: number;
+export interface Comment {
+    id: string;
     time: string;
     type: string;
     player: string;
@@ -31,6 +31,11 @@ function CommentaryBox({
     const bodyRef =
         useRef<HTMLDivElement>(null);
 
+    // API se naye comments aaye to state update ho
+    useEffect(() => {
+        setComments(initialComments);
+    }, [initialComments]);
+
     useEffect(() => {
 
         if (bodyRef.current) {
@@ -49,7 +54,7 @@ function CommentaryBox({
         if (!newComment.trim()) return;
 
         const comment: Comment = {
-            id: Date.now(),
+            id: Date.now().toString(),
             time: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
@@ -99,28 +104,7 @@ function CommentaryBox({
 
             </div>
 
-            <div className="commentary-box__input">
-
-                <input
-                    type="text"
-                    placeholder="Add commentary..."
-                    value={newComment}
-                    onChange={(e) =>
-                        setNewComment(e.target.value)
-                    }
-                    onKeyDown={(e) =>
-                        e.key === "Enter" &&
-                        handleAddComment()
-                    }
-                />
-
-                <button
-                    onClick={handleAddComment}
-                >
-                    Post
-                </button>
-
-            </div>
+         
 
         </section>
 

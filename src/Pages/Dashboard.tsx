@@ -20,6 +20,7 @@ function Dashboard() {
     const { commentaryByMatch } = useCommentaryFeed(
         "5A89597A-817B-4B38-B22C-75DCDA108BE8"
     );
+    const [selectedFixtureId, setSelectedFixtureId] =useState<string | null>(null);
 
      useEffect(() => {
     const loadMatches = async () => {
@@ -46,8 +47,19 @@ function Dashboard() {
 
     return () => clearTimeout(timer);
 }, [searchTerm]);
-console.log(matches)
+
 const matchCards = matches.map(mapCricbuzzMatchToCard);
+ const selectedFixture = matchCards.find(x => x.id === selectedFixtureId);
+
+ useEffect(() => {
+  if (!selectedFixtureId && matchCards.length > 0) {
+    setSelectedFixtureId(matchCards[0].id);
+  }
+  
+}, [matchCards, selectedFixtureId]);
+
+
+
 
     return (
 
@@ -61,9 +73,17 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
 
             <SportTabs />
 
-            <MatchGrid matches={matchCards}/>
+   <MatchGrid
+  matches={matchCards}
+  selectedFixtureId={selectedFixtureId}
+  onMatchSelect={(match) =>
+    setSelectedFixtureId(match.id)
+  }
+/>
             <div className="Commentry_Performers">
-               <LiveCommentary />
+              <LiveCommentary
+    matchId={selectedFixture?.id}
+/>
                <TopPerformers />
             </div>
 

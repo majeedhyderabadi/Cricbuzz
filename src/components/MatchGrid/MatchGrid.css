@@ -178,3 +178,6 @@
     }
 
 }
+.match-card--selected{
+    border:2px solid #00c853;
+}
