@@ -28,6 +28,7 @@ export interface Fixture {
     homeWickets: number;
     awayScore: number;
     awayWickets: number;
+    phase: string;
 }
 
 const api = axios.create({
@@ -49,6 +50,23 @@ export const fixtureService = {
         const response = await api.get<Fixture[]>("/fixtures/live");
         return response.data;
     },
+    async updateFixture(
+        id: string,
+        status: number,
+        phase: number,
+        scheduledAtUtc: string
+    ): Promise<Fixture> {
+        const response = await api.patch(`${API_BASE_URL}/fixtures/${id}`, {
+            status,
+            phase,
+            scheduledAtUtc,
+        });
+
+        return response.data;
+    },
+    async deleteFixture(id: string) {
+        await axios.delete(`${API_BASE_URL}/${id}`);
+    }
 };
 
 export default api;
