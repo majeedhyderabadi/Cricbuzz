@@ -1,7 +1,14 @@
 export interface CommentaryUpdate {
-    matchId: string;
-    over: string;
-    ballText: string;
-    timestamp: string;
-    score?: string;
+    id: string;
+    fixtureId: string;
+    action: string;
+    note: string;
+    playerName: string;
+    side: string;
+    fixtureName: string;
+    createdAtUtc: string;
+    homeScore: number;
+    homeWickets: number;
+    awayScore: number;
+    awayWickets: number;
 }

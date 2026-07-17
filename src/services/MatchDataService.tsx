@@ -35,7 +35,7 @@ export const searchLiveFixtures = async (searchText: string) => {
 };
 
 export const getCricbuzzMatchInfo = async (
-  matchId: number
+  matchId: string
 ): Promise<CricbuzzMatchDetailsResponse> => {
 
   const response = await axios.get<CricbuzzMatchDetailsResponse>(

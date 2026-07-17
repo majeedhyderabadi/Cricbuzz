@@ -16,11 +16,11 @@ export function useCommentaryFeed(fixtureId: string) {
         const connection = createCommentaryHubConnection();
 
         connection.on(COMMENTARY_EVENT, (update: CommentaryUpdate) => {
-        console.log(update);
-            setCommentaryByMatch((previous) => ({
-                ...previous,
-                [update.matchId]: update,
-            }));
+        
+         setCommentaryByMatch((previous) => ({
+    ...previous,
+    [update.fixtureId]: update,
+}));
 
         });
 

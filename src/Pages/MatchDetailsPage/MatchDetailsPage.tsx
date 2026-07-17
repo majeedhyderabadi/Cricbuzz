@@ -173,7 +173,6 @@ useEffect(() => {
   };
 
 }, [matchId, source, pathname]);
- console.log("MatchDeatsilPage comenrty",matchDetails?.commentary)
 
   // =========================================================
   // LOAD SCORECARD

@@ -1,27 +1,37 @@
 import "./MatchGrid.css";
 import { Link } from "react-router-dom";
 import type { MatchCardModel } from "../types/MatchCardModel";
+import { useNavigate } from "react-router-dom";
 
 type MatchCardProps = {
   match: MatchCardModel;
+  isSelected: boolean;
+
+onClick: () => void;
 };
 
-function MatchCard({ match }: MatchCardProps) {
+function MatchCard({
+  match,
+ isSelected,
+  onClick
+}: MatchCardProps) {
 
 const route =
   match.source === "cricbuzz"
     ? `/match/${match.id}`
     : `/fixture/${match.id}`;
-
+const navigate = useNavigate();
   return (
-    <Link
-      to={route}
-      style={{
-        textDecoration: "none",
-        color: "inherit"
-      }}
-    >
-      <article className="match-card">
+    
+      <article
+    className={`match-card ${
+        isSelected ? "match-card--selected" : ""
+    }`}
+   onClick={() => {
+   
+    onClick();
+}}
+>
 
         <div className="match-card__header">
 
@@ -40,6 +50,12 @@ const route =
               : match.status}
 
           </span>
+          <button
+      className="match-card__view-button"
+      onClick={() => navigate(route)}
+    >
+      View
+    </button>
 
         </div>
 
@@ -92,7 +108,7 @@ const route =
         </div>
 
       </article>
-    </Link>
+    
   );
 }
 
