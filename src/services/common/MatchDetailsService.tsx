@@ -20,7 +20,7 @@ export async function getMatchDetails(
     case "cricbuzz": {
 
       const response =
-        await getCricbuzzMatchInfo(Number(matchId));
+        await getCricbuzzMatchInfo(matchId);
 
       const commentaryStorageKey =
         `match-commentary-${matchId}`;
