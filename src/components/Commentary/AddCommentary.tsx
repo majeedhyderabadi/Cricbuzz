@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { FeedingMatchs } from '../../services/match.types';
-import { fetchLiveTeams, liveFixtures, postCommentary } from '../../services/liveservice';
+import { fetchLiveTeams, liveFixtures, postCommentary, updateScoreFixtures } from '../../services/liveservice';
 import './AddCommentary.css';
+import { showError, showSuccess } from '../../services/common/AlertService';
 
 interface Player {
     playerId: string;
@@ -108,6 +109,9 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('');
     const [note, setNote] = useState('');
     const [selectedActionType, setSelectedActionType] = useState<string | null>(null);
+
+    const [pendingDeltas, setPendingDeltas] = useState<Record<string, { runs: number; wkts: number }>>({});
+    const [updatingTeam, setUpdatingTeam] = useState<string | null>(null);
 
 
     const [allTeams, setAllTeams] = useState<Team[]>([]);
@@ -240,6 +244,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
         return null;
     };
 
+
     const adjustScore = (team: string, field: 'runs' | 'wkts', delta: number) => {
         setScores((prev) => ({
             ...prev,
@@ -248,6 +253,55 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                 [field]: Math.max(0, (prev[team]?.[field] || 0) + delta),
             },
         }));
+
+        setPendingDeltas((prev) => ({
+            ...prev,
+            [team]: {
+                runs: (prev[team]?.runs || 0) + (field === 'runs' ? delta : 0),
+                wkts: (prev[team]?.wkts || 0) + (field === 'wkts' ? delta : 0),
+            },
+        }));
+    };
+
+
+    const handleUpdateScore = async (teamName: string) => {
+        const delta = pendingDeltas[teamName];
+        if (!delta || (delta.runs === 0 && delta.wkts === 0)) return;
+
+        if (!selectedFixtureId) {
+            alert('No fixture selected. Please select a match first.');
+            return;
+        }
+
+        const side = getSide(teamName);
+        if (side === null) {
+            alert('Could not determine side for the selected team.');
+            return;
+        }
+
+        const payload: { side: 0 | 1; runsDelta?: number; wicketsDelta?: number } = { side };
+        if (delta.runs !== 0) payload.runsDelta = delta.runs;
+        if (delta.wkts !== 0) payload.wicketsDelta = delta.wkts;
+
+        const changeParts: string[] = [];
+        if (delta.runs !== 0) changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} run${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+        if (delta.wkts !== 0) changeParts.push(`${delta.wkts > 0 ? '+' : ''}${delta.wkts} wkt${Math.abs(delta.wkts) !== 1 ? 's' : ''}`);
+        const changeSummary = changeParts.join(', ');
+
+        setUpdatingTeam(teamName);
+        try {
+            await updateScoreFixtures(selectedFixtureId, payload);
+            setPendingDeltas((prev) => ({
+                ...prev,
+                [teamName]: { runs: 0, wkts: 0 },
+            }));
+            showSuccess('Success', `${teamName} updated (${changeSummary})`);
+        } catch (error) {
+            console.error('AddCommentary: Error updating score:', error);
+            showError('Error', 'Failed to update score, please try again.');
+        } finally {
+            setUpdatingTeam(null);
+        }
     };
 
     const handleActionSelect = (actionType: string) => {
@@ -334,7 +388,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                         {selectedMatch.sport}: {matchTeams[0].teamName} vs {matchTeams[1].teamName}
                     </span>
                     <span className="match-info-score">{selectedMatch.score}</span>
-                    
+
                 </div>
             ) : (
                 <div className="match-info-banner" style={{ background: '#666' }}>
@@ -342,7 +396,6 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                 </div>
             )}
 
-            {/* Score Control Section */}
             <div className="score-control">
                 <div className="score-header">
                     <h3>SCORE CONTROL</h3>
@@ -351,55 +404,75 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                 <p className="score-subtitle">Set RUNS / WKTS for each side. Also logs a commentary entry.</p>
 
                 <div className="score-cards">
-                    {teams.map((team) => (
-                        <div className="team-score-card" key={team.name}>
-                            <h4>
-                                <span className="team-dot" style={{ background: team.color }} />
-                                {team.name}
-                            </h4>
-                            <div className="score-detail">
-                                <span className="score-label">RUNS</span>
-                                <div className="score-stepper">
-                                    <button
-                                        className="stepper-btn"
-                                        onClick={() => adjustScore(team.name, 'runs', -1)}
-                                        aria-label={`Decrease ${team.name} runs`}
-                                    >
-                                        −
-                                    </button>
-                                    <span className="score-value">{scores[team.name]?.runs || 0}</span>
-                                    <button
-                                        className="stepper-btn"
-                                        onClick={() => adjustScore(team.name, 'runs', 1)}
-                                        aria-label={`Increase ${team.name} runs`}
-                                    >
-                                        +
-                                    </button>
+                    {teams.map((team) => {
+                        const delta = pendingDeltas[team.name];
+                        const hasPendingChange = !!delta && (delta.runs !== 0 || delta.wkts !== 0);
+
+                        return (
+                            <div className="team-score-card" key={team.name}>
+                                <h4>
+                                    <span className="team-dot" style={{ background: team.color }} />
+                                    {team.name}
+                                </h4>
+                                <div className="score-detail">
+                                    <span className="score-label">RUNS</span>
+                                    <div className="score-stepper">
+                                        <button
+                                            className="stepper-btn"
+                                            onClick={() => adjustScore(team.name, 'runs', -1)}
+                                            aria-label={`Decrease ${team.name} runs`}
+                                        >
+                                            −
+                                        </button>
+                                        <span className="score-value">{scores[team.name]?.runs || 0}</span>
+                                        <button
+                                            className="stepper-btn"
+                                            onClick={() => adjustScore(team.name, 'runs', 1)}
+                                            aria-label={`Increase ${team.name} runs`}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="score-detail">
-                                <span className="score-label">WKTS</span>
-                                <div className="score-stepper">
-                                    <button
-                                        className="stepper-btn"
-                                        onClick={() => adjustScore(team.name, 'wkts', -1)}
-                                        aria-label={`Decrease ${team.name} wickets`}
-                                    >
-                                        −
-                                    </button>
-                                    <span className="score-value">{scores[team.name]?.wkts || 0}</span>
-                                    <button
-                                        className="stepper-btn"
-                                        onClick={() => adjustScore(team.name, 'wkts', 1)}
-                                        aria-label={`Increase ${team.name} wickets`}
-                                    >
-                                        +
-                                    </button>
+                                <div className="score-detail">
+                                    <span className="score-label">WKTS</span>
+                                    <div className="score-stepper">
+                                        <button
+                                            className="stepper-btn"
+                                            onClick={() => adjustScore(team.name, 'wkts', -1)}
+                                            aria-label={`Decrease ${team.name} wickets`}
+                                        >
+                                            −
+                                        </button>
+                                        <span className="score-value">{scores[team.name]?.wkts || 0}</span>
+                                        <button
+                                            className="stepper-btn"
+                                            onClick={() => adjustScore(team.name, 'wkts', 1)}
+                                            aria-label={`Increase ${team.name} wickets`}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <button
+                                    className="update-score-btn"
+                                    onClick={() => handleUpdateScore(team.name)}
+                                    disabled={updatingTeam === team.name || !hasPendingChange}
+                                >
+                                    {updatingTeam === team.name
+                                        ? 'Updating...'
+                                        : hasPendingChange
+                                            ? `Update Score (${delta.runs >= 0 ? '+' : ''}${delta.runs} runs, ${delta.wkts >= 0 ? '+' : ''
+                                            }${delta.wkts} wkts)`
+                                            : 'Update Score'}
+                                </button>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
+
+
             </div>
 
             <hr className="divider" />
@@ -528,9 +601,9 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                     </button>
                 </div>
                 {selectedActionType && (
-                    <div style={{ 
-                        fontSize: '12px', 
-                        color: '#8d96aa', 
+                    <div style={{
+                        fontSize: '12px',
+                        color: '#8d96aa',
                         marginTop: '8px',
                         textAlign: 'right'
                     }}>

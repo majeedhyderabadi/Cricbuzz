@@ -1,11 +1,14 @@
 import "./MatchStats.css";
-import type { CricbuzzMiniScore } from "../types/CricbuzzLiveMatchInfo";
+
+import type {
+  MatchLiveModel
+} from "../types/MatchDetailsModel";
 
 type MatchStatsProps = {
-  miniscore: CricbuzzMiniScore;
+  live: MatchLiveModel;
 };
 
-function MatchStats({ miniscore }: MatchStatsProps) {
+function MatchStats({ live }: MatchStatsProps) {
   return (
     <section className="match-stats">
 
@@ -15,31 +18,31 @@ function MatchStats({ miniscore }: MatchStatsProps) {
 
         <div className="match-stats__item">
           <span>Current Run Rate</span>
-          <strong>{miniscore.currentRunRate}</strong>
+          <strong>{live.currentRunRate}</strong>
         </div>
 
         <div className="match-stats__item">
           <span>Required Run Rate</span>
           <strong>
-            {miniscore.requiredRunRate || "-"}
+            {live.requiredRunRate || "-"}
           </strong>
         </div>
 
         <div className="match-stats__item">
           <span>Overs</span>
-          <strong>{miniscore.overs}</strong>
+          <strong>{live.overs}</strong>
         </div>
 
         <div className="match-stats__item">
           <span>Target</span>
-          <strong>{miniscore.target || "-"}</strong>
+          <strong>{live.target || "-"}</strong>
         </div>
 
         <div className="match-stats__item">
           <span>Partnership</span>
           <strong>
-            {miniscore.partnerShip
-              ? `${miniscore.partnerShip.runs} (${miniscore.partnerShip.balls} balls)`
+            {live.partnerShip
+              ? `${live.partnerShip.runs} (${live.partnerShip.balls} balls)`
               : "-"}
           </strong>
         </div>
@@ -47,7 +50,7 @@ function MatchStats({ miniscore }: MatchStatsProps) {
         <div className="match-stats__item">
           <span>Runs Required</span>
           <strong>
-            {miniscore.remRunsToWin || "-"}
+            {live.remRunsToWin || "-"}
           </strong>
         </div>
 

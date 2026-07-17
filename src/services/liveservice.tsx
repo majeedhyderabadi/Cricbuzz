@@ -26,10 +26,17 @@ export interface FeedingMatch {
 }
 
 export interface CommentaryRequest {
-    side: 0 | 1;   
+    side: 0 | 1;
     playerId: string;
     action: number;
     note?: string;
+}
+
+export interface ScoreUpdate {
+    side: 0 | 1;
+    fixtureId: string,
+    runsDelta: number,
+    wicketsDelta: number,
 }
 
 const API_URL = "https://localhost:62965/api";
@@ -137,7 +144,7 @@ export async function getLiveMatchesWithOriginalIds(): Promise<FeedingMatch[]> {
 }
 
 
-export const fetchLiveTeams = async() =>{
+export const fetchLiveTeams = async () => {
     try {
         const response = await axios.get(`${API_URL}/teams`);
         console.log("Fetched live teams:", response.data);
@@ -149,7 +156,7 @@ export const fetchLiveTeams = async() =>{
     }
 }
 
-export const liveFixtures = async() =>{
+export const liveFixtures = async () => {
     try {
         const response = await axios.get(`${API_URL}/fixtures/live`);
         console.log("Fetched live fixtures:", response.data);
@@ -176,3 +183,23 @@ export async function postCommentary(fixtureId: string, data: CommentaryRequest)
 
     return response.json();
 }
+
+export const updateScoreFixtures = async (
+    fixtureId: string,
+    data: { side: 0 | 1; runsDelta?: number; wicketsDelta?: number }
+) => {
+    const res = await fetch(`${API_URL}/fixtures/${fixtureId}/score`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to update scores: ${res.status} ${errorText}`);
+    }
+
+    return res.json();
+};

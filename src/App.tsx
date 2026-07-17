@@ -26,6 +26,7 @@ function App() {
                     <Route path="/register" element={<RegistrationForm />} />
                     <Route path="/nvian" element={<NVianDashboard />} />
                     <Route path="/match/:matchId" element={<MatchDetailsPage/>} />
+                    <Route path="/fixture/:matchId" element={<MatchDetailsPage />} />
                     <Route 
                         path="/admin/fixtures" 
                         element={

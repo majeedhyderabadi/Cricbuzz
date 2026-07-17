@@ -26,7 +26,7 @@ const SportTabs = () => {
 
             const data: Sport[] = await response.json();
 
-            console.log("Sports API Response:", data);
+            
 
             setSportsCategories([
                 {

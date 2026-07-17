@@ -600,3 +600,37 @@
     padding: 12px 14px;
   }
 }
+
+.update-score-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: 1px solid #3B82F6;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+}
+
+.update-score-btn:hover:not(:disabled) {
+    background-color: #1D4ED8;
+    border-color: #2563EB;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+.update-score-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.update-score-btn:disabled {
+    background-color: #2A2F3E;
+    color: #6B7280;
+    border-color: #3A3F4E;
+    cursor: not-allowed;
+    box-shadow: none;
+}
