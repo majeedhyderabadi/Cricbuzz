@@ -4,6 +4,7 @@ import "./FixtureForm.css";
 
 import { getTeams, type Team } from "../../services/TeamService";
 import { sportService, type Sport } from "../../services/fixturesservice";
+import { showError, showSuccess } from "../../services/common/AlertService";
 
 
 interface Fixture {
@@ -12,8 +13,10 @@ interface Fixture {
     away: string;
     scheduledAtUtc: string;
 }
-
-function FixtureForm() {
+interface FixtureFormProps {
+    onSaved: () => void;
+}
+function FixtureForm({ onSaved }: FixtureFormProps) {
     const [sports, setSports] = useState<Sport[]>([]);
     const [loading, setLoading] = useState(true);
     const [sportswiseteams, setTeams] = useState<Team[]>([]);
@@ -23,8 +26,17 @@ function FixtureForm() {
             try {
                 const data = await sportService.getSports();
                 setSports(data);
+                if (data.length > 0) {
+                    setFixture((prev) => ({
+                        ...prev,
+                        sport: data[0].name,
+                    }));
+                }
+
             } catch (error) {
-                console.error("Failed to fetch sports:", error);
+                showError(
+                    "Error", "Failed to fetch sports:"
+                );
             } finally {
                 setLoading(false);
             }
@@ -77,24 +89,22 @@ function FixtureForm() {
             setTeams(data);
 
             return data;
-        } catch (err) {
-            console.error(err);
+        } catch (err:any) {
+            showError(
+                "Error", err
+            );
             return [];
         }
         
     };
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        debugger
-        console.log(fixture.scheduledAtUtc);
-        console.log(new Date(fixture.scheduledAtUtc).toISOString());
-
         const payload = {
             homeTeamId: fixture.home,
             awayTeamId: fixture.away,
             scheduledAtUtc: new Date(fixture.scheduledAtUtc).toISOString(),
         };
-        debugger
+      
         try {
             const response = await fetch("https://localhost:62965/api/fixtures", {
                 method: "POST",
@@ -106,22 +116,28 @@ function FixtureForm() {
 
             if (!response.ok) {
                 const error = await response.json();
-                alert(error.detail || "Failed to create fixture");
+                showError(
+                    "Error", error.detail || "Failed to create fixture"
+                );
+
                 return;
             }
-          
-            alert("Fixture scheduled successfully!");
 
+            await showSuccess(
+                "Success",
+                "Fixture scheduled successfully!"
+            );
+            onSaved(); // refresh FixtureList
             setFixture({
-                sport: sports[0].name,
+                sport: sports.length > 0 ? sports[0].name : "",
                 home: "",
                 away: "",
                 scheduledAtUtc: "",
             });
         } catch (error) {
-            
-            console.error(error);
-            alert("Something went wrong.");
+            showError(
+                "Error", "Something went wrong."
+            );
         }
     };
 
@@ -138,6 +154,7 @@ function FixtureForm() {
 
                 <select
                     name="sport"
+                    value={fixture.sport}
                     onChange={handleChange}
                 >
                     {sports.map((sport) => (
@@ -179,7 +196,7 @@ function FixtureForm() {
                             <option value="">Select Team B</option>
 
                             {filteredTeams
-                                .filter(team => team.id !== fixture.away)
+                                .filter(team => team.id !== fixture.home)
                                 .map(team => (
                                     <option key={team.id} value={team.id}>
                                         {team.teamName}
