@@ -42,13 +42,14 @@ export function useCommentaryFeed(fixtureId: string) {
             .catch((error) => {
 
                 console.error("Failed to connect to commentary hub", error);
-                //setConnectionState(HubConnectionState.Disconnected);
+                setConnectionState(HubConnectionState.Disconnected);
 
             });
 
         return () => {
 
-            //connection.stop();
+            connection.off(COMMENTARY_EVENT);
+            connection.stop();
 
         };
 
