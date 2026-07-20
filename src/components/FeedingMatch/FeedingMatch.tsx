@@ -63,7 +63,7 @@ const FeedingMatchComponent = ({ onMatchSelect }: FeedingMatchProps) => {
         }
     };
 
-    const selectedMatch: FeedingMatch = useMemo(() => {
+    const selectedMatch: FeedingMatchs = useMemo(() => {
         return feedingMatches.find((match) => match.id === selectedMatchId) ?? feedingMatches[0];
     }, [selectedMatchId, feedingMatches]);
 

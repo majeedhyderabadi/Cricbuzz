@@ -12,7 +12,7 @@ function TeamsPlayers() {
             <FeedingMatch />
             <section className="admin-page">
 
-                <AdminTabs />
+                {/* <AdminTabs /> */}
             </section>
         </main>
     )
