@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./RegistrationForm.css";
 import { registerAdmin } from "../services/adminservice";
 import { useNavigate } from "react-router-dom";
+import { showError, showSuccess } from "../services/common/AlertService";
 
 function RegistrationForm() {
     
@@ -108,7 +109,12 @@ function RegistrationForm() {
 
             const result = await registerAdmin(registrationData);
 
-            alert("Registration successful. Waiting for Super Admin approval.");
+            console.log("Registration response:", result);
+
+            await showSuccess(
+              "Success",
+              "Registration successful. Waiting for Super Admin approval."
+            );
 
             setFormData({
                 firstName: "",
@@ -120,7 +126,10 @@ function RegistrationForm() {
 
         } catch (error) {
             console.error("Registration error:", error);
-            alert("Registration failed");
+            showError(
+              "Error",
+              "Registration failed"
+            );
         }
     };
 
