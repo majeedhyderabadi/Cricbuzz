@@ -84,7 +84,7 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
               <LiveCommentary
     matchId={selectedFixture?.id}
 />
-               <TopPerformers />
+               <TopPerformers fixtureId={selectedFixture?.id ?? ""} />
             </div>
 
             <div className="live-stat-details-container">      

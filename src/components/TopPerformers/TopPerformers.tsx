@@ -1,4 +1,6 @@
 import "./TopPerformers.css";
+import { useEffect, useState } from "react";
+import { getTopPerformers } from "../../services/MatchDataService";
 
 export interface Performer {
   rank: number;
@@ -8,45 +10,44 @@ export interface Performer {
   color: string;
 }
 
+type Props = {
+  fixtureId: string;
+};
 
-function TopPerformers() {
-    const performers: Performer[] = [
-    {
-      rank: 1,
-      name: "Dhoni",
-      team: "Chennai",
-      score: 9,
-      color: "#d1d984",
-    },
-    {
-      rank: 2,
-      name: "Kohli",
-      team: "Mumbai",
-      score: 7,
-      color: "#2F80ED",
-    },
-    {
-      rank: 3,
-      name: "Rohit",
-      team: "Mumbai",
-      score: 7,
-      color: "#F5A623",
-    },
-    {
-      rank: 4,
-      name: "Conway",
-      team: "Chennai",
-      score: 6,
-      color: "#6eed2f",
-    },
-    {
-      rank: 5,
-      name: "Jadeja",
-      team: "Chennai",
-      score: 5,
-      color: "#933e78",
-    },
-  ];
+function TopPerformers({ fixtureId }: Props) {
+  const [performers, setPerformers] = useState<Performer[]>([]);
+
+  useEffect(() => {
+    if (!fixtureId) return;
+
+    const loadPerformers = async () => {
+      try {
+        const response = await getTopPerformers(fixtureId);
+
+        const colors = [
+          "#d1d984",
+          "#2F80ED",
+          "#F5A623",
+          "#6eed2f",
+        ];
+
+        const mapped = response.map((player, index) => ({
+          rank: index + 1,
+          name: player.playerName,
+          team: player.teamName,
+          score: player.runsScored,
+          color: colors[index] ?? "#933e78",
+        }));
+
+        setPerformers(mapped);
+      } catch (error) {
+        console.error("Failed to load performers", error);
+      }
+    };
+
+    loadPerformers();
+  }, [fixtureId]);
+
   return (
     <div className="top-performers-card">
       <div className="tp-header">
@@ -65,6 +66,7 @@ function TopPerformers() {
 
             <div className="tp-player">
               <div className="tp-name">{player.name}</div>
+
               <div
                 className="tp-team"
                 style={{ color: player.color }}
@@ -81,6 +83,6 @@ function TopPerformers() {
       </div>
     </div>
   );
-};
+}
 
 export default TopPerformers;

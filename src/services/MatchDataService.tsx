@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { CricbuzzMatchDetailsResponse } from "../components/types/CricbuzzLiveMatchInfo";
-import type { FixtureDetailsDto } from "../components/types/FixtureDetails";
+import type { FixtureDetailsDto, TopPerformerDto} from "../components/types/FixtureDetails";
 
 
 const API_BASE_URL = "https://localhost:62965/api";
@@ -59,6 +59,14 @@ export const searchCurrentMatches = async (searchText: string) => {
         searchText,
       },
     }
+  );
+
+  return response.data;
+};
+
+export const getTopPerformers = async (fixtureId: string) => {
+  const response = await axios.get<TopPerformerDto[]>(
+    `${API_BASE_URL}/fixtures/${fixtureId}/top-performers`
   );
 
   return response.data;
