@@ -1,19 +1,67 @@
 import './RecentEntries.css';
-import recentEntries from "./RecentMockData";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCommentary, type CommentaryEntry } from '../../services/liveservice';
 
 interface Entry {
-    id: number;
+    id: string;
     player: string;
     event: string;
     time: string;
     comment?: string;
 }
 
-function RecentEntries() {
-    const [entries, setEntries] = useState<Entry[]>(recentEntries);
-    const [editingId, setEditingId] = useState<number | null>(null);
+interface RecentEntriesProps {
+    fixtureId: string | null;
+    refreshTrigger?: number;
+}
+
+function mapEntry(item: CommentaryEntry): Entry {
+    return {
+        id: item.id,
+        player: item.playerName,
+        event: item.action?.toUpperCase() ?? '',
+        time: new Date(item.createdAtUtc).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        comment: item.note || undefined,
+    };
+}
+
+function RecentEntries({ fixtureId, refreshTrigger }: RecentEntriesProps) {
+    const [entries, setEntries] = useState<Entry[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [editData, setEditData] = useState<Entry | null>(null);
+
+    useEffect(() => {
+        if (!fixtureId) {
+            setEntries([]);
+            return;
+        }
+
+        let cancelled = false;
+
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const data = await getCommentary(fixtureId);
+                if (!cancelled) {
+                    setEntries(data.map(mapEntry));
+                }
+            } catch (e) {
+                console.error('RecentEntries: Error fetching commentary:', e);
+                if (!cancelled) setError('Failed to load commentary.');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        load();
+        return () => {
+            cancelled = true;
+        };
+    }, [fixtureId, refreshTrigger]);
 
     const getBallColor = (event: string) => {
         switch (event.toUpperCase()) {
@@ -36,7 +84,7 @@ function RecentEntries() {
 
     const handleSaveEdit = () => {
         if (editData) {
-            setEntries(entries.map(item => 
+            setEntries(entries.map(item =>
                 item.id === editData.id ? editData : item
             ));
             setEditingId(null);
@@ -54,30 +102,32 @@ function RecentEntries() {
             setEditData({ ...editData, [field]: value });
         }
     };
-
-    const quickActions = [
-        { label: 'SIX', value: 'SIX', color: 'orange' },
-        { label: 'FOUR', value: 'FOUR', color: 'blue' },
-        { label: 'Single', value: 'SINGLE', color: 'green' },
-        { label: 'Wicket', value: 'WICKET', color: 'red' },
-        { label: 'Wide', value: 'WIDE', color: 'purple' },
-    ];
-
-    return (
+return (
         <div className="mainComponent">
             <div className="mainHeader">
-                <h3>RECENT ENTRIES</h3>
-                <p>{entries.length}</p>
+                <div className="mainHeaderTop">
+                    <h3>RECENT ENTRIES</h3>
+                    <p>{entries.length}</p>
+                </div>
+                <span className="mainHeaderSubtitle">Latest commentary for this fixture, most recent first.</span>
             </div>
 
             <div className="divider"></div>
 
             <div className="recentList">
+                {!fixtureId && (
+                    <div className="empty-state">Select a match to see commentary.</div>
+                )}
+                {loading && <div className="loading-state">Loading commentary...</div>}
+                {error && <div className="error-state">{error}</div>}
+                {fixtureId && !loading && !error && entries.length === 0 && (
+                    <div className="empty-state">No commentary yet — post one from the left panel.</div>
+                )}
+
                 {entries.map((item) => (
                     <div className="entry" key={item.id}>
                         <div className="content">
                             {editingId === item.id && editData ? (
-                                // Edit Mode
                                 <div className="editModeContainer">
                                     <div className="editHeader">
                                         <div className="editPlayerInfo">
@@ -103,7 +153,6 @@ function RecentEntries() {
                                                         <option value="DOUBLE">Double</option>
                                                         <option value="WICKET">Wicket</option>
                                                         <option value="WIDE">Wide</option>
-                                                        <option value="FOCUS">FOCUS</option>
                                                     </select>
                                                 </div>
                                                 <span className="editTime">{editData.time}</span>
@@ -118,12 +167,11 @@ function RecentEntries() {
                                             value={editData.comment || ''}
                                             onChange={(e) => handleInputChange('comment', e.target.value)}
                                             className="editCommentInput"
-                                            placeholder="Add a comment (e.g., tucks it to leg, comfortable single)"
+                                            placeholder="Add a comment"
                                         />
                                     </div>
 
                                     <div className="editActionsRow">
-                                       
                                         <div className="editButtons">
                                             <button className="cancelEditBtn" onClick={handleCancelEdit}>
                                                 Cancel
@@ -135,7 +183,6 @@ function RecentEntries() {
                                     </div>
                                 </div>
                             ) : (
-                                // View Mode
                                 <div className="subContent">
                                     <div className="contentHeader">
                                         <div className={`playerBall ${getBallColor(item.event)}`}></div>
@@ -148,7 +195,7 @@ function RecentEntries() {
                                         </div>
                                     </div>
                                     <div className="actionButtons">
-                                        <button 
+                                        <button
                                             className="edit-btn"
                                             onClick={() => handleEditClick(item)}
                                         >

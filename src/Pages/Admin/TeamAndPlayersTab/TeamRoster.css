@@ -4,6 +4,9 @@
     padding:24px;
     color:white;
     border:1px solid #2b3142;
+    height: 750px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .roster-title{

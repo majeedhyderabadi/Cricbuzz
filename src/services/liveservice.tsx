@@ -39,6 +39,23 @@ export interface ScoreUpdate {
     wicketsDelta: number,
 }
 
+export interface CommentaryEntry {
+    id: string;
+    fixtureId: string;
+    side: string;
+    playerId: string;
+    playerName: string;
+    action: string;
+    note: string;
+    createdAtUtc: string;
+    homeScore: number;
+    homeWickets: number;
+    awayScore: number;
+    awayWickets: number;
+    fixtureName: string;
+    sportName: string;
+}
+
 const API_URL = "https://localhost:62965/api";
 
 export async function getLiveMatches(): Promise<FeedingMatch[]> {
@@ -203,3 +220,19 @@ export const updateScoreFixtures = async (
 
     return res.json();
 };
+
+export async function getCommentary(fixtureId: string): Promise<CommentaryEntry[]> {
+    const response = await fetch(`${API_URL}/fixtures/${fixtureId}/commentary`, {
+        method: "GET",
+        headers: {
+            accept: "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch commentary: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+}
