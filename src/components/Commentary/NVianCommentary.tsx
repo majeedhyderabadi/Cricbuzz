@@ -32,6 +32,7 @@ function NVianCommentary({
 
     useEffect(() => {
         if (!fixtureId) return;
+        setComments([])
         const loadFixture = async () => {
             try {
                 const response = await getFixtureMatchDetails(fixtureId);
@@ -97,8 +98,7 @@ function NVianCommentary({
 
         });
 
-    }, [liveComment, title]);
-
+    }, [liveComment]);
 
 
     return (
