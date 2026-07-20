@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./TeamsPlayers.css";
 
 import CreateTeam from "./CreateTeam";
@@ -8,10 +8,20 @@ import AdminTabs from "../../../components/AdminTabs/AdminTabs";
 import FeedingMatch from "../../../components/FeedingMatch/FeedingMatch";
 import Header from "../../../components/Header/Header";
 import type { TabType } from "../Admin";
+import { getTeams, type Team } from "../../../services/TeamService";
 
 const TeamsPlayers: React.FC = () => {
 const [activeTab, setActiveTab] = useState<TabType>("teams");
+const [teams, setTeams] = useState<Team[]>([]);
+const loadTeams = async () => {
+    const teams = await getTeams();
+    setTeams(teams);
+};
+  useEffect(() => {
+    loadTeams();
+}, []);
   return (
+    
         <main className="container">
             <Header />
             <br />
@@ -30,11 +40,14 @@ const [activeTab, setActiveTab] = useState<TabType>("teams");
         <CreateTeam
           team={null}
           isDialog={false}
+          onSaved={loadTeams}
         />
 
         <AddPlayer
           player={null}
           isDialog={false}
+          teams={teams}
+          loadTeams={loadTeams}
         />
 
       </div>
@@ -43,7 +56,11 @@ const [activeTab, setActiveTab] = useState<TabType>("teams");
 
       <div className="teams-right">
 
-        <TeamRoster />
+        <TeamRoster 
+        teams={teams}
+        setTeams={setTeams}
+        loadTeams={loadTeams}
+        />
 
       </div>
 

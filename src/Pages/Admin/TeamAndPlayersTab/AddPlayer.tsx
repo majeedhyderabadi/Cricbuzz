@@ -7,29 +7,33 @@ import { showSuccess, showError, showWarning } from "../../../services/common/Al
 
 interface AddPlayerProps {
     player?: Player | null;
+    teams: Team[];
     isDialog?: boolean;
     onClose?: () => void;
     onSaved?: () => void;
     onSaveSuccess?: () => void;
+    loadTeams: () => Promise<void>;
 }
 
 const AddPlayer: React.FC<AddPlayerProps> = ({
     player,
+    teams,
     isDialog = false,
     onClose,
     onSaved,
-    onSaveSuccess
+    onSaveSuccess,
+    loadTeams
 }) => {
     const [playerName, setPlayerName] = useState("");
     const [showRoleDialog, setShowRoleDialog] = useState(false);
-    const [teams, setTeams] = useState<Team[]>([]);
+    //const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState("");
     const [roles, setRoles] = useState<SportRole[]>([]);
     const [selectedRole, setSelectedRole] = useState("");
     const [sports, setSports] = useState<Sport[]>([]);
-const initialize = async () => {
+    const initialize = async () => {
 
-    const loadedTeams = await loadTeams();
+    //const loadedTeams = await loadTeams();
 
     if (!player)
         return;
@@ -40,7 +44,7 @@ const initialize = async () => {
 
     const loadedRoles = await loadRoles(
         player.teamId,
-        loadedTeams
+        teams
     );
 
     const roleExists = loadedRoles.some(
@@ -69,18 +73,6 @@ useEffect(() => {
         loadSports();
     }, [player]);
 
-  const loadTeams = async (): Promise<Team[]> => {
-    try {
-        const data = await getTeams();
-
-        setTeams(data);
-
-        return data;
-    } catch (err) {
-        console.error(err);
-        return [];
-    }
-};
     const loadSports = async () => {
         try {
             const data = await getSports();
