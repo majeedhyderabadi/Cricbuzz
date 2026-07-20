@@ -77,6 +77,19 @@ export const searchCurrentMatches = async (searchText: string) => {
   return response.data;
 };
 
+export const searchLiveFixtures = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/fixtures/search`,
+    {
+      params: {
+        searchText,
+      },
+    }
+  );
+
+  return response.data;
+};
+
 export const getFixtureMatchDetails = async (
   fixtureId: string
 ): Promise<FixtureDetailsDto> => {

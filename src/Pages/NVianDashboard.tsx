@@ -7,7 +7,7 @@ import MatchGrid from "../components/MatchGrid/MatchGrid";
 import {useState,useEffect} from "react";
 import type { Fixture } from "../components/types/Fixture";
 import  { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
-import { getLiveFixtures,  searchLiveFixtures, } from "../services/MatchDataService";
+import { getLiveFixtures, searchLiveFixtures} from "../services/MatchDataService";
 
 import type { MatchCardModel } from "../components/types/MatchCardModel";
 
