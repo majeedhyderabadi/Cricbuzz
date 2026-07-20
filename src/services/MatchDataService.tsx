@@ -21,19 +21,6 @@ export const getMatchDetails = async (matchId: string) => {
   return response.data;
 };
 
-export const searchLiveFixtures = async (searchText: string) => {
-  const response = await axios.get(
-    `${API_BASE_URL}/fixtures/search`,
-    {
-      params: {
-        searchText,
-      },
-    }
-  );
- 
-  return response.data;
-};
-
 export const getCricbuzzMatchInfo = async (
   matchId: string
 ): Promise<CricbuzzMatchDetailsResponse> => {
