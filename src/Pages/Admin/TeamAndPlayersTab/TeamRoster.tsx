@@ -6,8 +6,16 @@ import EditTeamDialog from "./EditTeamDialog";
 import EditPlayerDialog from "./EditPlayerDialog"
 import { showSuccess, showError, showConfirm } from "../../../services/common/AlertService";
 
-const TeamRoster = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
+interface TeamRosterProps {
+    teams: Team[];
+    setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+    loadTeams: () => Promise<void>;
+}
+const TeamRoster : React.FC<TeamRosterProps> = ({
+    teams,
+    setTeams,
+    loadTeams
+}) => {
   const [expandedTeam, setExpandedTeam] = useState<number>(1);
   const [showEditTeamDialog, setShowEditTeamDialog] = useState(false);
   const [selectedEditTeam, setSelectedEditTeam] = useState<Team | null>(null);
@@ -17,14 +25,7 @@ const TeamRoster = () => {
   const toggleTeam = (id: number) => {
     setExpandedTeam(expandedTeam === id ? 0 : id);
   };
-  useEffect(() => {
-    loadTeams();
-}, []);
 
-const loadTeams = async () => {
-    const data = await getTeams();
-    setTeams(data);
-};
 const loadPlayers = async (teamId?:string) => {
     const data = await getPlayers(teamId);
         setTeams(prevTeams =>
@@ -75,9 +76,8 @@ const handleDeleteTeam = async (teamId: string) => {
              "Error",
              response.message || response.error?.message
            );
-
-        // reload teams
-        await loadTeams();
+            // reload teams
+            await loadTeams();
     } catch (error) {
         console.error("Failed to delete team", error);
                    showError(
@@ -88,7 +88,6 @@ const handleDeleteTeam = async (teamId: string) => {
 };
 
 const handleEditPlayer = async (player: Player) => {
-  await loadTeams(); 
        setEditingPlayer(player);
 
     setShowEditPlayer(true);
@@ -163,7 +162,8 @@ const handleDeletePlayer = async (playerId: string) => {
     onClose={() => setShowEditPlayer(false)}
     onSaved={loadTeams}
     onSaveSuccess={() => handlePlayerSaved(editingPlayer?.teamId)}
-
+    teams={teams}
+    loadTeams={loadTeams}
 />
     </div>
   );

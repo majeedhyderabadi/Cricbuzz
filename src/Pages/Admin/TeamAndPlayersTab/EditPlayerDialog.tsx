@@ -1,4 +1,4 @@
-import type { Player } from "../../../services/TeamService";
+import type { Player, Team } from "../../../services/TeamService";
 import AddPlayer from "./AddPlayer";
 import "./EditPlayerDialog.css";
 
@@ -8,6 +8,8 @@ interface Props {
     onClose: () => void;
     onSaved: () => void;
     onSaveSuccess: () => void;
+    teams: Team[];
+    loadTeams: () => Promise<void>;
 }
 
 const EditPlayerDialog = ({
@@ -15,7 +17,9 @@ const EditPlayerDialog = ({
     player,
     onClose,
     onSaved,
-    onSaveSuccess
+    onSaveSuccess,
+    teams,
+    loadTeams
 }: Props) => {
 
     if (!open)
@@ -39,6 +43,8 @@ const EditPlayerDialog = ({
                     onClose={onClose}
                     onSaved={onSaved}
                     onSaveSuccess={onSaveSuccess}
+                    teams={teams}
+                    loadTeams={loadTeams}
                 />
 
             </div>
