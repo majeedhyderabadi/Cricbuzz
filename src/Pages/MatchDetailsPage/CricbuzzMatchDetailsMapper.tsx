@@ -143,17 +143,25 @@ live: response.miniscore
 
               matchId: value.matchId.toString(),
 
-              batsmanDetails: {
-                ...value.batsmanDetails,
-                playerId:
-                  value.batsmanDetails.playerId.toString()
-              },
+              batsmanDetails: value.batsmanDetails
+  ? {
+      ...value.batsmanDetails,
+      playerId: value.batsmanDetails.playerId?.toString() ?? ""
+    }
+  :  {
+    playerId: "",
+    playerName: "",
+},
 
-              bowlerDetails: {
-                ...value.bowlerDetails,
-                playerId:
-                  value.bowlerDetails.playerId.toString()
-              },
+             bowlerDetails: value.bowlerDetails
+  ? {
+      ...value.bowlerDetails,
+      playerId: value.bowlerDetails.playerId?.toString() ?? ""
+    }
+  :  {
+    playerId: "",
+    playerName: "",
+},
 
               overSeparator:
 
