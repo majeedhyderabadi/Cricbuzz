@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { approveAdmin, getAdminApprovalRequests ,type  AdminApprovalRequest } from "../../services/adminservice";
 import "./AdminApproval.css";
+import { showError, showSuccess } from "../../services/common/AlertService";
 
 function AdminApproval() {
 
@@ -31,11 +32,16 @@ function AdminApproval() {
             setApprovalRequests((prev) =>
                 prev.filter((admin) => admin.id !== id)
             );
-
-            alert("Admin approved successfully");
+            await showSuccess(
+              "Success",
+              "Admin approved successfully"
+            );
         } catch (error) {
             console.error(error);
-            alert("Failed to approve admin");
+            showError(
+              "Error",
+              "Failed to approve admin"
+            );
         }
     };
 
