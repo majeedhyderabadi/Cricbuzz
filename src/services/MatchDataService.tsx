@@ -1,5 +1,7 @@
 import axios from "axios";
-import type { Fixture } from "../components/types/Fixture";
+import type { CricbuzzMatchDetailsResponse } from "../components/types/CricbuzzLiveMatchInfo";
+import type { FixtureDetailsDto, TopPerformerDto} from "../components/types/FixtureDetails";
+
 
 const API_BASE_URL = "https://localhost:62965/api";
 
@@ -19,9 +21,11 @@ export const getMatchDetails = async (matchId: string) => {
   return response.data;
 };
 
-export const getCricbuzzMatchInfo = async (matchId: number) => {
-    console.log(`${API_BASE_URL}/matches/cricbuzz/${matchId}/info`)
-  const response = await axios.get(
+export const getCricbuzzMatchInfo = async (
+  matchId: string
+): Promise<CricbuzzMatchDetailsResponse> => {
+
+  const response = await axios.get<CricbuzzMatchDetailsResponse>(
     `${API_BASE_URL}/matches/cricbuzz/${matchId}/info`
   );
 
@@ -36,23 +40,58 @@ export const getCricbuzzScorecard = async (matchId: number) => {
   return response.data;
 };
 
-export const getLiveFixtures = async (): Promise<Fixture[]> => {
+
+
+export const getLiveFixtures = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/fixtures/live`
   );
-      return response.data.map((item: any) => ({
-        id: item.id,
-        homeTeamId: item.homeTeamId,
-        homeTeamName: item.homeTeamName,
-        awayTeamId: item.awayTeamId,
-        awayTeamName: item.awayTeamName,
-        sport: item.sport,
-        scheduledAtUtc: item.scheduledAtUtc,
-        status: item.status,
-        homeScore: item.homeScore,
-        homeWickets: item.homeWickets,
-        awayScore: item.awayScore,
-        awayWickets: item.awayWickets
-    }));
+ 
+  return response.data;
 };
 
+
+export const searchCurrentMatches = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/matches/search`,
+    {
+      params: {
+        searchText,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const getTopPerformers = async (fixtureId: string) => {
+  const response = await axios.get<TopPerformerDto[]>(
+    `${API_BASE_URL}/fixtures/${fixtureId}/top-performers`
+  );
+
+  return response.data;
+};
+
+export const searchLiveFixtures = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/fixtures/search`,
+    {
+      params: {
+        searchText,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const getFixtureMatchDetails = async (
+  fixtureId: string
+): Promise<FixtureDetailsDto> => {
+
+  const response = await axios.get<FixtureDetailsDto>(
+    `${API_BASE_URL}/fixtures/${fixtureId}`
+  );
+
+  return response.data;
+};

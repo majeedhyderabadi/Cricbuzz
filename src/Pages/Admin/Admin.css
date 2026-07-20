@@ -8,7 +8,7 @@
     gap:24px;
     margin-top:25px;
     margin-bottom:30px;
-
+    align-items: start;
 }
 
 .card{
@@ -18,8 +18,8 @@
     padding:24px;
 }
 
-@media(max-width:900px){
-    .fixtures-layout{
-        grid-template-columns:1fr;
+@media (max-width: 900px) {
+    .fixtures-layout {
+        grid-template-columns: 1fr;
     }
 }

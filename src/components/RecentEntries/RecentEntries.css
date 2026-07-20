@@ -1,10 +1,6 @@
-
 .mainComponent {
-    width: 35%;
-    min-width: 360px;
-    max-width: 450px;
-    height: 600px;
-    max-height: 700px;
+    width: 100%;
+    height: 890px;      /* fixed height, fits ~14-15 entries before scrolling */
 
     display: flex;
     flex-direction: column;
@@ -20,27 +16,40 @@
 
     overflow: hidden;
 
-    /* Soft shadow */
     box-shadow:
         0 12px 32px rgba(0, 0, 0, 0.45),
         inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
     backdrop-filter: blur(10px);
 }
-
 .mainHeader {
-    height: 55px;
-    padding: 0 18px;
+    height: auto;
+    min-height: 55px;
+    padding: 18px 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: white;
+}
+
+.mainHeaderTop {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
+    width: 100%;
 }
 
 .mainHeader h3 {
     font-size: 12px;
     letter-spacing: 1px;
     margin: 0;
+    font-weight: 700;
+}
+
+.mainHeaderSubtitle {
+    margin: 0;
+    color: #8d96aa;
+    font-size: 12px;
 }
 
 .mainHeader p {
@@ -61,6 +70,8 @@
 .recentList {
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .recentList::-webkit-scrollbar {
@@ -469,22 +480,36 @@
     box-shadow: 0 4px 12px rgba(47, 128, 255, 0.3);
 }
 
+/* Empty / loading / error states */
+.empty-state,
+.loading-state,
+.error-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #8d96aa;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
 
+.error-state {
+    color: #ef4444;
+}
+
+/* Responsive — grid collapses to 1 column at 900px (see Admin.css),
+   these just tune spacing/typography, no width/height overrides needed
+   since .mainComponent already fills its grid cell at 100%/100% */
 @media (max-width: 768px) {
-    .mainComponent {
-        width: 90%;
-        min-width: unset;
-        max-width: 500px;
-        height: 500px;
-        max-height: 600px;
+    .content {
+        padding: 10px 14px;
     }
 }
 
 @media (max-width: 600px) {
     .mainComponent {
-        width: 95%;
-        height: 450px;
-        max-height: 550px;
         border-radius: 12px;
     }
 
@@ -496,19 +521,19 @@
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .quickActions {
         justify-content: center;
     }
-    
+
     .editButtons {
         justify-content: center;
     }
-    
+
     .editPlayerInput {
         flex-wrap: wrap;
     }
-    
+
     .editPlayerNameInput {
         width: 100px;
     }
@@ -539,16 +564,12 @@
 
 @media (max-width: 400px) {
     .mainComponent {
-        width: 98%;
-        height: 400px;
-        max-height: 500px;
-        min-width: unset;
         border-radius: 8px;
     }
 
     .mainHeader {
-        height: 45px;
-        padding: 0 12px;
+        min-height: 45px;
+        padding: 12px 12px 8px;
     }
 
     .mainHeader h3 {
@@ -604,4 +625,36 @@ input:focus-visible,
 select:focus-visible {
     outline: 2px solid #2f80ff;
     outline-offset: 2px;
+}
+
+.error-message {
+    padding: 30px 20px;
+    text-align: center;
+    color: #ef4444;
+    font-size: 14px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    margin: 10px;
+}
+
+.loading-spinner {
+    padding: 30px 20px;
+    text-align: center;
+    color: #8d96aa;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.no-selection-message,
+.no-entries-message {
+    padding: 30px 20px;
+    text-align: center;
+    color: #8d96aa;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    margin: 10px;
 }

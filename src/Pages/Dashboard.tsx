@@ -5,7 +5,7 @@ import TopPerformers from "../components/TopPerformers/TopPerformers";
 import LiveCommentary from "../components/Commentary/LiveCommentary";
 import SearchBar from "../components/Search/SearchBar";
 import {useState,useEffect} from "react";
-import { getCurrentMatches } from "../services/MatchDataService";
+import { getCurrentMatches, searchCurrentMatches } from "../services/MatchDataService";
 import RecentEntries from "../components/RecentEntries/RecentEntries";
 import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
 
@@ -20,21 +20,46 @@ function Dashboard() {
     const { commentaryByMatch } = useCommentaryFeed(
         "5A89597A-817B-4B38-B22C-75DCDA108BE8"
     );
+    const [selectedFixtureId, setSelectedFixtureId] =useState<string | null>(null);
 
      useEffect(() => {
-         const loadMatches = async () => {
+    const loadMatches = async () => {
         try {
-         const response = await getCurrentMatches();
-            setMatches(response.matches);
-          } catch (error) {
-          console.error("Failed to load matches", error);
-           }
-       };
+            let response;
 
-  loadMatches();
-}, []);
+            if (searchTerm.trim() === "") {
+                response = await getCurrentMatches();
+                setMatches(response.matches);
+            } else {
+                response = await searchCurrentMatches(searchTerm);
+
+                
+                setMatches(response.matches);
+
+               
+            }
+        } catch (error) {
+            console.error("Failed to load matches", error);
+        }
+    };
+
+    const timer = setTimeout(loadMatches, 500);
+
+    return () => clearTimeout(timer);
+}, [searchTerm]);
 
 const matchCards = matches.map(mapCricbuzzMatchToCard);
+ const selectedFixture = matchCards.find(x => x.id === selectedFixtureId);
+
+ useEffect(() => {
+  if (!selectedFixtureId && matchCards.length > 0) {
+    setSelectedFixtureId(matchCards[0].id);
+  }
+  
+}, [matchCards, selectedFixtureId]);
+
+
+
 
     return (
 
@@ -48,10 +73,32 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
 
             <SportTabs />
 
-            <MatchGrid searchTerm={searchTerm} matches={matchCards}/>
+{
+
+  matchCards.length > 0 ? (
+
+    <MatchGrid
+
+      matches={matchCards}
+
+      selectedFixtureId={selectedFixtureId}
+
+      onMatchSelect={(match) => setSelectedFixtureId(match.id)}
+
+    />
+
+  ) : (
+
+    <section className="match-grid" style={{borderWidth:1}}>Loading</section>
+
+  )
+
+}
             <div className="Commentry_Performers">
-               <LiveCommentary />
-               <TopPerformers />
+              <LiveCommentary
+    matchId={selectedFixture?.id}
+/>
+               <TopPerformers fixtureId={selectedFixture?.id ?? ""} />
             </div>
 
             <div className="live-stat-details-container">      

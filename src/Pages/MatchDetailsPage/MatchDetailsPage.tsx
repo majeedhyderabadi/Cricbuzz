@@ -13,26 +13,45 @@ import MatchInfo from "../../components/MatchDetails/MatchInfo";
 import MatchCommentary from "../../components/MatchDetails/MatchCommentary";
 import ScoreCard from "../../components/MatchDetails/ScoreCard";
 import LiveMatchDetails from "../../components/MatchDetails/LiveMatchDetails";
+import { useCommentaryFeed } from "../../hooks/useCommentaryFeed";
+import type { MatchCommentaryModel } from "../../components/types/MatchDetailsModel";
+import type {CricbuzzScorecardResponse} from "../../components/types/CricbuzzScorecard";
+
+import { getMatchDetails } from "../../services/common/MatchDetailsService";
+import { useLocation } from "react-router-dom";
 
 import {
-  getCricbuzzMatchInfo,
   getCricbuzzScorecard
 } from "../../services/MatchDataService";
 
 import type {
-  CricbuzzMatchDetailsResponse
-} from "../../components/types/CricbuzzLiveMatchInfo";
+  MatchDetailsModel,
+  MatchSource
+} from "../../components/types/MatchDetailsModel";
 
-import type {
-  CricbuzzScorecardResponse
-} from "../../components/types/CricbuzzScorecard";
+//import type {CricbuzzScorecardResponse} from "../../components/types/CricbuzzScorecard";
 
 
 function MatchDetailsPage() {
 
-  const { matchId } = useParams();
+const { matchId } = useParams();
 
-  const numericMatchId = Number(matchId);
+const { pathname } = useLocation();
+
+const source: MatchSource =
+  pathname.startsWith("/fixture")
+    ? "fixture"
+    : "cricbuzz";
+
+    const { commentaryByMatch } = useCommentaryFeed(
+       String(matchId)
+    );
+
+    //const liveUpdate = commentaryByMatch[String(matchId)];
+ 
+
+
+//const numericMatchId = Number(matchId);
 
 
   // =========================================================
@@ -40,7 +59,10 @@ function MatchDetailsPage() {
   // =========================================================
 
   const [matchDetails, setMatchDetails] =
-    useState<CricbuzzMatchDetailsResponse | null>(null);
+  useState<MatchDetailsModel | null>(null);
+
+
+  
 
   const [scorecard, setScorecard] =
     useState<CricbuzzScorecardResponse | null>(null);
@@ -71,176 +93,168 @@ function MatchDetailsPage() {
   // LOAD MATCH DETAILS
   // =========================================================
 
-  useEffect(() => {
+useEffect(() => {
 
-    let ignore = false;
+  let ignore = false;
 
-    const loadMatchDetails = async () => {
+  const loadMatchDetails = async () => {
 
-      if (!matchId || Number.isNaN(numericMatchId)) {
+    if (!matchId) {
 
-        setError("Invalid match ID");
+      setError("Invalid match ID");
+      setLoading(false);
+
+      return;
+    }
+
+    if (
+      source === "cricbuzz" &&
+      Number.isNaN(Number(matchId))
+    ) {
+
+      setError("Invalid match ID");
+      setLoading(false);
+
+      return;
+    }
+
+   
+
+    try {
+
+      setLoading(true);
+      setError(null);
+
+      
+
+      const response = await getMatchDetails(
+        matchId,
+        source
+      );
+
+      if (!ignore) {
+
+        setMatchDetails(response);
+       
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load match details",
+        error
+      );
+
+      if (!ignore) {
+
+        setError("Failed to load match details");
+
+      }
+
+    } finally {
+
+      if (!ignore) {
+
         setLoading(false);
 
-        return;
       }
 
-      try {
+    }
 
-        setLoading(true);
-        setError(null);
+  };
 
-        const response =
-          await getCricbuzzMatchInfo(numericMatchId);
+  loadMatchDetails();
 
-  
-        // Prevent old request from updating state
+  return () => {
 
-        if (!ignore) {
+    ignore = true;
 
-          setMatchDetails(response);
+  };
 
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Failed to load match details",
-          error
-        );
-
-
-        if (!ignore) {
-
-          setError(
-            "Failed to load match details"
-          );
-
-        }
-
-      } finally {
-
-        if (!ignore) {
-
-          setLoading(false);
-
-        }
-
-      }
-
-    };
-
-
-    loadMatchDetails();
-
-
-    return () => {
-
-      ignore = true;
-
-    };
-
-  }, [matchId, numericMatchId]);
-
+}, [matchId, source, pathname]);
 
   // =========================================================
   // LOAD SCORECARD
   // Only when Scorecard tab is opened
   // =========================================================
 
-  useEffect(() => {
+ useEffect(() => {
 
-    // Don't call API until Scorecard tab is selected
+  // Don't call API until Scorecard tab is selected
+  if (activeTab !== "Scorecard") {
+    return;
+  }
 
-    if (activeTab !== "Scorecard") {
-      return;
-    }
+  // Scorecard sirf Cricbuzz ke liye hai
+  if (source !== "cricbuzz") {
+    return;
+  }
 
+  // Already loaded
+  if (scorecard) {
+    return;
+  }
 
-    // Already loaded — don't call again
+  // Invalid match ID
+  if (!matchId || Number.isNaN(Number(matchId))) {
+    return;
+  }
 
-    if (scorecard) {
-      return;
-    }
+  let ignore = false;
 
+  const loadScorecard = async () => {
 
-    // Invalid match ID
+    try {
 
-    if (!matchId || Number.isNaN(numericMatchId)) {
-      return;
-    }
+      setScorecardLoading(true);
+      setScorecardError(null);
 
+      const response = await getCricbuzzScorecard(Number(matchId));
 
-    let ignore = false;
-
-
-    const loadScorecard = async () => {
-
-      try {
-
-        setScorecardLoading(true);
-        setScorecardError(null);
-
-
-        const response =
-          await getCricbuzzScorecard(numericMatchId);
-
-
-        if (!ignore) {
-
-          setScorecard(response);
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Failed to load scorecard",
-          error
-        );
-
-
-        if (!ignore) {
-
-          setScorecardError(
-            "Failed to load scorecard"
-          );
-
-        }
-
-      } finally {
-
-        if (!ignore) {
-
-          setScorecardLoading(false);
-
-        }
-
+      if (!ignore) {
+        setScorecard(response);
       }
 
-    };
+    } catch (error) {
 
+      console.error(
+        "Failed to load scorecard",
+        error
+      );
 
-    loadScorecard();
+      if (!ignore) {
+        setScorecardError(
+          "Scorecard is not available yet."
+        );
+      }
 
+    } finally {
 
-    return () => {
+      if (!ignore) {
+        setScorecardLoading(false);
+      }
 
-      ignore = true;
+    }
 
-    };
+  };
 
-  }, [
-    activeTab,
-    matchId,
-    numericMatchId,
-    scorecard
-  ]);
+  loadScorecard();
+
+  return () => {
+    ignore = true;
+  };
+
+}, [
+  activeTab,
+  matchId,
+  source,
+  scorecard
+]);
 
 
   // =========================================================
   // PAGE STATES
-  // All hooks are ABOVE these returns
   // =========================================================
 
   if (loading) {
@@ -291,10 +305,22 @@ function MatchDetailsPage() {
 
       case "Live":
 
+        if (!matchDetails.live) {
+
+          return (
+            <div className="match-details-page__state">
+              {matchDetails.header?.status ||
+                "Match has not started yet. Live score will be available once play begins."}
+            </div>
+          );
+
+        }
+
+
         return (
 
           <LiveMatchDetails
-            miniscore={matchDetails.miniscore}
+            live={matchDetails.live}
           />
 
         );
@@ -332,7 +358,18 @@ function MatchDetailsPage() {
 
           return (
             <div className="match-details-page__state">
-              Scorecard not available.
+              Scorecard is not available yet.
+            </div>
+          );
+
+        }
+
+
+        if (!scorecard.scoreCard?.length) {
+
+          return (
+            <div className="match-details-page__state">
+              Scorecard will be available once the match begins.
             </div>
           );
 
@@ -354,12 +391,24 @@ function MatchDetailsPage() {
 
       case "Commentary":
 
+        if (
+          !matchDetails.commentary ||
+          Object.keys(matchDetails.commentary).length === 0
+        ) {
+
+          return (
+            <div className="match-details-page__state">
+              Commentary will be available once the match begins.
+            </div>
+          );
+
+        }
+
+
         return (
 
           <MatchCommentary
-            commentary={
-              matchDetails.matchCommentary
-            }
+            commentary={matchDetails.commentary}
           />
 
         );
@@ -371,10 +420,21 @@ function MatchDetailsPage() {
 
       case "Stats":
 
+        if (!matchDetails.live) {
+
+          return (
+            <div className="match-details-page__state">
+              Stats will be available once the match begins.
+            </div>
+          );
+
+        }
+
+
         return (
 
           <MatchStats
-            miniscore={matchDetails.miniscore}
+            live={matchDetails.live}
           />
 
         );
@@ -413,22 +473,33 @@ function MatchDetailsPage() {
     <main className="match-details-page">
 
 
+      {/* MATCH HEADER */}
+
       <MatchHeader
-        matchHeader={
-          matchDetails.matchHeader
-        }
+        header={matchDetails.header}
       />
 
 
-      <MatchSummary
-        matchHeader={
-          matchDetails.matchHeader
-        }
-        miniscore={
-          matchDetails.miniscore
-        }
-      />
+      {/* MATCH SUMMARY */}
 
+      {matchDetails.live ? (
+
+        <MatchSummary
+          header={matchDetails.header}
+          live={matchDetails.live}
+        />
+
+      ) : (
+
+        <div className="match-details-page__state">
+          {matchDetails.header?.status ||
+            "Match has not started yet."}
+        </div>
+
+      )}
+
+
+      {/* MATCH TABS */}
 
       <MatchTabs
         activeTab={activeTab}
@@ -436,10 +507,12 @@ function MatchDetailsPage() {
       />
 
 
+      {/* MAIN CONTENT */}
+
       <section className="match-details-page__content">
 
 
-        {/* LEFT SIDE - TAB CONTENT */}
+        {/* LEFT SIDE - ACTIVE TAB CONTENT */}
 
         <div className="match-details-page__left">
 
@@ -453,9 +526,7 @@ function MatchDetailsPage() {
         <aside className="match-details-page__right">
 
           <MatchInfo
-            matchHeader={
-              matchDetails.matchHeader
-            }
+            header={matchDetails.header}
           />
 
         </aside>
