@@ -98,7 +98,3 @@ function AddSportDialog({
 }
 
 export default AddSportDialog;
-
-function showError(arg0: string, arg1: any) {
-  throw new Error("Function not implemented.");
-}

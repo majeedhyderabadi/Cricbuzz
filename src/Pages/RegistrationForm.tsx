@@ -108,8 +108,6 @@ function RegistrationForm() {
 
             const result = await registerAdmin(registrationData);
 
-            console.log("Registration response:", result);
-
             alert("Registration successful. Waiting for Super Admin approval.");
 
             setFormData({

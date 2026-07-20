@@ -3,7 +3,7 @@ import { type Team, getTeams, createPlayer, type Player, updatePlayer } from "..
 import "./AddPlayer.css";
 import AddRoleDialog from "./AddRoleDialog";
 import { createSportRole, getSportRolesBySportId, getSports, type Sport, type SportRole } from "../../../services/SportService";
-import { showSuccess, showError } from "../../../services/common/AlertService";
+import { showSuccess, showError, showWarning } from "../../../services/common/AlertService";
 
 interface AddPlayerProps {
     player?: Player | null;
@@ -342,6 +342,3 @@ useEffect(() => {
 
 export default AddPlayer;
 
-function showWarning(arg0: string, arg1: string) {
-    throw new Error("Function not implemented.");
-}

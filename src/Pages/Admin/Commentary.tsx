@@ -13,7 +13,7 @@ function Commentary() {
     const [activeTab, setActiveTab] = useState<TabType>("commentary");
 
     const handleMatchSelect = (match: FeedingMatchType) => {
-        console.log("Commentary: Match selected:", match);
+      
         setSelectedMatch(match);
     };
 

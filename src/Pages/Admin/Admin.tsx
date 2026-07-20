@@ -15,11 +15,9 @@ function Admin() {
     const [selectedMatch, setSelectedMatch] = useState<FeedingMatchType | null>(null);
 
     const handleMatchSelect = (match: FeedingMatchType) => {
-        console.log("Admin: Match selected:", match);
+     
         setSelectedMatch(match);
     };
-
-    console.log("Admin: Current selectedMatch:", selectedMatch);
 
     return (
         <main className="container">
