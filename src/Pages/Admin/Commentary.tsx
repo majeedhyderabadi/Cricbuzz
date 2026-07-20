@@ -1,35 +1,22 @@
-import { useState } from 'react';
-import AdminTabs from '../../components/AdminTabs/AdminTabs';
-import Header from '../../components/Header/Header';
+import { useOutletContext } from 'react-router-dom';
 import RecentEntries from '../../components/RecentEntries/RecentEntries';
 import AddCommentary from '../../components/Commentary/AddCommentary';
-import FeedingMatch from '../../components/FeedingMatch/FeedingMatch';
-import type { FeedingMatchs as FeedingMatchType } from '../../services/match.types';
-import type { TabType } from './Admin';
+import type { AdminOutletContext } from './Admin';
 import './Admin.css';
 
 function Commentary() {
-    const [selectedMatch, setSelectedMatch] = useState<FeedingMatchType | null>(null);
-    const [activeTab, setActiveTab] = useState<TabType>("commentary");
-
-    const handleMatchSelect = (match: FeedingMatchType) => {
-      
-        setSelectedMatch(match);
-    };
+    const { selectedMatch, selectedFixtureId, setSelectedFixtureId, refreshTick, triggerRefresh } =
+        useOutletContext<AdminOutletContext>();
 
     return (
-        <main className="container">
-            <Header />
-            <br />
-            <FeedingMatch onMatchSelect={handleMatchSelect} />
-            <section className="admin-page">
-                <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
-                <div className="fixtures-layout">
-                    <AddCommentary selectedMatch={selectedMatch} />
-                    <RecentEntries />
-                </div>
-            </section>
-        </main>
+        <div className="fixtures-layout">
+            <AddCommentary
+                selectedMatch={selectedMatch}
+                onFixtureIdChange={setSelectedFixtureId}
+                onCommentaryPosted={triggerRefresh}
+            />
+            <RecentEntries fixtureId={selectedFixtureId} refreshTrigger={refreshTick} />
+        </div>
     );
 }
 

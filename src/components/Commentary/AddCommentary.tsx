@@ -36,6 +36,8 @@ interface LiveFixture {
 
 interface AddCommentaryProps {
     selectedMatch?: FeedingMatchs | null;
+    onFixtureIdChange?: (fixtureId: string | null) => void;
+    onCommentaryPosted?: () => void;
 }
 
 const ACTION_MAP: Record<string, number> = {
@@ -44,6 +46,9 @@ const ACTION_MAP: Record<string, number> = {
     single: 2,
     wicket: 3,
     wide: 4,
+    two: 5,
+    three : 6,
+
 };
 
 const quickActions = [
@@ -102,9 +107,31 @@ const quickActions = [
         selectedBg: '#2563EB',
         selectedColor: '#FFFFFF',
     },
+    {
+        label: 'Two',
+        runs: 2,
+        type: 'two',
+        icon: '✌🏻',
+        color: '#eff0e7',
+        bgColor: '#ace05e',
+        borderColor: '#deeb25',
+        selectedBg: '#d3cd97',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: 'Three',
+        runs: 3,
+        type: 'three',
+        icon: '👌🏻',
+        color: '#eff0e7',
+        bgColor: '#b66565',
+        borderColor: '#ed4426',
+        selectedBg: '#9a3725',
+        selectedColor: '#FFFFFF',
+    },
 ];
 
-function AddCommentary({ selectedMatch }: AddCommentaryProps) {
+function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }: AddCommentaryProps) {
     const [selectedTeamName, setSelectedTeamName] = useState<string>('');
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('');
     const [note, setNote] = useState('');
@@ -119,9 +146,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
     const [matchTeams, setMatchTeams] = useState<Team[]>([]);
     const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
-
     const [scores, setScores] = useState<Record<string, { runs: number; wkts: number }>>({});
-
 
     const [isPosting, setIsPosting] = useState<boolean>(false);
     const [postStatus, setPostStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -175,9 +200,11 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
             if (fixture) {
                 console.log('AddCommentary: Matching fixture found:', fixture);
                 setSelectedFixtureId(fixture.id);
+                onFixtureIdChange?.(fixture.id);
             } else {
                 console.warn('AddCommentary: No matching fixture found for the selected match');
                 setSelectedFixtureId(null);
+                onFixtureIdChange?.(null);
             }
 
             if (foundTeams.length === 2) {
@@ -203,6 +230,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
             setMatchTeams([]);
             setSelectedTeamName('');
             setSelectedFixtureId(null);
+            onFixtureIdChange?.(null);
             setSelectedActionType(null);
         }
     }, [selectedMatch, allTeams, liveFixturesList]);
@@ -368,6 +396,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
             setPostStatus('success');
             alert(`Commentary posted successfully! (${selectedActionType})`);
             setSelectedActionType(null);
+            onCommentaryPosted?.();
             setTimeout(() => setPostStatus('idle'), 3000);
         } catch (error) {
             console.error('AddCommentary: Error posting commentary:', error);
@@ -477,7 +506,6 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
 
             <hr className="divider" />
 
-            {/* Add Commentary Section */}
             <div className="commentary-section">
                 <div className="commentary-header">
                     <h3>ADD COMMENTARY</h3>
@@ -485,7 +513,6 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                 </div>
                 <p className="commentary-subtitle">Pick a team and player, then tap an action — it pushes straight to the live feed.</p>
 
-                {/* Team Selector Buttons */}
                 <div className="control-group">
                     <label>TEAM</label>
                     <div className="team-selector">
@@ -502,7 +529,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                 </div>
 
                 <div className="commentary-controls">
-                    {/* Player Dropdown */}
+
                     <div className="control-group">
                         <label>PLAYER</label>
                         <div className="player-selector">
@@ -525,7 +552,6 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                         </div>
                     </div>
 
-                    {/* Note Input */}
                     <div className="control-group">
                         <label>NOTE (optional)</label>
                         <div className="note-input-group">
@@ -540,7 +566,7 @@ function AddCommentary({ selectedMatch }: AddCommentaryProps) {
                     </div>
                 </div>
 
-                {/* Quick Actions - Selection Mode */}
+
                 <div className="quick-actions">
                     <p className="quick-actions-title">
                         ⚡ Select an action, then click "Post Commentary"
