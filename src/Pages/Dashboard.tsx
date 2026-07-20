@@ -73,13 +73,27 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
 
             <SportTabs />
 
-   <MatchGrid
-  matches={matchCards}
-  selectedFixtureId={selectedFixtureId}
-  onMatchSelect={(match) =>
-    setSelectedFixtureId(match.id)
-  }
-/>
+{
+
+  matchCards.length > 0 ? (
+
+    <MatchGrid
+
+      matches={matchCards}
+
+      selectedFixtureId={selectedFixtureId}
+
+      onMatchSelect={(match) => setSelectedFixtureId(match.id)}
+
+    />
+
+  ) : (
+
+    <section className="match-grid" style={{borderWidth:1}}>Loading</section>
+
+  )
+
+}
             <div className="Commentry_Performers">
               <LiveCommentary
     matchId={selectedFixture?.id}
