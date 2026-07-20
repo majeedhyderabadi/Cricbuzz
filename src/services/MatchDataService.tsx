@@ -49,12 +49,22 @@ export const getLiveFixtures = async () => {
   return response.data;
 };
 
-export const searchLiveFixtures = async (searchText: string) => {
-  const response = await axios.get(
-    `${API_BASE_URL}/fixtures/search`,
 export const searchCurrentMatches = async (searchText: string) => {
   const response = await axios.get(
     `${API_BASE_URL}/matches/search`,
+    {
+      params: {
+        searchText,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const searchLiveFixtures = async (searchText: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/fixtures/search`,
     {
       params: {
         searchText,
