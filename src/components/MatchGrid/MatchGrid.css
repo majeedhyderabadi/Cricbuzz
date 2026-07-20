@@ -178,3 +178,10 @@
     }
 
 }
+.match-card--selected{
+    border:2px solid #00c853;
+}
+.match-card__view-button
+{
+    color : whitesmoke
+}

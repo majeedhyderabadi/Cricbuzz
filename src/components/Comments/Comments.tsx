@@ -1,7 +1,7 @@
 import "./Comments.css";
 
 interface CommentData {
-    id: number;
+    id: string;
     time: string;
     type: string;
     player: string;

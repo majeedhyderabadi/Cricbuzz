@@ -1,29 +1,23 @@
-import { useState } from 'react'
-import AdminTabs from '../../components/AdminTabs/AdminTabs'
-import LiveCommentary from '../../components/Commentary/LiveCommentary'
-import FeedingMatch from '../../components/FeedingMatch/FeedingMatch'
-import Header from '../../components/Header/Header'
-import RecentEntries from '../../components/RecentEntries/RecentEntries'
-import './Admin.css'
-import type { TabType } from './Admin'
+import { useOutletContext } from 'react-router-dom';
+import RecentEntries from '../../components/RecentEntries/RecentEntries';
+import AddCommentary from '../../components/Commentary/AddCommentary';
+import type { AdminOutletContext } from './Admin';
+import './Admin.css';
 
 function Commentary() {
-    const [activeTab, setActiveTab] = useState<TabType>("commentary");
+    const { selectedMatch, selectedFixtureId, setSelectedFixtureId, refreshTick, triggerRefresh } =
+        useOutletContext<AdminOutletContext>();
+
     return (
-        <main className="container">
-            <Header />
-            <br />
-            <FeedingMatch />
-            <section className="admin-page">
-                 <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}/>
-               <div className="fixtures-layout">
-                    
-                    <LiveCommentary />
-                    <RecentEntries />
-                </div>
-            </section>
-        </main>
-    )
+        <div className="fixtures-layout">
+            <AddCommentary
+                selectedMatch={selectedMatch}
+                onFixtureIdChange={setSelectedFixtureId}
+                onCommentaryPosted={triggerRefresh}
+            />
+            <RecentEntries fixtureId={selectedFixtureId} refreshTrigger={refreshTick} />
+        </div>
+    );
 }
 
-export default Commentary
+export default Commentary;
