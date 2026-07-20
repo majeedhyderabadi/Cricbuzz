@@ -23,12 +23,12 @@ const loadTeams = async () => {
   return (
     
         <main className="container">
-            <Header />
-            <br />
-            <FeedingMatch />
+            {/* <Header /> */}
+            {/* <br /> */}
+            {/* <FeedingMatch /> */}
             <section className="admin-page">
 
-            <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}/>
+            {/* <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}/> */}
               
 
                 <div className="teams-page">
@@ -68,5 +68,7 @@ const loadTeams = async () => {
         </main>
 
   );
+
 };
+
 export default TeamsPlayers;
