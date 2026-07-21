@@ -77,7 +77,7 @@ export const searchLiveFixtures = async (searchText: string) => {
     `${API_BASE_URL}/fixtures/search`,
     {
       params: {
-        searchText,
+        searchTerm: searchText,
       },
     }
   );
