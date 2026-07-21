@@ -5,9 +5,11 @@ import "./FeedingMatch.css";
 
 interface FeedingMatchProps {
     onMatchSelect?: (match: FeedingMatchs) => void;
+    onMatchesLoaded?: (matches: FeedingMatchs[]) => void;
+    matches?: FeedingMatchs[];
 }
 
-const FeedingMatchComponent = ({ onMatchSelect }: FeedingMatchProps) => {
+const FeedingMatchComponent = ({ onMatchSelect, onMatchesLoaded, matches: externalMatches }: FeedingMatchProps) => {
     const [feedingMatches, setFeedingMatches] = useState<FeedingMatchs[]>([]);
     const [selectedMatchId, setSelectedMatchId] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -25,19 +27,23 @@ const FeedingMatchComponent = ({ onMatchSelect }: FeedingMatchProps) => {
         },
     ];
 
+    // Load matches on mount or when external matches change
     useEffect(() => {
-        fetchLiveMatches();
-    }, []);
-
-    useEffect(() => {
-        if (feedingMatches.length > 0 && onMatchSelect) {
-            const selected = feedingMatches.find(m => m.id === selectedMatchId) || feedingMatches[0];
-            console.log("FeedingMatch: Notifying parent with match:", selected);
-            onMatchSelect(selected);
+        if (externalMatches && externalMatches.length > 0) {
+            setFeedingMatches(externalMatches);
+            // If selected match ID is not in the list, select the first one
+            if (!externalMatches.some(m => m.id === selectedMatchId)) {
+                setSelectedMatchId(externalMatches[0].id);
+                // Notify parent about the new selection
+                if (onMatchSelect) {
+                    onMatchSelect(externalMatches[0]);
+                }
+            }
+            setLoading(false);
+        } else {
+            fetchLiveMatches();
         }
-    }, [feedingMatches, selectedMatchId, onMatchSelect]);
-
-
+    }, [externalMatches]); // Re-run when externalMatches changes
 
     const fetchLiveMatches = async () => {
         try {
@@ -48,29 +54,46 @@ const FeedingMatchComponent = ({ onMatchSelect }: FeedingMatchProps) => {
                 console.log("FeedingMatch: Fetched matches:", matches);
                 setFeedingMatches(matches);
                 setSelectedMatchId(matches[0].id);
+                onMatchesLoaded?.(matches);
+                if (onMatchSelect) {
+                    onMatchSelect(matches[0]);
+                }
             } else {
                 console.log("FeedingMatch: Using fallback matches");
                 setFeedingMatches(fallbackMatches);
                 setSelectedMatchId(fallbackMatches[0].id);
+                onMatchesLoaded?.(fallbackMatches);
+                if (onMatchSelect) {
+                    onMatchSelect(fallbackMatches[0]);
+                }
             }
         } catch (error) {
             console.error("FeedingMatch: Error fetching:", error);
             setError("Failed to load live matches. Showing demo data.");
             setFeedingMatches(fallbackMatches);
             setSelectedMatchId(fallbackMatches[0].id);
+            onMatchesLoaded?.(fallbackMatches);
+            if (onMatchSelect) {
+                onMatchSelect(fallbackMatches[0]);
+            }
         } finally {
             setLoading(false);
         }
     };
 
     const selectedMatch: FeedingMatchs = useMemo(() => {
-        return feedingMatches.find((match) => match.id === selectedMatchId) ?? feedingMatches[0];
+        const match = feedingMatches.find((match) => match.id === selectedMatchId);
+        return match ?? feedingMatches[0];
     }, [selectedMatchId, feedingMatches]);
 
     const handleMatchChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const newId = Number(e.target.value);
         console.log("FeedingMatch: Match changed to ID:", newId);
         setSelectedMatchId(newId);
+        const match = feedingMatches.find(m => m.id === newId);
+        if (match && onMatchSelect) {
+            onMatchSelect(match);
+        }
     };
 
     if (loading) {
