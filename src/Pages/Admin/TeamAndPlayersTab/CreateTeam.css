@@ -59,7 +59,7 @@
 }
 .sport-color-header {
     display: flex;
-    gap: 16rem;
+    gap: 14rem;
     align-items: center;
 }
 
@@ -136,7 +136,7 @@
 .sport-container {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 0.5rem;
     width: 100%;
 }
 
@@ -155,7 +155,7 @@
 .add-sport-btn {
     width: 46px;
     min-width: 46px;
-    height: 46px;
+    height: 42px;
 
     display: flex;
     align-items: center;

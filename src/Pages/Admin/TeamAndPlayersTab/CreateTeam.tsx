@@ -225,16 +225,16 @@ const handleCreateTeam = async () => {
             </option>
         ))}
     </select>
-
-   <button
-      type="button"
-      className="add-sport-btn"
-      onClick={() => setShowSportDialog(true)}
-      title="Add Sport"
-      disabled={team !== null}
-    >
-      + 
-    </button>
+       {!team && (
+         <button
+            type="button"
+            className="add-sport-btn"
+            onClick={() => setShowSportDialog(true)}
+            title="Add Sport"
+          >
+            + 
+          </button>
+        )}
     </div>
           <div className="color-section">
             
