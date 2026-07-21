@@ -4,51 +4,64 @@ import SearchBar from "../components/Search/SearchBar";
 import Header from "../components/Header/Header";
 import SportTabs from "../components/SportTabs/SportTabs";
 import MatchGrid from "../components/MatchGrid/MatchGrid";
-import {useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 import type { Fixture } from "../components/types/Fixture";
-import  { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
-import { getLiveFixtures, searchLiveFixtures} from "../services/MatchDataService";
-
-import type { MatchCardModel } from "../components/types/MatchCardModel";
+import { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
+import { getLiveFixtures, searchLiveFixtures } from "../services/MatchDataService";
 
 function NVianDashboard() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedSportId, setSelectedSportId] = useState("all");
 
-     const [matches, setMatches] =useState<Fixture[]>([]);
-       
-const [selectedFixtureId, setSelectedFixtureId] =useState<string | null>(null);
-  
+    const [matches, setMatches] = useState<Fixture[]>([]);
 
-useEffect(() => {
-    const loadMatches = async () => {
-        try {
-            let response;
+    const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
-            if (searchTerm.trim() === "") {
-                response = await getLiveFixtures();
-            } else {
-                response = await searchLiveFixtures(searchTerm);
+
+    useEffect(() => {
+        const loadMatches = async () => {
+            try {
+                let response;
+
+                if (searchTerm.trim() === "") {
+                    response = await getLiveFixtures();
+                } else {
+                    response = await searchLiveFixtures(searchTerm);
+                }
+
+                setMatches(response);
+            } catch (error) {
+                console.error("Failed to load matches", error);
             }
+        };
 
-            setMatches(response);
-        } catch (error) {
-            console.error("Failed to load matches", error);
+        const timer = setTimeout(loadMatches, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+
+    const filteredMatches =
+        selectedSportId === "all"
+            ? matches
+            : matches.filter(
+                (m) => m.sportId === selectedSportId
+            );
+
+    const matchCards = filteredMatches.map(mapFixtureToMatchCard);
+
+    
+    const selectedFixture = matchCards.find(x => x.id === selectedFixtureId);
+
+    useEffect(() => {
+        if (
+            !matchCards.some((m) => m.id === selectedFixtureId)
+        ) {
+            setSelectedFixtureId(
+                matchCards.length > 0 ? matchCards[0].id : null
+            );
         }
-    };
-
-    const timer = setTimeout(loadMatches, 500);
-
-    return () => clearTimeout(timer);
-}, [searchTerm]);
-
-      const matchCards = matches.map(mapFixtureToMatchCard);
-      const selectedFixture = matchCards.find(x => x.id === selectedFixtureId);
-
-useEffect(() => {
-  if (!selectedFixtureId && matchCards.length > 0) {
-    setSelectedFixtureId(matchCards[0].id);
-  }
-}, [matchCards, selectedFixtureId]);
+    }, [matchCards, selectedFixtureId]);
 
 
 
@@ -58,22 +71,25 @@ useEffect(() => {
             <SearchBar
                 setSearchTerm={setSearchTerm}
             />
-            <SportTabs />
-<MatchGrid
-  matches={matchCards}
-  selectedFixtureId={selectedFixtureId}
-  onMatchSelect={(match) =>
-    setSelectedFixtureId(match.id)
-  }
-/>
+            <SportTabs
+                selectedSportId={selectedSportId}
+                onSportChange={setSelectedSportId}
+            />
+            <MatchGrid
+                matches={matchCards}
+                selectedFixtureId={selectedFixtureId}
+                onMatchSelect={(match) =>
+                    setSelectedFixtureId(match.id)
+                }
+            />
             <NVianCommentary
-  fixtureId={selectedFixture?.id}
-  title={
-    selectedFixture
-      ? `${selectedFixture.team1Name} vs ${selectedFixture.team2Name}`
-      : "NVian Commentary"
-  }
-/>
+                fixtureId={selectedFixture?.id}
+                title={
+                    selectedFixture
+                        ? `${selectedFixture.team1Name} vs ${selectedFixture.team2Name}`
+                        : "NVian Commentary"
+                }
+            />
         </main>
     );
 }
