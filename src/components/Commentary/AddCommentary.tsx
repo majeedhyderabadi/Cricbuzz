@@ -29,29 +29,44 @@ interface LiveFixture {
     sport: string;
     status: string;
     homeScore: number;
-    homeWickets: number;
+    homeWickets: number | null;
     awayScore: number;
-    awayWickets: number;
+    awayWickets: number | null;
 }
 
 interface AddCommentaryProps {
     selectedMatch?: FeedingMatchs | null;
     onFixtureIdChange?: (fixtureId: string | null) => void;
     onCommentaryPosted?: () => void;
+    onScoreUpdated?: (updatedMatch: FeedingMatchs) => void;
 }
 
-const ACTION_MAP: Record<string, number> = {
+// Cricket Action Map
+const CRICKET_ACTION_MAP: Record<string, number> = {
     six: 0,
     four: 1,
     single: 2,
     wicket: 3,
     wide: 4,
     two: 5,
-    three : 6,
-
+    three: 6,
 };
 
-const quickActions = [
+// Football Action Map
+const FOOTBALL_ACTION_MAP: Record<string, number> = {
+    goal: 7,
+    assist: 8,
+    yellow_card: 9,
+    red_card: 10,
+    substitution: 11,
+    penalty: 12,
+    free_kick: 13,
+    corner: 14,
+    offside: 15,
+    save: 16,
+};
+
+const cricketQuickActions = [
     {
         label: 'SIX',
         runs: 6,
@@ -131,7 +146,110 @@ const quickActions = [
     },
 ];
 
-function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }: AddCommentaryProps) {
+const footballQuickActions = [
+    {
+        label: '⚽ Goal',
+        type: 'goal',
+        icon: '⚽',
+        color: '#059669',
+        bgColor: '#D1FAE5',
+        borderColor: '#059669',
+        selectedBg: '#059669',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🅰️ Assist',
+        type: 'assist',
+        icon: '🅰️',
+        color: '#2563EB',
+        bgColor: '#DBEAFE',
+        borderColor: '#2563EB',
+        selectedBg: '#2563EB',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🟨 Yellow Card',
+        type: 'yellow_card',
+        icon: '🟨',
+        color: '#D97706',
+        bgColor: '#FEF3C7',
+        borderColor: '#D97706',
+        selectedBg: '#D97706',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🟥 Red Card',
+        type: 'red_card',
+        icon: '🟥',
+        color: '#DC2626',
+        bgColor: '#FEE2E2',
+        borderColor: '#DC2626',
+        selectedBg: '#DC2626',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🔄 Substitution',
+        type: 'substitution',
+        icon: '🔄',
+        color: '#8B5CF6',
+        bgColor: '#EDE9FE',
+        borderColor: '#8B5CF6',
+        selectedBg: '#8B5CF6',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '⚡ Penalty',
+        type: 'penalty',
+        icon: '⚡',
+        color: '#EF4444',
+        bgColor: '#FEE2E2',
+        borderColor: '#EF4444',
+        selectedBg: '#EF4444',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🎯 Free Kick',
+        type: 'free_kick',
+        icon: '🎯',
+        color: '#F59E0B',
+        bgColor: '#FEF3C7',
+        borderColor: '#F59E0B',
+        selectedBg: '#F59E0B',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🚩 Corner',
+        type: 'corner',
+        icon: '🚩',
+        color: '#3B82F6',
+        bgColor: '#DBEAFE',
+        borderColor: '#3B82F6',
+        selectedBg: '#3B82F6',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🚫 Offside',
+        type: 'offside',
+        icon: '🚫',
+        color: '#6B7280',
+        bgColor: '#E5E7EB',
+        borderColor: '#6B7280',
+        selectedBg: '#6B7280',
+        selectedColor: '#FFFFFF',
+    },
+    {
+        label: '🧤 Save',
+        type: 'save',
+        icon: '🧤',
+        color: '#10B981',
+        bgColor: '#D1FAE5',
+        borderColor: '#10B981',
+        selectedBg: '#10B981',
+        selectedColor: '#FFFFFF',
+    },
+];
+
+function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, onScoreUpdated }: AddCommentaryProps) {
     const [selectedTeamName, setSelectedTeamName] = useState<string>('');
     const [selectedPlayerId, setSelectedPlayerId] = useState<string>('');
     const [note, setNote] = useState('');
@@ -140,16 +258,33 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
     const [pendingDeltas, setPendingDeltas] = useState<Record<string, { runs: number; wkts: number }>>({});
     const [updatingTeam, setUpdatingTeam] = useState<string | null>(null);
 
-
     const [allTeams, setAllTeams] = useState<Team[]>([]);
     const [liveFixturesList, setLiveFixturesList] = useState<LiveFixture[]>([]);
     const [matchTeams, setMatchTeams] = useState<Team[]>([]);
     const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
+    const [matchStatus, setMatchStatus] = useState<string>('');
 
     const [scores, setScores] = useState<Record<string, { runs: number; wkts: number }>>({});
 
     const [isPosting, setIsPosting] = useState<boolean>(false);
     const [postStatus, setPostStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+    // Determine sport type from selected match
+    const getSportType = (): 'cricket' | 'football' => {
+        if (selectedMatch?.sport?.toLowerCase().includes('football') || 
+            selectedMatch?.sport?.toLowerCase().includes('soccer')) {
+            return 'football';
+        }
+        return 'cricket';
+    };
+
+    const sportType = getSportType();
+    const isFootball = sportType === 'football';
+    const quickActions = isFootball ? footballQuickActions : cricketQuickActions;
+    const ACTION_MAP = isFootball ? FOOTBALL_ACTION_MAP : CRICKET_ACTION_MAP;
+
+    // Check if match is live
+    const isMatchLive = matchStatus?.toLowerCase() === 'live';
 
     useEffect(() => {
         fetchTeams();
@@ -176,9 +311,22 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
         }
     };
 
+    // Helper to update the parent with new score
+    const updateParentScore = (team1Score: string, team2Score: string) => {
+        if (!selectedMatch || !onScoreUpdated) return;
+        
+        const updatedMatch: FeedingMatchs = {
+            ...selectedMatch,
+            score: isFootball 
+                ? `${team1Score} - ${team2Score}`
+                : `${team1Score}/${scores[matchTeams[0]?.teamName]?.wkts || 0} - ${team2Score}/${scores[matchTeams[1]?.teamName]?.wkts || 0}`
+        };
+        
+        onScoreUpdated(updatedMatch);
+    };
+
     useEffect(() => {
         if (selectedMatch && allTeams.length > 0 && liveFixturesList.length > 0) {
-
             const team1 = allTeams.find(
                 (t) => t.teamName.toLowerCase() === selectedMatch.team1.toLowerCase()
             );
@@ -188,7 +336,6 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
             const foundTeams = [team1, team2].filter(Boolean) as Team[];
             console.log('AddCommentary: Match teams found:', foundTeams);
             setMatchTeams(foundTeams);
-
 
             const fixture = liveFixturesList.find(
                 (f) =>
@@ -200,41 +347,92 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
             if (fixture) {
                 console.log('AddCommentary: Matching fixture found:', fixture);
                 setSelectedFixtureId(fixture.id);
+                setMatchStatus(fixture.status);
                 onFixtureIdChange?.(fixture.id);
             } else {
                 console.warn('AddCommentary: No matching fixture found for the selected match');
                 setSelectedFixtureId(null);
+                setMatchStatus('');
                 onFixtureIdChange?.(null);
             }
 
             if (foundTeams.length === 2) {
-                const scoreParts = selectedMatch.score.split(' - ');
-                const homeScore = scoreParts[0]?.split('/') || ['0', '0'];
-                const awayScore = scoreParts[1]?.split('/') || ['0', '0'];
-                setScores({
-                    [foundTeams[0].teamName]: {
-                        runs: parseInt(homeScore[0]) || 0,
-                        wkts: parseInt(homeScore[1]) || 0,
-                    },
-                    [foundTeams[1].teamName]: {
-                        runs: parseInt(awayScore[0]) || 0,
-                        wkts: parseInt(awayScore[1]) || 0,
-                    },
-                });
-
-                setSelectedTeamName(foundTeams[0].teamName);
-
-                setSelectedActionType(null);
+                // Initialize scores from the fixture data if available
+                if (fixture) {
+                    const homeTeam = foundTeams.find(t => t.teamName === fixture.homeTeamName);
+                    const awayTeam = foundTeams.find(t => t.teamName === fixture.awayTeamName);
+                    
+                    if (homeTeam && awayTeam) {
+                        if (isFootball) {
+                            setScores({
+                                [homeTeam.teamName]: {
+                                    runs: fixture.homeScore || 0,
+                                    wkts: 0,
+                                },
+                                [awayTeam.teamName]: {
+                                    runs: fixture.awayScore || 0,
+                                    wkts: 0,
+                                },
+                            });
+                        } else {
+                            setScores({
+                                [homeTeam.teamName]: {
+                                    runs: fixture.homeScore || 0,
+                                    wkts: fixture.homeWickets || 0,
+                                },
+                                [awayTeam.teamName]: {
+                                    runs: fixture.awayScore || 0,
+                                    wkts: fixture.awayWickets || 0,
+                                },
+                            });
+                        }
+                        setSelectedTeamName(foundTeams[0].teamName);
+                        setSelectedActionType(null);
+                    }
+                } else {
+                    // Fallback to parsing from selectedMatch.score
+                    if (isFootball) {
+                        const scoreParts = selectedMatch.score.split(' - ');
+                        const homeScore = parseInt(scoreParts[0]) || 0;
+                        const awayScore = parseInt(scoreParts[1]) || 0;
+                        setScores({
+                            [foundTeams[0].teamName]: {
+                                runs: homeScore,
+                                wkts: 0,
+                            },
+                            [foundTeams[1].teamName]: {
+                                runs: awayScore,
+                                wkts: 0,
+                            },
+                        });
+                    } else {
+                        const scoreParts = selectedMatch.score.split(' - ');
+                        const homeScore = scoreParts[0]?.split('/') || ['0', '0'];
+                        const awayScore = scoreParts[1]?.split('/') || ['0', '0'];
+                        setScores({
+                            [foundTeams[0].teamName]: {
+                                runs: parseInt(homeScore[0]) || 0,
+                                wkts: parseInt(homeScore[1]) || 0,
+                            },
+                            [foundTeams[1].teamName]: {
+                                runs: parseInt(awayScore[0]) || 0,
+                                wkts: parseInt(awayScore[1]) || 0,
+                            },
+                        });
+                    }
+                    setSelectedTeamName(foundTeams[0].teamName);
+                    setSelectedActionType(null);
+                }
             }
         } else {
             setMatchTeams([]);
             setSelectedTeamName('');
             setSelectedFixtureId(null);
+            setMatchStatus('');
             onFixtureIdChange?.(null);
             setSelectedActionType(null);
         }
-    }, [selectedMatch, allTeams, liveFixturesList]);
-
+    }, [selectedMatch, allTeams, liveFixturesList, isFootball]);
 
     useEffect(() => {
         if (selectedTeamName) {
@@ -256,12 +454,10 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
         return team ? team.players : [];
     })();
 
-
     const teams = matchTeams.map((team) => ({
         name: team.teamName,
         color: team.color || '#ccc',
     }));
-
 
     const getSide = (teamName: string): 0 | 1 | null => {
         if (!selectedFixtureId || !liveFixturesList.length) return null;
@@ -272,8 +468,12 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
         return null;
     };
 
-
     const adjustScore = (team: string, field: 'runs' | 'wkts', delta: number) => {
+        if (!isMatchLive) {
+            showError('Error', 'Cannot update score for a match that is not live');
+            return;
+        }
+        
         setScores((prev) => ({
             ...prev,
             [team]: {
@@ -291,8 +491,12 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
         }));
     };
 
-
     const handleUpdateScore = async (teamName: string) => {
+        if (!isMatchLive) {
+            showError('Error', 'Cannot update score for a match that is not live');
+            return;
+        }
+
         const delta = pendingDeltas[teamName];
         if (!delta || (delta.runs === 0 && delta.wkts === 0)) return;
 
@@ -312,7 +516,13 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
         if (delta.wkts !== 0) payload.wicketsDelta = delta.wkts;
 
         const changeParts: string[] = [];
-        if (delta.runs !== 0) changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} run${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+        if (delta.runs !== 0) {
+            if (isFootball) {
+                changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} goal${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+            } else {
+                changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} run${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+            }
+        }
         if (delta.wkts !== 0) changeParts.push(`${delta.wkts > 0 ? '+' : ''}${delta.wkts} wkt${Math.abs(delta.wkts) !== 1 ? 's' : ''}`);
         const changeSummary = changeParts.join(', ');
 
@@ -323,6 +533,14 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                 ...prev,
                 [teamName]: { runs: 0, wkts: 0 },
             }));
+            
+            // Update the parent component with the new score
+            if (matchTeams.length === 2) {
+                const team1Score = scores[matchTeams[0].teamName]?.runs || 0;
+                const team2Score = scores[matchTeams[1].teamName]?.runs || 0;
+                updateParentScore(String(team1Score), String(team2Score));
+            }
+            
             showSuccess('Success', `${teamName} updated (${changeSummary})`);
         } catch (error) {
             console.error('AddCommentary: Error updating score:', error);
@@ -333,6 +551,11 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
     };
 
     const handleActionSelect = (actionType: string) => {
+        if (!isMatchLive) {
+            showError('Error', 'Cannot post commentary for a match that is not live');
+            return;
+        }
+        
         console.log(`AddCommentary: Action selected: ${actionType}`);
 
         if (selectedActionType === actionType) {
@@ -345,8 +568,13 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
     };
 
     const handlePostCommentary = async () => {
+        if (!isMatchLive) {
+            showError('Error', 'Cannot post commentary for a match that is not live');
+            return;
+        }
+
         if (!selectedActionType) {
-            alert('Please select an action (SIX, FOUR, Single, Wicket, or Wide)');
+            alert('Please select an action');
             return;
         }
 
@@ -416,8 +644,34 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                     <span className="match-info">
                         {selectedMatch.sport}: {matchTeams[0].teamName} vs {matchTeams[1].teamName}
                     </span>
-                    <span className="match-info-score">{selectedMatch.score}</span>
-
+                    <span className="match-info-score">
+                        {isFootball 
+                            ? `${scores[matchTeams[0]?.teamName]?.runs || 0} - ${scores[matchTeams[1]?.teamName]?.runs || 0}`
+                            : `${scores[matchTeams[0]?.teamName]?.runs || 0}/${scores[matchTeams[0]?.teamName]?.wkts || 0} - ${scores[matchTeams[1]?.teamName]?.runs || 0}/${scores[matchTeams[1]?.teamName]?.wkts || 0}`
+                        }
+                    </span>
+                    <span className="match-status-badge" style={{
+                        background: isMatchLive ? '#10B981' : '#F59E0B',
+                        padding: '2px 12px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        marginLeft: '8px'
+                    }}>
+                        {isMatchLive ? '🔴 LIVE' : matchStatus?.toUpperCase() || 'SCHEDULED'}
+                    </span>
+                    <span className="match-sport-badge" style={{
+                        background: isFootball ? '#10B981' : '#8B5CF6',
+                        padding: '2px 12px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        marginLeft: '8px'
+                    }}>
+                        {isFootball ? '⚽ Football' : '🏏 Cricket'}
+                    </span>
                 </div>
             ) : (
                 <div className="match-info-banner" style={{ background: '#666' }}>
@@ -425,12 +679,27 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                 </div>
             )}
 
-            <div className="score-control">
+            {/* Disabled overlay for scheduled matches */}
+            {!isMatchLive && selectedMatch && (
+                <div className="match-disabled-overlay">
+                    <div className="disabled-message">
+                        <span className="disabled-icon">⏳</span>
+                        <h3>Match is {matchStatus?.toUpperCase() || 'SCHEDULED'}</h3>
+                        <p>Commentary and score updates are only available when the match is LIVE</p>
+                    </div>
+                </div>
+            )}
+
+            <div className={`score-control ${!isMatchLive ? 'disabled-section' : ''}`}>
                 <div className="score-header">
                     <h3>SCORE CONTROL</h3>
                     <span className="feed-score">Feed the score directly</span>
                 </div>
-                <p className="score-subtitle">Set RUNS / WKTS for each side. Also logs a commentary entry.</p>
+                <p className="score-subtitle">
+                    {isFootball 
+                        ? 'Set GOALS for each side. Also logs a commentary entry.' 
+                        : 'Set RUNS / WKTS for each side. Also logs a commentary entry.'}
+                </p>
 
                 <div className="score-cards">
                     {teams.map((team) => {
@@ -444,12 +713,13 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                                     {team.name}
                                 </h4>
                                 <div className="score-detail">
-                                    <span className="score-label">RUNS</span>
+                                    <span className="score-label">{isFootball ? 'GOALS' : 'RUNS'}</span>
                                     <div className="score-stepper">
                                         <button
                                             className="stepper-btn"
                                             onClick={() => adjustScore(team.name, 'runs', -1)}
-                                            aria-label={`Decrease ${team.name} runs`}
+                                            disabled={!isMatchLive}
+                                            aria-label={`Decrease ${team.name} ${isFootball ? 'goals' : 'runs'}`}
                                         >
                                             −
                                         </button>
@@ -457,61 +727,69 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                                         <button
                                             className="stepper-btn"
                                             onClick={() => adjustScore(team.name, 'runs', 1)}
-                                            aria-label={`Increase ${team.name} runs`}
+                                            disabled={!isMatchLive}
+                                            aria-label={`Increase ${team.name} ${isFootball ? 'goals' : 'runs'}`}
                                         >
                                             +
                                         </button>
                                     </div>
                                 </div>
-                                <div className="score-detail">
-                                    <span className="score-label">WKTS</span>
-                                    <div className="score-stepper">
-                                        <button
-                                            className="stepper-btn"
-                                            onClick={() => adjustScore(team.name, 'wkts', -1)}
-                                            aria-label={`Decrease ${team.name} wickets`}
-                                        >
-                                            −
-                                        </button>
-                                        <span className="score-value">{scores[team.name]?.wkts || 0}</span>
-                                        <button
-                                            className="stepper-btn"
-                                            onClick={() => adjustScore(team.name, 'wkts', 1)}
-                                            aria-label={`Increase ${team.name} wickets`}
-                                        >
-                                            +
-                                        </button>
+                                {!isFootball && (
+                                    <div className="score-detail">
+                                        <span className="score-label">WKTS</span>
+                                        <div className="score-stepper">
+                                            <button
+                                                className="stepper-btn"
+                                                onClick={() => adjustScore(team.name, 'wkts', -1)}
+                                                disabled={!isMatchLive}
+                                                aria-label={`Decrease ${team.name} wickets`}
+                                            >
+                                                −
+                                            </button>
+                                            <span className="score-value">{scores[team.name]?.wkts || 0}</span>
+                                            <button
+                                                className="stepper-btn"
+                                                onClick={() => adjustScore(team.name, 'wkts', 1)}
+                                                disabled={!isMatchLive}
+                                                aria-label={`Increase ${team.name} wickets`}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 <button
                                     className="update-score-btn"
                                     onClick={() => handleUpdateScore(team.name)}
-                                    disabled={updatingTeam === team.name || !hasPendingChange}
+                                    disabled={updatingTeam === team.name || !hasPendingChange || !isMatchLive}
                                 >
-                                    {updatingTeam === team.name
-                                        ? 'Updating...'
-                                        : hasPendingChange
-                                            ? `Update Score (${delta.runs >= 0 ? '+' : ''}${delta.runs} runs, ${delta.wkts >= 0 ? '+' : ''
-                                            }${delta.wkts} wkts)`
-                                            : 'Update Score'}
+                                    {!isMatchLive 
+                                        ? 'Match Not Live'
+                                        : updatingTeam === team.name
+                                            ? 'Updating...'
+                                            : hasPendingChange
+                                                ? `Update Score (${delta.runs >= 0 ? '+' : ''}${delta.runs} ${isFootball ? 'goal' : 'run'}${Math.abs(delta.runs) !== 1 ? 's' : ''}${!isFootball && delta.wkts !== 0 ? `, ${delta.wkts >= 0 ? '+' : ''}${delta.wkts} wkt${Math.abs(delta.wkts) !== 1 ? 's' : ''}` : ''})`
+                                                : 'Update Score'}
                                 </button>
                             </div>
                         );
                     })}
                 </div>
-
-
             </div>
 
             <hr className="divider" />
 
-            <div className="commentary-section">
+            <div className={`commentary-section ${!isMatchLive ? 'disabled-section' : ''}`}>
                 <div className="commentary-header">
                     <h3>ADD COMMENTARY</h3>
-                    <span className="sport-tag">{selectedMatch?.sport || 'Cricket'}</span>
+                    <span className="sport-tag">{selectedMatch?.sport || (isFootball ? 'Football' : 'Cricket')}</span>
                 </div>
-                <p className="commentary-subtitle">Pick a team and player, then tap an action — it pushes straight to the live feed.</p>
+                <p className="commentary-subtitle">
+                    {isMatchLive 
+                        ? 'Pick a team and player, then tap an action — it pushes straight to the live feed.'
+                        : `Commentary is disabled while match is ${matchStatus?.toLowerCase() || 'scheduled'}`}
+                </p>
 
                 <div className="control-group">
                     <label>TEAM</label>
@@ -521,6 +799,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                                 key={team.name}
                                 className={`team-btn ${selectedTeamName === team.name ? 'active' : ''}`}
                                 onClick={() => setSelectedTeamName(team.name)}
+                                disabled={!isMatchLive}
                             >
                                 {team.name}
                             </button>
@@ -529,7 +808,6 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                 </div>
 
                 <div className="commentary-controls">
-
                     <div className="control-group">
                         <label>PLAYER</label>
                         <div className="player-selector">
@@ -537,7 +815,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                                 value={selectedPlayerId}
                                 onChange={(e) => setSelectedPlayerId(e.target.value)}
                                 className="player-dropdown"
-                                disabled={currentPlayers.length === 0}
+                                disabled={currentPlayers.length === 0 || !isMatchLive}
                             >
                                 {currentPlayers.length === 0 ? (
                                     <option value="">No players available</option>
@@ -557,26 +835,32 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                         <div className="note-input-group">
                             <input
                                 type="text"
-                                placeholder="e.g. drives it through the covers"
+                                placeholder={isFootball ? "e.g. powerful strike from outside the box" : "e.g. drives it through the covers"}
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                                 className="note-input"
+                                disabled={!isMatchLive}
                             />
                         </div>
                     </div>
                 </div>
-
 
                 <div className="quick-actions">
                     <p className="quick-actions-title">
                         ⚡ Select an action, then click "Post Commentary"
                         {selectedActionType && (
                             <span className="selected-action-indicator">
-                                &nbsp;• Selected: <strong>{selectedActionType.toUpperCase()}</strong>
+                                &nbsp;• Selected: <strong>{selectedActionType.toUpperCase().replace('_', ' ')}</strong>
                             </span>
                         )}
                     </p>
-                    <div className="action-buttons">
+                    <div className="action-buttons" style={{
+                        display: 'grid',
+                        gridTemplateColumns: isFootball ? 'repeat(5, 1fr)' : 'repeat(7, 1fr)',
+                        gap: '8px',
+                        opacity: isMatchLive ? 1 : 0.5,
+                        pointerEvents: isMatchLive ? 'auto' : 'none'
+                    }}>
                         {quickActions.map((action) => {
                             const isSelected = selectedActionType === action.type;
                             return (
@@ -584,20 +868,22 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                                     key={action.type}
                                     className={`action-btn ${action.type} ${isSelected ? 'selected' : ''}`}
                                     onClick={() => handleActionSelect(action.type)}
+                                    disabled={!isMatchLive}
                                     style={{
                                         backgroundColor: isSelected ? action.selectedBg : action.bgColor,
                                         borderColor: isSelected ? action.selectedBg : action.borderColor,
                                         color: isSelected ? action.selectedColor : action.color,
                                         transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                                         boxShadow: isSelected ? `0 4px 16px ${action.borderColor}66` : 'none',
+                                        padding: isFootball ? '8px 4px' : '8px 6px',
+                                        fontSize: isFootball ? '11px' : '12px',
+                                        opacity: !isMatchLive ? 0.5 : 1,
+                                        cursor: !isMatchLive ? 'not-allowed' : 'pointer'
                                     }}
                                 >
                                     <span className="action-icon">{action.icon}</span>
-                                    <span className="action-label">{action.label}</span>
-                                    <span className="action-runs">
-                                        {action.type === 'wicket'
-                                            ? '🪓 +1 wkt'
-                                            : `+${action.runs} run${action.runs > 1 ? 's' : ''}`}
+                                    <span className="action-label" style={{ fontSize: isFootball ? '9px' : '10px' }}>
+                                        {action.label}
                                     </span>
                                     {isSelected && <span className="check-mark">✓</span>}
                                 </button>
@@ -610,30 +896,31 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted }:
                     <button
                         className={`add-note-btn ${postStatus === 'success' ? 'success' : ''} ${postStatus === 'error' ? 'error' : ''}`}
                         onClick={handlePostCommentary}
-                        disabled={isPosting || !selectedActionType}
+                        disabled={isPosting || !selectedActionType || !isMatchLive}
                     >
-                        {isPosting ? (
-                            'Posting...'
-                        ) : postStatus === 'success' ? (
-                            '✅ Posted!'
-                        ) : postStatus === 'error' ? (
-                            '❌ Failed'
-                        ) : (
-                            <>
-                                Post Commentary
-                                <span className="arrow">→</span>
-                            </>
-                        )}
+                        {!isMatchLive 
+                            ? 'Match Not Live' 
+                            : isPosting 
+                                ? 'Posting...'
+                                : postStatus === 'success' 
+                                    ? '✅ Posted!'
+                                    : postStatus === 'error' 
+                                        ? '❌ Failed'
+                                        : <>
+                                            Post Commentary
+                                            <span className="arrow">→</span>
+                                        </>
+                        }
                     </button>
                 </div>
-                {selectedActionType && (
+                {selectedActionType && isMatchLive && (
                     <div style={{
                         fontSize: '12px',
                         color: '#8d96aa',
                         marginTop: '8px',
                         textAlign: 'right'
                     }}>
-                        Ready to post: <strong style={{ color: '#ffffff' }}>{selectedActionType.toUpperCase()}</strong>
+                        Ready to post: <strong style={{ color: '#ffffff' }}>{selectedActionType.toUpperCase().replace('_', ' ')}</strong>
                         {note && ` with note: "${note}"`}
                     </div>
                 )}

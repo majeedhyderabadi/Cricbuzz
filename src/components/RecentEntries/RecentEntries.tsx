@@ -1,6 +1,7 @@
 import './RecentEntries.css';
 import { useEffect, useState } from 'react';
-import { getCommentary, type CommentaryEntry } from '../../services/liveservice';
+import { getCommentary, updateCommentary, type CommentaryEntry } from '../../services/liveservice';
+import { showError, showSuccess } from '../../services/common/AlertService';
 
 interface Entry {
     id: string;
@@ -32,6 +33,48 @@ function RecentEntries({ fixtureId, refreshTrigger }: RecentEntriesProps) {
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editData, setEditData] = useState<Entry | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    // console.log("FIXTUREID====================>", fixtureId);
+    // console.log("CommentaryData==================>", entries);
+    // console.log("editData===========>", editData);
+
+    const updateCommentarys = async () => {
+        if (!fixtureId || !editData) return;
+        
+        setIsUpdating(true);
+        try {
+            // Only send the comment update
+            const res = await updateCommentary(fixtureId, editData.id, {
+                note: editData.comment || ''
+            });
+            
+            console.log("Response===========>", res);
+            
+            // Update local state with the new comment
+            setEntries(entries.map(item =>
+                item.id === editData.id ? { ...item, comment: editData.comment } : item
+            ));
+            
+            // Close edit mode
+            setEditingId(null);
+            setEditData(null);
+            
+            showSuccess("Success", `Commentary updated for ${editData.player}`);
+            
+        } catch (e: any) {
+            console.error("RecentEntries.tsx: Error updateCommentary======>", e);
+            console.error("RecentEntries.tsx: Error updateCommentary full======>", e);
+            showError("Error", "Failed to update commentary. Please try again.");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleSaveEdit = () => {
+        if (!editData) return;
+        updateCommentarys();
+    };
 
     useEffect(() => {
         if (!fixtureId) {
@@ -82,16 +125,6 @@ function RecentEntries({ fixtureId, refreshTrigger }: RecentEntriesProps) {
         setEditData({ ...item });
     };
 
-    const handleSaveEdit = () => {
-        if (editData) {
-            setEntries(entries.map(item =>
-                item.id === editData.id ? editData : item
-            ));
-            setEditingId(null);
-            setEditData(null);
-        }
-    };
-
     const handleCancelEdit = () => {
         setEditingId(null);
         setEditData(null);
@@ -102,7 +135,8 @@ function RecentEntries({ fixtureId, refreshTrigger }: RecentEntriesProps) {
             setEditData({ ...editData, [field]: value });
         }
     };
-return (
+
+    return (
         <div className="mainComponent">
             <div className="mainHeader">
                 <div className="mainHeaderTop">
@@ -134,26 +168,15 @@ return (
                                             <div className={`playerBall ${getBallColor(editData.event)}`}></div>
                                             <div className="editTextContainer">
                                                 <div className="editPlayerInput">
-                                                    <input
-                                                        type="text"
-                                                        value={editData.player}
-                                                        onChange={(e) => handleInputChange('player', e.target.value)}
-                                                        className="editPlayerNameInput"
-                                                        placeholder="Player"
-                                                    />
+                                                    {/* Read-only player name */}
+                                                    <span className="editPlayerNameDisplay">
+                                                        <strong>{editData.player}</strong>
+                                                    </span>
                                                     <span className="editSeparator">·</span>
-                                                    <select
-                                                        value={editData.event}
-                                                        onChange={(e) => handleInputChange('event', e.target.value)}
-                                                        className="editEventSelect"
-                                                    >
-                                                        <option value="SIX">SIX</option>
-                                                        <option value="FOUR">FOUR</option>
-                                                        <option value="SINGLE">Single</option>
-                                                        <option value="DOUBLE">Double</option>
-                                                        <option value="WICKET">Wicket</option>
-                                                        <option value="WIDE">Wide</option>
-                                                    </select>
+                                                    {/* Read-only event */}
+                                                    <span className="editEventDisplay">
+                                                        {editData.event}
+                                                    </span>
                                                 </div>
                                                 <span className="editTime">{editData.time}</span>
                                             </div>
@@ -162,22 +185,31 @@ return (
                                     </div>
 
                                     <div className="editCommentSection">
-                                        <input
-                                            type="text"
+                                        <textarea
                                             value={editData.comment || ''}
                                             onChange={(e) => handleInputChange('comment', e.target.value)}
                                             className="editCommentInput"
-                                            placeholder="Add a comment"
+                                            placeholder="Edit comment..."
+                                            rows={3}
+                                            autoFocus
                                         />
                                     </div>
 
                                     <div className="editActionsRow">
                                         <div className="editButtons">
-                                            <button className="cancelEditBtn" onClick={handleCancelEdit}>
+                                            <button 
+                                                className="cancelEditBtn" 
+                                                onClick={handleCancelEdit}
+                                                disabled={isUpdating}
+                                            >
                                                 Cancel
                                             </button>
-                                            <button className="saveEditBtn" onClick={handleSaveEdit}>
-                                                Save
+                                            <button 
+                                                className="saveEditBtn" 
+                                                onClick={handleSaveEdit}
+                                                disabled={isUpdating}
+                                            >
+                                                {isUpdating ? 'Saving...' : 'Save Comment'}
                                             </button>
                                         </div>
                                     </div>
@@ -198,6 +230,7 @@ return (
                                         <button
                                             className="edit-btn"
                                             onClick={() => handleEditClick(item)}
+                                            disabled={isUpdating}
                                         >
                                             ✎ Edit
                                         </button>

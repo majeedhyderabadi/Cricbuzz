@@ -14,6 +14,7 @@ export interface AdminOutletContext {
     setSelectedFixtureId: (id: string | null) => void;
     refreshTick: number;
     triggerRefresh: () => void;
+    onScoreUpdated: (updatedMatch: FeedingMatchType) => void;
 }
 
 function pathToTab(pathname: string): TabType {
@@ -30,9 +31,32 @@ function Admin() {
     const [selectedMatch, setSelectedMatch] = useState<FeedingMatchType | null>(null);
     const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
     const [refreshTick, setRefreshTick] = useState(0);
+    const [feedingMatches, setFeedingMatches] = useState<FeedingMatchType[]>([]);
 
     const handleMatchSelect = (match: FeedingMatchType) => {
+        console.log("Admin: Match selected:", match);
         setSelectedMatch(match);
+    };
+
+    const handleMatchesLoaded = (matches: FeedingMatchType[]) => {
+        console.log("Admin: Matches loaded:", matches);
+        setFeedingMatches(matches);
+    };
+
+    const handleScoreUpdated = (updatedMatch: FeedingMatchType) => {
+        console.log("Admin: Score updated for match:", updatedMatch);
+        // Update the match in the feeding matches list
+        setFeedingMatches(prevMatches => {
+            const updated = prevMatches.map(m => 
+                m.id === updatedMatch.id ? updatedMatch : m
+            );
+            console.log("Admin: Updated feeding matches:", updated);
+            return updated;
+        });
+        // Update the selected match
+        setSelectedMatch(updatedMatch);
+        // Trigger refresh to update commentary
+        setRefreshTick(t => t + 1);
     };
 
     const handleTabChange = (tab: TabType) => {
@@ -49,13 +73,18 @@ function Admin() {
         setSelectedFixtureId,
         refreshTick,
         triggerRefresh: () => setRefreshTick((t) => t + 1),
+        onScoreUpdated: handleScoreUpdated,
     };
 
     return (
         <main className="container">
             <Header />
             <br />
-            <FeedingMatch onMatchSelect={handleMatchSelect} />
+            <FeedingMatch 
+                onMatchSelect={handleMatchSelect} 
+                onMatchesLoaded={handleMatchesLoaded}
+                matches={feedingMatches}
+            />
 
             <section className="admin-page">
                 <AdminTabs activeTab={activeTab} onTabChange={handleTabChange} />

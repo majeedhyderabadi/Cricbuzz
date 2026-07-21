@@ -5,7 +5,7 @@ import type { AdminOutletContext } from './Admin';
 import './Admin.css';
 
 function Commentary() {
-    const { selectedMatch, selectedFixtureId, setSelectedFixtureId, refreshTick, triggerRefresh } =
+    const { selectedMatch, selectedFixtureId, setSelectedFixtureId, refreshTick, triggerRefresh, onScoreUpdated  } =
         useOutletContext<AdminOutletContext>();
 
     return (
@@ -14,6 +14,7 @@ function Commentary() {
                 selectedMatch={selectedMatch}
                 onFixtureIdChange={setSelectedFixtureId}
                 onCommentaryPosted={triggerRefresh}
+                onScoreUpdated={onScoreUpdated}
             />
             <RecentEntries fixtureId={selectedFixtureId} refreshTrigger={refreshTick} />
         </div>
