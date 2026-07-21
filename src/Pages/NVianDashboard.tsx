@@ -1,4 +1,3 @@
-
 import NVianCommentary from "../components/Commentary/NVianCommentary";
 import SearchBar from "../components/Search/SearchBar";
 import Header from "../components/Header/Header";
@@ -8,13 +7,13 @@ import { useState, useEffect } from "react";
 import type { Fixture } from "../components/types/Fixture";
 import { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
 import { getLiveFixtures, searchLiveFixtures } from "../services/MatchDataService";
+import TopPerformers from "../components/TopPerformers/TopPerformers";
 
 function NVianDashboard() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedSportId, setSelectedSportId] = useState("all");
 
     const [matches, setMatches] = useState<Fixture[]>([]);
-
     const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
 
@@ -39,7 +38,6 @@ function NVianDashboard() {
 
         return () => clearTimeout(timer);
     }, [searchTerm]);
-
 
     const filteredMatches =
         selectedSportId === "all"
@@ -82,7 +80,8 @@ function NVianDashboard() {
                     setSelectedFixtureId(match.id)
                 }
             />
-            <NVianCommentary
+               <div className="Commentry_Performers">
+               <NVianCommentary
                 fixtureId={selectedFixture?.id}
                 title={
                     selectedFixture
@@ -90,6 +89,10 @@ function NVianDashboard() {
                         : "NVian Commentary"
                 }
             />
+               <TopPerformers fixtureId={selectedFixture?.id ?? ""} />
+            </div>
+
+
         </main>
     );
 }
