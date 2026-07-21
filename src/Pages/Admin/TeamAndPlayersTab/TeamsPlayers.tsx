@@ -61,7 +61,6 @@ const loadTeams = async () => {
         setTeams={setTeams}
         loadTeams={loadTeams}
         />
-
       </div>
 
     </div>

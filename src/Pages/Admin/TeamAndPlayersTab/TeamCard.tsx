@@ -9,6 +9,8 @@ interface Props {
   onDeleteTeam?: (teamId: string) => void;
   onEditPlayer?: (player: Player) => void;
   onDeletePlayer?: (playerId: string) => void;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
 const TeamCard = ({
@@ -17,13 +19,13 @@ const TeamCard = ({
   onDeleteTeam,
   onEditPlayer,
   onDeletePlayer,
+  expanded,
+  onToggle
 }: Props) => {
-  const [expanded, setExpanded] = useState(true);
-
   return (
     <div className="team-card" style={{ "--team-color": team.color } as React.CSSProperties}>
 
-    <div className="team-header">
+    <div className="team-header" onClick={onToggle}>
 
         <div className="team-header-left">
 
@@ -83,19 +85,14 @@ const TeamCard = ({
                         onDelete={onDeletePlayer}
                     />
                 ))
-
             ) : (
 
                 <div className="empty-roster">
                     No players added.
                 </div>
-
             )}
-
         </div>
-
     )}
-
 </div>
   );
 };

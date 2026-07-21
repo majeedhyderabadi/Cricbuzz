@@ -16,15 +16,19 @@ const TeamRoster : React.FC<TeamRosterProps> = ({
     setTeams,
     loadTeams
 }) => {
-  const [expandedTeam, setExpandedTeam] = useState<number>(1);
+  const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
   const [showEditTeamDialog, setShowEditTeamDialog] = useState(false);
   const [selectedEditTeam, setSelectedEditTeam] = useState<Team | null>(null);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [showEditPlayer, setShowEditPlayer] = useState(false);
 
-  const toggleTeam = (id: number) => {
-    setExpandedTeam(expandedTeam === id ? 0 : id);
-  };
+const toggleTeam = (teamId: string) => {
+    setExpandedTeams(prev =>
+        prev.includes(teamId)
+            ? prev.filter(id => id !== teamId)
+            : [...prev, teamId]
+    );
+};
 
 const loadPlayers = async (teamId?:string) => {
     const data = await getPlayers(teamId);
@@ -145,6 +149,8 @@ const handleDeletePlayer = async (playerId: string) => {
     onDeleteTeam={handleDeleteTeam}
     onEditPlayer={handleEditPlayer}
     onDeletePlayer={handleDeletePlayer}
+    expanded={expandedTeams.includes(team.id)}
+    onToggle={() => toggleTeam(team.id)}
 />
 
 ))}
