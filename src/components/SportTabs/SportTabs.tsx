@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import "../SportTabs/SportTabs.css";
 
-
 interface Sport {
     id: string;
     name: string;
 }
 
-const SportTabs = () => {
+interface SportTabsProps {
+    selectedSportId: string;
+    onSportChange: (sportId: string) => void;
+}
 
+const SportTabs = ({
+    selectedSportId,
+    onSportChange,
+}: SportTabsProps) => {
     const [sportsCategories, setSportsCategories] = useState<Sport[]>([]);
-    const [selectedSportId, setSelectedSportId] = useState<string>("all");
 
     useEffect(() => {
         loadSports();
@@ -26,38 +31,30 @@ const SportTabs = () => {
 
             const data: Sport[] = await response.json();
 
-            
-
             setSportsCategories([
                 {
                     id: "all",
-                    name: "All Sports"
+                    name: "All Sports",
                 },
-                ...data
+                ...data,
             ]);
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Error loading sports:", error);
         }
     };
 
     return (
         <section className="sports-tabs">
-
             {sportsCategories.map((sport) => (
-
                 <button
                     key={sport.id}
-                    className={`sports-tabs__button ${
-                        selectedSportId === sport.id ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedSportId(sport.id)}
+                    className={`sports-tabs__button ${selectedSportId === sport.id ? "active" : ""
+                        }`}
+                    onClick={() => onSportChange(sport.id)}
                 >
                     {sport.name}
                 </button>
-
             ))}
-
         </section>
     );
 };

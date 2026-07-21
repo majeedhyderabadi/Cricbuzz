@@ -15,6 +15,7 @@ import { mapCricbuzzMatchToCard } from "../components/MatchGrid/cricbuzzMatchCar
 
 function Dashboard() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedSportId, setSelectedSportId] = useState("all");
 
  const [matches, setMatches] =useState<CricbuzzMatchItem[]>([]);
     const { commentaryByMatch } = useCommentaryFeed(
@@ -71,7 +72,10 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
                 setSearchTerm={setSearchTerm}
             />
 
-            <SportTabs />
+            <SportTabs
+                selectedSportId={selectedSportId}
+                onSportChange={setSelectedSportId}
+            />
 
 {
 
