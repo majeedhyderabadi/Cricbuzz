@@ -93,11 +93,17 @@ const loadRoles = async (
         setRoles([]);
         return [];
     }
-
-    const sportRoles = await getSportRolesBySportId(team.sportId);
-
-    setRoles(sportRoles);
-
+    return loadRolesBySportId(team.sportId, teamId);
+};
+const loadRolesBySportId = async (
+    sportId: string,
+    selectedTeamId: string
+): Promise<SportRole[]> => {
+    const sportRoles = await getSportRolesBySportId(sportId);
+    const team = teams.find(t => t.id === selectedTeamId);
+    if (team && team.sportId === sportId) {
+        setRoles(sportRoles);
+    }
     return sportRoles;
 };
 
@@ -125,6 +131,9 @@ const loadRoles = async (
               );
 
             setShowRoleDialog(false);
+            if(selectedTeam)
+            loadRolesBySportId(sportId, selectedTeam);
+
         } catch (err) {
             console.error(err);
         }
@@ -304,14 +313,15 @@ useEffect(() => {
 
                     </div>
                     <div className="add-role-btn-div">
-                        <button
-                            type="button"
-                            className="add-role-btn"
-                            onClick={() => setShowRoleDialog(true)}
-                           disabled={player !== null}
-                        >
-                            +
-                        </button>
+                        {!player && (
+                                <button
+                                    type="button"
+                                    className="add-role-btn"
+                                    onClick={() => setShowRoleDialog(true)}
+                                >
+                                    +
+                                </button>
+                            )}
                     </div>
                 </div>
             </div>
