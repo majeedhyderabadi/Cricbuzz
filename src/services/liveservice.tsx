@@ -236,3 +236,23 @@ export async function getCommentary(fixtureId: string): Promise<CommentaryEntry[
 
     return response.json();
 }
+
+export const updateCommentary = async (
+    fixtureId: string, commentaryId: string,
+    data: { note :string }
+) => {
+    const res = await fetch(`${API_URL}/fixtures/${fixtureId}/commentary/${commentaryId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to update scores: ${res.status} ${errorText}`);
+    }
+
+    return res.json();
+};
