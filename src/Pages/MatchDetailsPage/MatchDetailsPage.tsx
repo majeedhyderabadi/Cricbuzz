@@ -2,7 +2,7 @@ import "./MatchDetailsPage.css";
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import NVianCommentary from "../../components/Commentary/NVianCommentary";
 import MatchHeader from "../../components/MatchDetails/MatchHeader";
 import MatchSummary from "../../components/MatchDetails/MatchSummary";
 import MatchStats from "../../components/MatchDetails/MatchStats";
@@ -38,146 +38,82 @@ const { matchId } = useParams();
 
 const { pathname } = useLocation();
 
-const source: MatchSource =
-  pathname.startsWith("/fixture")
-    ? "fixture"
-    : "cricbuzz";
-
-    const { commentaryByMatch } = useCommentaryFeed(
-       String(matchId)
-    );
-
-    //const liveUpdate = commentaryByMatch[String(matchId)];
- 
+const source: MatchSource = pathname.startsWith("/fixture")? "fixture" : "cricbuzz";
 
 
-//const numericMatchId = Number(matchId);
+  const [matchDetails, setMatchDetails] = useState<MatchDetailsModel | null>(null);
 
+  const [scorecard, setScorecard] = useState<CricbuzzScorecardResponse | null>(null);
 
-  // =========================================================
-  // STATE
-  // =========================================================
+  const [activeTab, setActiveTab] =useState<MatchTab>("Live");
 
-  const [matchDetails, setMatchDetails] =
-  useState<MatchDetailsModel | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState<string | null>(null);
 
-  
+  const [scorecardLoading, setScorecardLoading] =useState(false);
 
-  const [scorecard, setScorecard] =
-    useState<CricbuzzScorecardResponse | null>(null);
+  const [scorecardError, setScorecardError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] =
-    useState<MatchTab>("Live");
-
-
-  // Main match info state
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
-
-  // Scorecard state
-
-  const [scorecardLoading, setScorecardLoading] =
-    useState(false);
-
-  const [scorecardError, setScorecardError] =
-    useState<string | null>(null);
-
-
-  // =========================================================
   // LOAD MATCH DETAILS
-  // =========================================================
 
 useEffect(() => {
-
   let ignore = false;
+  let timeoutId: number;
 
   const loadMatchDetails = async () => {
-
     if (!matchId) {
-
       setError("Invalid match ID");
       setLoading(false);
-
       return;
     }
 
-    if (
-      source === "cricbuzz" &&
-      Number.isNaN(Number(matchId))
-    ) {
-
+    if (source === "cricbuzz" && Number.isNaN(Number(matchId))) {
       setError("Invalid match ID");
       setLoading(false);
-
       return;
     }
-
-   
 
     try {
+      // Sirf first load pe loader dikhao
+      if (!matchDetails) {
+        setLoading(true);
+      }
 
-      setLoading(true);
       setError(null);
 
-      
-
-      const response = await getMatchDetails(
-        matchId,
-        source
-      );
+      const response = await getMatchDetails(matchId, source);
 
       if (!ignore) {
-
         setMatchDetails(response);
-       
-
       }
-
     } catch (error) {
-
-      console.error(
-        "Failed to load match details",
-        error
-      );
+      console.error("Failed to load match details", error);
 
       if (!ignore) {
-
         setError("Failed to load match details");
-
       }
-
     } finally {
-
       if (!ignore) {
-
         setLoading(false);
 
+        // Next poll after 1 minute
+        timeoutId = window.setTimeout(loadMatchDetails, 60000);
       }
-
     }
-
   };
 
   loadMatchDetails();
 
   return () => {
-
     ignore = true;
-
+    clearTimeout(timeoutId);
   };
+}, [matchId, source]);
 
-}, [matchId, source, pathname]);
+  
+  // LOAD SCORECARD Only when Scorecard tab is opened
 
-  // =========================================================
-  // LOAD SCORECARD
-  // Only when Scorecard tab is opened
-  // =========================================================
 
  useEffect(() => {
 
@@ -252,10 +188,8 @@ useEffect(() => {
   scorecard
 ]);
 
-
-  // =========================================================
   // PAGE STATES
-  // =========================================================
+ 
 
   if (loading) {
 
@@ -266,7 +200,6 @@ useEffect(() => {
     );
 
   }
-
 
   if (error) {
 
@@ -385,33 +318,36 @@ useEffect(() => {
         );
 
 
-      // -------------------------------------------------------
-      // COMMENTARY
-      // -------------------------------------------------------
-
-      case "Commentary":
-
-        if (
-          !matchDetails.commentary ||
-          Object.keys(matchDetails.commentary).length === 0
-        ) {
-
-          return (
-            <div className="match-details-page__state">
-              Commentary will be available once the match begins.
-            </div>
-          );
-
-        }
 
 
-        return (
+case "Commentary": {
 
-          <MatchCommentary
-            commentary={matchDetails.commentary}
-          />
+  if (source === "fixture") {
+    return (
+      <NVianCommentary
+        fixtureId={matchId}
+        title="testing"
+      />
+    );
+  }
 
-        );
+  if (
+    !matchDetails.commentary ||
+    Object.keys(matchDetails.commentary).length === 0
+  ) {
+    return (
+      <div className="match-details-page__state">
+        Commentary will be available once the match begins.
+      </div>
+    );
+  }
+
+  return (
+    <MatchCommentary
+      commentary={matchDetails.commentary}
+    />
+  );
+}
 
 
       // -------------------------------------------------------
