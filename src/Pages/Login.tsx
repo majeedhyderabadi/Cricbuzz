@@ -49,7 +49,7 @@ function Login() {
 
 
             //alert("Login successful");
-            login(response.role)
+            login(response.token,response.role)
 
              navigate("/");
          

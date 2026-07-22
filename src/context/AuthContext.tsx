@@ -11,7 +11,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isAdmin: boolean;
     isSuperAdmin: boolean;
-    login: (role: string) => void;
+    login: (token: string, role: string) => void;
     logout: () => void;
 }
 
@@ -31,12 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return localStorage.getItem('userRole') === 'superadmin';
     });
 
-    const login = useCallback((role: string) => {
+    const login = useCallback((token:string,role: string) => {
     const normalizedRole = role.toLowerCase();
 
     setIsAuthenticated(true);
     setIsAdmin(normalizedRole === "admin");
     setIsSuperAdmin(normalizedRole==="superadmin")
+    localStorage.setItem("token", token);
     localStorage.setItem("isAuthenticated", "true");
     localStorage.setItem("userRole", normalizedRole);
 }, []);
