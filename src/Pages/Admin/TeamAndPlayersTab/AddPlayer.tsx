@@ -4,36 +4,29 @@ import "./AddPlayer.css";
 import AddRoleDialog from "./AddRoleDialog";
 import { createSportRole, getSportRolesBySportId, getSports, type Sport, type SportRole } from "../../../services/SportService";
 import { showSuccess, showError, showWarning } from "../../../services/common/AlertService";
+import { useTeamSportPlayerData } from "../../../context/TeamSportPlayerContext";
 
 interface AddPlayerProps {
     player?: Player | null;
-    teams: Team[];
     isDialog?: boolean;
     onClose?: () => void;
     onSaved?: () => void;
     onSaveSuccess?: () => void;
-    loadTeams: () => Promise<void>;
 }
 
 const AddPlayer: React.FC<AddPlayerProps> = ({
     player,
-    teams,
     isDialog = false,
     onClose,
     onSaved,
     onSaveSuccess,
-    loadTeams
 }) => {
     const [playerName, setPlayerName] = useState("");
     const [showRoleDialog, setShowRoleDialog] = useState(false);
-    //const [teams, setTeams] = useState<Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState("");
-    const [roles, setRoles] = useState<SportRole[]>([]);
     const [selectedRole, setSelectedRole] = useState("");
-    const [sports, setSports] = useState<Sport[]>([]);
+    const { teams,sports, roles, setRoles,loadTeams, loadSports,loadRolesBySportById}=useTeamSportPlayerData();
     const initialize = async () => {
-
-    //const loadedTeams = await loadTeams();
 
     if (!player)
         return;
@@ -73,15 +66,6 @@ useEffect(() => {
         loadSports();
     }, [player]);
 
-    const loadSports = async () => {
-        try {
-            const data = await getSports();
-            setSports(data);
-
-        } catch (err) {
-            console.error(err);
-        }
-    };
 const loadRoles = async (
     teamId: string,
     teamList: Team[]
@@ -102,7 +86,7 @@ const loadRolesBySportId = async (
     const sportRoles = await getSportRolesBySportId(sportId);
     const team = teams.find(t => t.id === selectedTeamId);
     if (team && team.sportId === sportId) {
-        setRoles(sportRoles);
+        await loadRolesBySportById(team.sportId);
     }
     return sportRoles;
 };
@@ -334,7 +318,6 @@ useEffect(() => {
             </button>
             <AddRoleDialog
                 open={showRoleDialog}
-                sports={sports}
                 onClose={() => setShowRoleDialog(false)}
                 onSave={handleSubmit}
             />

@@ -8,8 +8,6 @@ interface Props {
     onClose: () => void;
     onSaved: () => void;
     onSaveSuccess: () => void;
-    teams: Team[];
-    loadTeams: () => Promise<void>;
 }
 
 const EditPlayerDialog = ({
@@ -18,10 +16,7 @@ const EditPlayerDialog = ({
     onClose,
     onSaved,
     onSaveSuccess,
-    teams,
-    loadTeams
 }: Props) => {
-
     if (!open)
         return null;
 
@@ -43,8 +38,6 @@ const EditPlayerDialog = ({
                     onClose={onClose}
                     onSaved={onSaved}
                     onSaveSuccess={onSaveSuccess}
-                    teams={teams}
-                    loadTeams={loadTeams}
                 />
 
             </div>
