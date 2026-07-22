@@ -326,7 +326,7 @@ case "Commentary": {
     return (
       <NVianCommentary
         fixtureId={matchId}
-        title="testing"
+        title={matchDetails.header.matchDescription}
       />
     );
   }
