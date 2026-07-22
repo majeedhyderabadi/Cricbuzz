@@ -23,6 +23,16 @@ export interface AdminLoginResponse {
 
 const API_URL = "https://localhost:62965/api/admin";
 
+function getAuthHeaders() {
+
+    const token = localStorage.getItem("token");
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
+
 export async function registerAdmin(data: RegisterAdminRequest) {
     const response = await fetch(`${API_URL}/register`, {
         method: "POST",
@@ -45,9 +55,7 @@ export async function getAdminApprovalRequests(): Promise<AdminApprovalRequest[]
         `${API_URL}/approval-requests`,
         {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: getAuthHeaders()
         }
     );
 
@@ -61,9 +69,7 @@ export async function getAdminApprovalRequests(): Promise<AdminApprovalRequest[]
 export async function approveAdmin(id: string): Promise<void> {
     const response = await fetch(`${API_URL}/approve/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders()
     });
 
     if (!response.ok) {

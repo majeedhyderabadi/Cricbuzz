@@ -25,6 +25,17 @@ function AdminApproval() {
         fetchApprovalRequests();
     }, []);
 
+
+const handleReject = (id: string) => {
+    console.log(id);
+
+    showError(
+        "Coming Soon",
+        "Reject feature is not implemented yet."
+    );
+};
+
+
     const handleApprove = async (id: string) => {
         try {
             await approveAdmin(id);
@@ -87,7 +98,7 @@ function AdminApproval() {
                                             Approve
                                         </button>
 
-                                        <button className="reject-btn">
+                                        <button className="reject-btn"  onClick={() => handleReject(admin.id)}>
                                             Reject
                                         </button>
                                     </div>
