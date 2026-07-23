@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AddRoleDialog.css";
 import { showWarning } from "../../../services/common/AlertService";
+import { useTeamSportPlayerData } from "../../../context/TeamSportPlayerContext";
 
 interface Sport {
   id: string;
@@ -9,21 +10,19 @@ interface Sport {
 
 interface AddRoleDialogProps {
   open: boolean;
-  sports: Sport[];
   onClose: () => void;
   onSave: (roleName: string, sportId: string, description: string) => void;
 }
 
 function AddRoleDialog({
   open,
-  sports,
   onClose,
   onSave,
 }: AddRoleDialogProps) {
   const [roleName, setRoleName] = useState("");
   const [sportId, setSportId] = useState("");
   const [description, setDescription] = useState("");
-
+  const { sports, loadSports } = useTeamSportPlayerData();
   if (!open) return null;
 
   const handleSave = () => {

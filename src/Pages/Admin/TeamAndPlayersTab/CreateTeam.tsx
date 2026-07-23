@@ -4,12 +4,12 @@ import AddSportDialog from "./AddSportDialog";
 import "./CreateTeam.css";
 import { type Sport, getSports, createSport } from "../../../services/SportService";
 import { showError, showSuccess, showWarning } from "../../../services/common/AlertService";
+import { useTeamSportPlayerData } from "../../../context/TeamSportPlayerContext";
 
 interface CreateTeamProps {
     team?: Team | null;
     isDialog?: boolean;
     onClose?: () => void;
-    onSaved?: () => void;
     onSaveSuccess?: () => void;
 }
 
@@ -17,14 +17,13 @@ const CreateTeam: React.FC<CreateTeamProps> = ({
     team,
     isDialog = false,
     onClose,
-    onSaved,
     onSaveSuccess
 }) => {
 const [teamName, setTeamName] = useState("");
 const [selectedColor, setSelectedColor] = useState("#9B5DE5");
 const [showSportDialog, setShowSportDialog] = useState(false);
-const [sports, setSports] = useState<Sport[]>([]);
 const [selectedSport, setSelectedSport] = useState("");
+const { loadTeams, sports, loadSports, } = useTeamSportPlayerData();
 
   useEffect(() => {
   loadSports();
@@ -39,16 +38,6 @@ const [selectedSport, setSelectedSport] = useState("");
         setSelectedColor("#9B5DE5");
     }
 }, [team]);
-
-const loadSports = async () => {
-  try {
-    const data = await getSports();
-    setSports(data);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
 
   const colors = [
     "#9B5DE5",
@@ -169,7 +158,7 @@ const handleCreateTeam = async () => {
             setSelectedSport("");
             setSelectedColor("");
         }
-        onSaved?.();
+      await loadTeams();
 
         if (isDialog)
             onClose?.();

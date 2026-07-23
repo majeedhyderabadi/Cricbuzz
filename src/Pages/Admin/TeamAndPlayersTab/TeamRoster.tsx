@@ -5,41 +5,22 @@ import TeamCard from "./TeamCard";
 import EditTeamDialog from "./EditTeamDialog";
 import EditPlayerDialog from "./EditPlayerDialog"
 import { showSuccess, showError, showConfirm } from "../../../services/common/AlertService";
+import { useTeamSportPlayerData } from "../../../context/TeamSportPlayerContext";
 
-interface TeamRosterProps {
-    teams: Team[];
-    setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
-    loadTeams: () => Promise<void>;
-}
-const TeamRoster : React.FC<TeamRosterProps> = ({
-    teams,
-    setTeams,
-    loadTeams
-}) => {
+const TeamRoster : React.FC = () => {
   const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
   const [showEditTeamDialog, setShowEditTeamDialog] = useState(false);
   const [selectedEditTeam, setSelectedEditTeam] = useState<Team | null>(null);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [showEditPlayer, setShowEditPlayer] = useState(false);
-
-const toggleTeam = (teamId: string) => {
-    setExpandedTeams(prev =>
-        prev.includes(teamId)
-            ? prev.filter(id => id !== teamId)
-            : [...prev, teamId]
-    );
-};
-
-const loadPlayers = async (teamId?:string) => {
-    const data = await getPlayers(teamId);
-        setTeams(prevTeams =>
-        prevTeams.map(team =>
-            team.id === teamId
-                ? { ...team, players: data }
-                : team
-        )
-    );
-};
+  const {teams,setTeams,loadTeams, loadPlayers }=useTeamSportPlayerData();
+  const toggleTeam = (teamId: string) => {
+      setExpandedTeams(prev =>
+          prev.includes(teamId)
+              ? prev.filter(id => id !== teamId)
+              : [...prev, teamId]
+      );
+  };
 
 const handleTeamSaved = () => {
     setShowEditTeamDialog(false);
@@ -128,20 +109,14 @@ const handleDeletePlayer = async (playerId: string) => {
 
   return (
     <div className="roster-container">
-
       <div className="roster-title">
-
         <h3>TEAMS & ROSTERS</h3>
-
         <span>
           {teams.length} teams ·{" "}
           {teams.reduce((t, team) => t + team.players.length, 0)} players
         </span>
-
       </div>
-
       {teams.map(team => (
-
   <TeamCard
     key={team.id}
     team={team}
@@ -152,15 +127,12 @@ const handleDeletePlayer = async (playerId: string) => {
     expanded={expandedTeams.includes(team.id)}
     onToggle={() => toggleTeam(team.id)}
 />
-
 ))}
 <EditTeamDialog
-    open={showEditTeamDialog}
     team={selectedEditTeam}
+    open={showEditTeamDialog}
     onClose={() => setShowEditTeamDialog(false)}
-    onSaved={loadTeams}
     onSaveSuccess={handleTeamSaved}
-
 />
 <EditPlayerDialog
     open={showEditPlayer}
@@ -168,8 +140,6 @@ const handleDeletePlayer = async (playerId: string) => {
     onClose={() => setShowEditPlayer(false)}
     onSaved={loadTeams}
     onSaveSuccess={() => handlePlayerSaved(editingPlayer?.teamId)}
-    teams={teams}
-    loadTeams={loadTeams}
 />
     </div>
   );

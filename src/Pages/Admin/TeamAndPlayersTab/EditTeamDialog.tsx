@@ -6,15 +6,13 @@ interface Props {
     open: boolean;
     team: Team | null;
     onClose: () => void;
-    onSaved: () => void;
     onSaveSuccess: () => void;
 }
 
 const EditTeamDialog = ({
-    open,
     team,
+    open,
     onClose,
-    onSaved,
     onSaveSuccess
 }: Props) => {
 
@@ -36,7 +34,6 @@ const EditTeamDialog = ({
                     team={team}
                     isDialog
                     onClose={onClose}
-                    onSaved={onSaved}
                     onSaveSuccess={onSaveSuccess}
                 />
 
