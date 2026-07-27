@@ -8,37 +8,21 @@ import type { Fixture } from "../components/types/Fixture";
 import { mapFixtureToMatchCard } from "../components/MatchGrid/fixtureMatchCardMapper";
 import { getLiveFixtures, searchLiveFixtures } from "../services/MatchDataService";
 import TopPerformers from "../components/TopPerformers/TopPerformers";
+import { useNVianDashboardSearch } from "../context/NVianDashboardSearchContext";
 
 function NVianDashboard() {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedSportId, setSelectedSportId] = useState("all");
+    const {
+    searchTerm,
+    setSearchTerm,
+    matches,
+    loading,
+} = useNVianDashboardSearch();
 
-    const [matches, setMatches] = useState<Fixture[]>([]);
+    const [selectedSportId, setSelectedSportId] = useState("all");
     const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
 
-    useEffect(() => {
-        const loadMatches = async () => {
-            try {
-                let response;
-
-                if (searchTerm.trim() === "") {
-                    response = await getLiveFixtures();
-                } else {
-                    response = await searchLiveFixtures(searchTerm);
-                }
-
-                setMatches(response);
-            } catch (error) {
-                console.error("Failed to load matches", error);
-            }
-        };
-
-        const timer = setTimeout(loadMatches, 500);
-
-        return () => clearTimeout(timer);
-    }, [searchTerm]);
-
+    
     const filteredMatches =
         selectedSportId === "all"
             ? matches

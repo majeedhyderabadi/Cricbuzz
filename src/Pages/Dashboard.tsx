@@ -12,42 +12,22 @@ import LiveStatDetails from "../components/LiveStatDetails/LiveStatDetails";
 import type { CricbuzzMatchItem } from "../components/types/Matches";
 import { useCommentaryFeed } from "../hooks/useCommentaryFeed";
 import { mapCricbuzzMatchToCard } from "../components/MatchGrid/cricbuzzMatchCardMapper";
+import { useDashboardSearch } from "../context/DashboardSearchContext";
 
 function Dashboard() {
-    const [searchTerm, setSearchTerm] = useState("");
+    const {
+        searchTerm,
+        setSearchTerm,
+        matches,
+        loading,
+    } = useDashboardSearch();
+
     const [selectedSportId, setSelectedSportId] = useState("all");
 
- const [matches, setMatches] =useState<CricbuzzMatchItem[]>([]);
     const { commentaryByMatch } = useCommentaryFeed(
         "5A89597A-817B-4B38-B22C-75DCDA108BE8"
     );
     const [selectedFixtureId, setSelectedFixtureId] =useState<string | null>(null);
-
-     useEffect(() => {
-    const loadMatches = async () => {
-        try {
-            let response;
-
-            if (searchTerm.trim() === "") {
-                response = await getCurrentMatches();
-                setMatches(response.matches);
-            } else {
-                response = await searchCurrentMatches(searchTerm);
-
-                
-                setMatches(response.matches);
-
-               
-            }
-        } catch (error) {
-            console.error("Failed to load matches", error);
-        }
-    };
-
-    const timer = setTimeout(loadMatches, 500);
-
-    return () => clearTimeout(timer);
-}, [searchTerm]);
 
 const matchCards = matches.map(mapCricbuzzMatchToCard);
  const selectedFixture = matchCards.find(x => x.id === selectedFixtureId);
