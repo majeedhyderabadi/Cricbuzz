@@ -14,48 +14,51 @@ import Commentary from "./Pages/Admin/Commentary.tsx";
 import TeamsPlayers from "./Pages/Admin/TeamAndPlayersTab/TeamsPlayers.tsx";
 import RegistrationForm from "./Pages/RegistrationForm.tsx";
 import { NVianDashboardSearchProvider } from "./context/NVianDashboardSearchContext.tsx";
+import { DashboardSearchProvider } from "./context/DashboardSearchContext.tsx";
 
 function App() {
     return (
         <AuthProvider>
             <NVianDashboardSearchProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/register" element={<RegistrationForm />} />
-                        <Route path="/nvian" element={<NVianDashboard />} />
-                        <Route path="/match/:matchId" element={<MatchDetailsPage />} />
-                        <Route path="/fixture/:matchId" element={<MatchDetailsPage />} />
+                <DashboardSearchProvider>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/" element={<Dashboard />} />
+                            <Route path="/register" element={<RegistrationForm />} />
+                            <Route path="/nvian" element={<NVianDashboard />} />
+                            <Route path="/match/:matchId" element={<MatchDetailsPage />} />
+                            <Route path="/fixture/:matchId" element={<MatchDetailsPage />} />
 
-                        <Route
-                            path="/admin"
-                            element={
-                                <ProtectedRoute
-                                    element={<Admin />}
-                                    requireAdmin={true}
-                                />
-                            }
-                        >
-                            <Route index element={<Navigate to="fixtures" replace />} />
-                            <Route path="fixtures" element={<Fixtures />} />
-                            <Route path="teams-players" element={<TeamsPlayers />} />
-                            <Route path="commentary" element={<Commentary />} />
-                        </Route>
+                            <Route
+                                path="/admin"
+                                element={
+                                    <ProtectedRoute
+                                        element={<Admin />}
+                                        requireAdmin={true}
+                                    />
+                                }
+                            >
+                                <Route index element={<Navigate to="fixtures" replace />} />
+                                <Route path="fixtures" element={<Fixtures />} />
+                                <Route path="teams-players" element={<TeamsPlayers />} />
+                                <Route path="commentary" element={<Commentary />} />
+                            </Route>
 
-                        <Route
-                            path="/superadmin"
-                            element={
-                                <ProtectedRoute
-                                    element={<SuperAdmin />}
-                                    requireAdmin={true}
-                                />
-                            }
-                        />
-                        <Route path="/access-denied" element={<AccessDenied />} />
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </BrowserRouter>
+                            <Route
+                                path="/superadmin"
+                                element={
+                                    <ProtectedRoute
+                                        element={<SuperAdmin />}
+                                        requireAdmin={true}
+                                    />
+                                }
+                            />
+                            <Route path="/access-denied" element={<AccessDenied />} />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </BrowserRouter>
+                </DashboardSearchProvider>
             </NVianDashboardSearchProvider>
         </AuthProvider>
     );
