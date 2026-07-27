@@ -1,26 +1,20 @@
-import { useState } from "react";
+import react from "react";
 import "./RegistrationForm.css";
 import { registerAdmin } from "../services/adminservice";
 import { useNavigate } from "react-router-dom";
 import { showError, showSuccess } from "../services/common/AlertService";
+import { useRegistration } from "../context/RegistrationContext";
 
 function RegistrationForm() {
+    const {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    resetForm
+} = useRegistration();
     
-    const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-    });
-
-    const [errors, setErrors] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-    });
+    
 
     const navigate = useNavigate();
 
