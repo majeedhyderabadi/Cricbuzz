@@ -15,17 +15,21 @@ import TeamsPlayers from "./Pages/Admin/TeamAndPlayersTab/TeamsPlayers.tsx";
 import RegistrationForm from "./Pages/RegistrationForm.tsx";
 import { NVianDashboardSearchProvider } from "./context/NVianDashboardSearchContext.tsx";
 import { DashboardSearchProvider } from "./context/DashboardSearchContext.tsx";
+import { RegistrationProvider } from "./context/RegistrationContext.tsx";
 
 function App() {
     return (
         <AuthProvider>
             <NVianDashboardSearchProvider>
                 <DashboardSearchProvider>
+                    <RegistrationProvider>
                     <BrowserRouter>
                         <Routes>
                             <Route path="/login" element={<Login />} />
                             <Route path="/" element={<Dashboard />} />
-                            <Route path="/register" element={<RegistrationForm />} />
+                            
+                                <Route path="/register" element={<RegistrationForm />} />
+                            
                             <Route path="/nvian" element={<NVianDashboard />} />
                             <Route path="/match/:matchId" element={<MatchDetailsPage />} />
                             <Route path="/fixture/:matchId" element={<MatchDetailsPage />} />
@@ -58,6 +62,7 @@ function App() {
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                     </BrowserRouter>
+                    </RegistrationProvider>
                 </DashboardSearchProvider>
             </NVianDashboardSearchProvider>
         </AuthProvider>
