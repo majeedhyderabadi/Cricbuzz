@@ -1,0 +1,47 @@
+.fixture-form h2 {
+    margin-bottom: 8px;
+}
+
+.fixture-form p {
+    color: #888;
+    margin-bottom: 20px;
+}
+
+.fixture-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+}
+
+.fixture-form label {
+    color: #999;
+    font-size: 13px;
+}
+
+.fixture-form select,
+.fixture-form input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    background: #202533;
+    border: 1px solid #30384a;
+    color: white;
+}
+
+.teams-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.fixture-form button {
+    margin-top: 10px;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    background: #d5d5d5;
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+}
