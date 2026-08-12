@@ -317,7 +317,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
         
         const updatedMatch: FeedingMatchs = {
             ...selectedMatch,
-            score: isFootball 
+            score: isFootball
                 ? `${team1Score} - ${team2Score}`
                 : `${team1Score}/${scores[matchTeams[0]?.teamName]?.wkts || 0} - ${team2Score}/${scores[matchTeams[1]?.teamName]?.wkts || 0}`
         };
@@ -355,13 +355,15 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                 setMatchStatus('');
                 onFixtureIdChange?.(null);
             }
+            setPendingDeltas({});
+            setNote('');
+            setSelectedPlayerId('');
 
             if (foundTeams.length === 2) {
                 // Initialize scores from the fixture data if available
                 if (fixture) {
                     const homeTeam = foundTeams.find(t => t.teamName === fixture.homeTeamName);
                     const awayTeam = foundTeams.find(t => t.teamName === fixture.awayTeamName);
-                    
                     if (homeTeam && awayTeam) {
                         if (isFootball) {
                             setScores({
@@ -392,7 +394,8 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                 } else {
                     // Fallback to parsing from selectedMatch.score
                     if (isFootball) {
-                        const scoreParts = selectedMatch.score.split(' - ');
+                        const rawScore = selectedMatch.score ?? '';
+                        const scoreParts = rawScore.split(' - ');
                         const homeScore = parseInt(scoreParts[0]) || 0;
                         const awayScore = parseInt(scoreParts[1]) || 0;
                         setScores({
@@ -406,7 +409,8 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                             },
                         });
                     } else {
-                        const scoreParts = selectedMatch.score.split(' - ');
+                        const rawScore = selectedMatch.score ?? '';
+                        const scoreParts = rawScore.split(' - ');
                         const homeScore = scoreParts[0]?.split('/') || ['0', '0'];
                         const awayScore = scoreParts[1]?.split('/') || ['0', '0'];
                         setScores({
@@ -431,6 +435,9 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
             setMatchStatus('');
             onFixtureIdChange?.(null);
             setSelectedActionType(null);
+            setPendingDeltas({});
+            setNote('');
+            setSelectedPlayerId('');
         }
     }, [selectedMatch, allTeams, liveFixturesList, isFootball]);
 
@@ -518,37 +525,46 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
         const changeParts: string[] = [];
         if (delta.runs !== 0) {
             if (isFootball) {
-                changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} goal${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+            changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} goal${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
             } else {
-                changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} run${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
+            changeParts.push(`${delta.runs > 0 ? '+' : ''}${delta.runs} run${Math.abs(delta.runs) !== 1 ? 's' : ''}`);
             }
         }
-        if (delta.wkts !== 0) changeParts.push(`${delta.wkts > 0 ? '+' : ''}${delta.wkts} wkt${Math.abs(delta.wkts) !== 1 ? 's' : ''}`);
+        if (delta.wkts !== 0) {
+            changeParts.push(`${delta.wkts > 0 ? '+' : ''}${delta.wkts} wkt${Math.abs(delta.wkts) !== 1 ? 's' : ''}`);
+        }
         const changeSummary = changeParts.join(', ');
 
         setUpdatingTeam(teamName);
         try {
             await updateScoreFixtures(selectedFixtureId, payload);
+
+            // 1. Clear the pending delta – the optimistic update is now permanent
             setPendingDeltas((prev) => ({
                 ...prev,
                 [teamName]: { runs: 0, wkts: 0 },
             }));
-            
-            // Update the parent component with the new score
+
+            // 2. Update the parent component with the current (optimistic) score
             if (matchTeams.length === 2) {
-                const team1Score = scores[matchTeams[0].teamName]?.runs || 0;
-                const team2Score = scores[matchTeams[1].teamName]?.runs || 0;
-                updateParentScore(String(team1Score), String(team2Score));
+            const team1Score = scores[matchTeams[0].teamName]?.runs || 0;
+            const team2Score = scores[matchTeams[1].teamName]?.runs || 0;
+            updateParentScore(String(team1Score), String(team2Score));
             }
-            
+
+            // 3. Refetch the fixture data from the server to sync the local `scores` state
+            //    This ensures the +/‑ controls show the exact server value.
+            await getFixtures();
+
             showSuccess('Success', `${teamName} updated (${changeSummary})`);
         } catch (error) {
             console.error('AddCommentary: Error updating score:', error);
             showError('Error', 'Failed to update score, please try again.');
+            // (Optional) revert the optimistic update here if you want
         } finally {
             setUpdatingTeam(null);
         }
-    };
+        };
 
     const handleActionSelect = (actionType: string) => {
         if (!isMatchLive) {
@@ -645,7 +661,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                         {selectedMatch.sport}: {matchTeams[0].teamName} vs {matchTeams[1].teamName}
                     </span>
                     <span className="match-info-score">
-                        {isFootball 
+                        {isFootball
                             ? `${scores[matchTeams[0]?.teamName]?.runs || 0} - ${scores[matchTeams[1]?.teamName]?.runs || 0}`
                             : `${scores[matchTeams[0]?.teamName]?.runs || 0}/${scores[matchTeams[0]?.teamName]?.wkts || 0} - ${scores[matchTeams[1]?.teamName]?.runs || 0}/${scores[matchTeams[1]?.teamName]?.wkts || 0}`
                         }
@@ -697,7 +713,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                 </div>
                 <p className="score-subtitle">
                     {isFootball 
-                        ? 'Set GOALS for each side. Also logs a commentary entry.' 
+                        ? 'Set GOALS for each side. Also logs a commentary entry.'
                         : 'Set RUNS / WKTS for each side. Also logs a commentary entry.'}
                 </p>
 
@@ -786,7 +802,7 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                     <span className="sport-tag">{selectedMatch?.sport || (isFootball ? 'Football' : 'Cricket')}</span>
                 </div>
                 <p className="commentary-subtitle">
-                    {isMatchLive 
+                    {isMatchLive
                         ? 'Pick a team and player, then tap an action — it pushes straight to the live feed.'
                         : `Commentary is disabled while match is ${matchStatus?.toLowerCase() || 'scheduled'}`}
                 </p>
@@ -898,13 +914,13 @@ function AddCommentary({ selectedMatch, onFixtureIdChange, onCommentaryPosted, o
                         onClick={handlePostCommentary}
                         disabled={isPosting || !selectedActionType || !isMatchLive}
                     >
-                        {!isMatchLive 
-                            ? 'Match Not Live' 
-                            : isPosting 
+                        {!isMatchLive
+                            ? 'Match Not Live'
+                            : isPosting
                                 ? 'Posting...'
-                                : postStatus === 'success' 
+                                : postStatus === 'success'
                                     ? '✅ Posted!'
-                                    : postStatus === 'error' 
+                                    : postStatus === 'error'
                                         ? '❌ Failed'
                                         : <>
                                             Post Commentary
