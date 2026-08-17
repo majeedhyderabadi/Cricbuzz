@@ -38,20 +38,11 @@ function FixtureListItem({
   const canEdit = [0, 5].includes(fixture.statusValue);
   const hideActions = fixture.statusValue === 2 || fixture.statusValue === 4;
 
-  const { scoreByMatch } = useScoreUpdateFeed(fixture.id, {
-    simulate: true,
-    intervalMs: 2600,
-    initialScore: {
-      fixtureId: fixture.id,
-      homeScore: 18,
-      homeWickets: 2,
-      awayScore: 16,
-      awayWickets: 1,
-      updatedAtUtc: new Date().toISOString(),
-    },
-  });
+  // Call the score feed hook the same way LiveMatchDetails does: pass
+  // the fixture id only (hook joins the correct group).
+  const { scoreByMatch } = useScoreUpdateFeed(String(fixture.id));
 
-  const realtime = scoreByMatch[fixture.id];
+  const realtime = fixture.id ? scoreByMatch[String(fixture.id)] : undefined;
 
   return (
     <div key={fixture.id}>
@@ -108,10 +99,7 @@ function FixtureListItem({
               Cancel
             </button>
 
-            <button
-              className="save"
-              onClick={() => handleSave(fixture)}
-            >
+            <button className="save" onClick={() => handleSave(fixture)}>
               Save
             </button>
           </div>
@@ -127,7 +115,8 @@ function FixtureListItem({
               </h4>
 
               <p>
-                {new Date(fixture.scheduledAtUtc).toLocaleString()} • {fixture.phase} • {fixture.status}
+                {new Date(fixture.scheduledAtUtc).toLocaleString()} •{" "}
+                {fixture.phase} • {fixture.status}
               </p>
             </div>
 
