@@ -35,7 +35,9 @@ function FixtureListItem({
   ) => void;
   handleSave: (fixture: EditableFixture) => Promise<void>;
 }) {
-  const canEdit = [0, 5].includes(fixture.statusValue);
+  // Live fixtures should remain editable as admin users may need to adjust
+  // phase/status after a match has started.
+  const canEdit = [0, 1, 5].includes(fixture.statusValue);
   const hideActions = fixture.statusValue === 2 || fixture.statusValue === 4;
 
   // Call the score feed hook the same way LiveMatchDetails does: pass
@@ -69,12 +71,30 @@ function FixtureListItem({
                 handleChange(index, "phaseValue", Number(e.target.value))
               }
             >
-              <option value={0}>First Innings</option>
-              <option value={1}>Second Innings</option>
-              <option value={2}>First Half</option>
-              <option value={3}>Second Half</option>
-              <option value={4}>Extra Time</option>
-              <option value={5}>Penalty Shootout</option>
+              {fixture.sport?.toLowerCase() ===
+              "football".toLowerCase().slice() ? (
+                <>
+                  <option value={0}>First Half</option>
+                  <option value={1}>Second Half</option>
+                  <option value={2}>Extra Time</option>
+                  <option value={3}>Penalty Shootout</option>
+                </>
+              ) : fixture.sport?.toLowerCase() === "hockey" ? (
+                <>
+                  <option value={0}>First Half</option>
+                  <option value={1}>Second Half</option>
+                  <option value={2}>Shootout</option>
+                </>
+              ) : (
+                <>
+                  <option value={0}>First Innings</option>
+                  <option value={1}>Second Innings</option>
+                  {/* <option value={2}>First Half</option>
+                  <option value={3}>Second Half</option>
+                  <option value={4}>Extra Time</option>
+                  <option value={5}>Penalty Shootout</option> */}
+                </>
+              )}
             </select>
           </div>
 
