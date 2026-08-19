@@ -20,12 +20,18 @@ import type { CricbuzzScorecardResponse } from "../../components/types/CricbuzzS
 import { getMatchDetails } from "../../services/common/MatchDetailsService";
 import { useLocation } from "react-router-dom";
 
-import { getCricbuzzScorecard } from "../../services/MatchDataService";
+import {
+  getCricbuzzScorecard,
+  getFixtureMatchDetails, // GET api/fixtures/{fixtureId}
+} from "../../services/MatchDataService";
 
 import type {
   MatchDetailsModel,
   MatchSource,
 } from "../../components/types/MatchDetailsModel";
+import FixtureScoreCard, {
+  type FixtureScorecard,
+} from "../../components/MatchDetails/FixtureScorecard";
 
 //import type {CricbuzzScorecardResponse} from "../../components/types/CricbuzzScorecard";
 
@@ -46,6 +52,9 @@ function MatchDetailsPage() {
     null,
   );
 
+  const [fixtureScorecard, setFixtureScorecard] =
+    useState<FixtureScorecard | null>(null);
+
   const [activeTab, setActiveTab] = useState<MatchTab>("Live");
 
   const [loading, setLoading] = useState(true);
@@ -55,6 +64,13 @@ function MatchDetailsPage() {
   const [scorecardLoading, setScorecardLoading] = useState(false);
 
   const [scorecardError, setScorecardError] = useState<string | null>(null);
+
+  const [fixtureScorecardLoading, setFixtureScorecardLoading] =
+    useState(false);
+
+  const [fixtureScorecardError, setFixtureScorecardError] = useState<
+    string | null
+  >(null);
 
   // LOAD MATCH DETAILS
 
@@ -112,7 +128,7 @@ function MatchDetailsPage() {
     };
   }, [matchId, source]);
 
-  // LOAD SCORECARD Only when Scorecard tab is opened
+  // LOAD SCORECARD Only when Scorecard tab is opened (Cricbuzz matches)
 
   useEffect(() => {
     // Don't call API until Scorecard tab is selected
@@ -167,6 +183,60 @@ function MatchDetailsPage() {
     };
   }, [activeTab, matchId, source, scorecard]);
 
+  // LOAD SCORECARD Only when Scorecard tab is opened (Fixture matches)
+
+  useEffect(() => {
+    // Don't call API until Scorecard tab is selected
+    if (activeTab !== "Scorecard") {
+      return;
+    }
+
+    // Scorecard sirf fixture matches ke liye
+    if (source !== "fixture") {
+      return;
+    }
+
+    // Already loaded
+    if (fixtureScorecard) {
+      return;
+    }
+
+    if (!matchId) {
+      return;
+    }
+
+    let ignore = false;
+
+    const loadFixtureScorecard = async () => {
+      try {
+        setFixtureScorecardLoading(true);
+        setFixtureScorecardError(null);
+
+        const response = await getFixtureMatchDetails(matchId);
+
+        if (!ignore) {
+          setFixtureScorecard(response);
+        }
+      } catch (error) {
+        console.error("Failed to load fixture scorecard", error);
+
+        if (!ignore) {
+          setFixtureScorecardError("Scorecard is not available yet.");
+        }
+      } finally {
+        if (!ignore) {
+          setFixtureScorecardLoading(false);
+        }
+      }
+    };
+
+    loadFixtureScorecard();
+
+    return () => {
+      ignore = true;
+    };
+  }, [activeTab, matchId, source, fixtureScorecard]);
+
   // PAGE STATES
 
   if (loading) {
@@ -216,7 +286,37 @@ function MatchDetailsPage() {
       // SCORECARD
       // -------------------------------------------------------
 
-      case "Scorecard":
+      case "Scorecard": {
+        // ---- FIXTURE MATCHES ----
+        if (source === "fixture") {
+          if (fixtureScorecardLoading) {
+            return (
+              <div className="match-details-page__state">
+                Loading scorecard...
+              </div>
+            );
+          }
+
+          if (fixtureScorecardError) {
+            return (
+              <div className="match-details-page__state">
+                {fixtureScorecardError}
+              </div>
+            );
+          }
+
+          if (!fixtureScorecard) {
+            return (
+              <div className="match-details-page__state">
+                Scorecard is not available yet.
+              </div>
+            );
+          }
+
+          return <FixtureScoreCard fixture={fixtureScorecard} />;
+        }
+
+        // ---- CRICBUZZ MATCHES ----
         if (scorecardLoading) {
           return (
             <div className="match-details-page__state">
@@ -248,6 +348,7 @@ function MatchDetailsPage() {
         }
 
         return <ScoreCard scorecards={scorecard.scoreCard} />;
+      }
 
       case "Commentary": {
         if (source === "fixture") {

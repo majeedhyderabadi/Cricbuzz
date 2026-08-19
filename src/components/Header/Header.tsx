@@ -17,10 +17,23 @@ function Header() {
         location.pathname === "/admin" ||
         location.pathname.startsWith("/admin/");
 
+    // Check if we're on the match details page (second page)
+    const isMatchDetailsPage = location.pathname.startsWith("/match/");
+    const isMatchFixturePage = location.pathname.startsWith("/fixture/");
+    
+    // Show back button on match details OR fixture pages
+    const shouldShowBackButton = isMatchDetailsPage || isMatchFixturePage;
+
     const handleLogout = () => {
         logout();
         navigate("/login");
     };
+
+    const handleBack = () => {
+        navigate(-1); // Go back to previous page
+    };
+
+    const backimage = "./public/backbutton.svg";
 
     return (
         <header className="header card">
@@ -28,6 +41,21 @@ function Header() {
             <div className="header__left">
 
                 <div className="header__logo">
+                    {/* Show back button only on match details page */}
+                    {shouldShowBackButton && (
+                        <button 
+                            className="header__back-btn" 
+                            onClick={handleBack}
+                            aria-label="Go back"
+                        >
+                           <img
+                            src="/backbutton.svg"
+                            alt="Back"
+                            width={32}
+                            height={32}
+                        />
+                        </button>
+                    )}
                     <span className="header__live-dot"></span>
 
                     <span className="header__live-text">

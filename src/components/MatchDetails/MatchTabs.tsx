@@ -1,3 +1,4 @@
+import FixtureScoreCard from "./FixtureScorecard";
 import "./MatchTabs.css";
 
 export type MatchTab =
@@ -42,6 +43,8 @@ function MatchTabs({
           {tab}
         </button>
       ))}
+
+
 
     </nav>
   );

@@ -44,7 +44,7 @@
 .score-card-tab.active {
   background: #2f80ed;
   color: #ffffff;
-  box-shadow: 0 0 15px rgba(47,128,237,.35);
+  box-shadow: 0 0 15px rgba(47, 128, 237, .35);
 }
 
 /* ===========================
@@ -57,7 +57,7 @@
   border: 1px solid #2c364a;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
 }
 
 /* ===========================
@@ -70,11 +70,9 @@
   align-items: center;
   gap: 20px;
   padding: 22px 24px;
-  background: linear-gradient(
-      180deg,
+  background: linear-gradient(180deg,
       #25334b 0%,
-      #1d2638 100%
-  );
+      #1d2638 100%);
   border-bottom: 1px solid #2d3950;
 }
 
@@ -520,7 +518,7 @@
 @media (min-width:769px) {
 
   .score-card:hover {
-    box-shadow: 0 18px 45px rgba(0,0,0,.32);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .32);
     transform: translateY(-2px);
   }
 
@@ -531,4 +529,76 @@
   .score-card__table tbody tr:hover {
     transform: scale(1.002);
   }
+}
+
+
+.score-card__text-muted {
+  color: #98a6c0;
+}
+
+.score-card__text-dim {
+  color: #9fb0ca;
+}
+
+.score-card__text-small {
+  font-size: 12px;
+}
+
+.score-card__text-small-13 {
+  font-size: 13px;
+}
+
+.score-card__ball-wicket {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.score-card__ball-boundary {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.score-card__detail-item--center {
+  justify-content: center;
+}
+
+.score-card__status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f87171;
+  margin-right: 6px;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.score-card__badge--live {
+  background: #b91c1c;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+}
+
+.score-card__summary-row--home {
+  background: #1e2a3a;
+  border-left: 4px solid #2f80ed;
+}
+
+.score-card__summary-row--away {
+  background: #1b2233;
+  border-left: 4px solid #f59e0b;
 }

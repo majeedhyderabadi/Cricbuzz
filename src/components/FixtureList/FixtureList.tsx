@@ -187,7 +187,6 @@ export default function FixtureList({ refreshKey }: FixtureListProps) {
   async function loadFixtures() {
     try {
       const data = await fixtureService.getLiveFixtures();
-      debugger;
       setFixtures(
         data.map((f) => ({
           ...f,
@@ -240,8 +239,7 @@ export default function FixtureList({ refreshKey }: FixtureListProps) {
   const editableStatuses = [0, 5];
 
   const isEditableStatus = (status: number) =>
-    editableStatuses.includes(status);
-  debugger;
+  editableStatuses.includes(status);
   const handleChange = (
     index: number,
     field: "statusValue" | "phaseValue",

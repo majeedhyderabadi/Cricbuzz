@@ -17,6 +17,29 @@
     border-radius:18px;
 
 }
+.header__back-btn {
+    background: #56525236;
+    border: 1 px solid #56525236;
+    border-radius: 20px;
+    color: #ffffff;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 10px 10px 10px 10px;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.header__back-btn:hover {
+    transform: scale(1.1);
+}
+
+.header__back-btn:active {
+    transform: scale(0.95);
+}
+
+
 
 .header__left{
 

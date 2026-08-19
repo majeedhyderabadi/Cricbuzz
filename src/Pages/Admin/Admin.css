@@ -4,12 +4,21 @@
 
 .fixtures-layout{
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap:24px;
     margin-top:25px;
     margin-bottom:30px;
     align-items: start;
 }
+
+.fixtures-layout > * {
+    min-width: 0;        /* allow the column to shrink below its content width */
+    overflow: hidden;    /* hide any overflow that would cause scrollbars */
+}
+
+
+
+
 
 .card{
     background:#171b24;

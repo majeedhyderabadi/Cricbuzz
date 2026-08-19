@@ -80,31 +80,10 @@ const matchCards = matches.map(mapCricbuzzMatchToCard);
 }
             <div className="Commentry_Performers">
               <LiveCommentary
-    matchId={selectedFixture?.id}
-/>
+                    matchId={selectedFixture?.id}
+                />
             </div>
 
-            <div className="live-stat-details-container">      
-                <LiveStatDetails
-                    matchStatus="LIVE"
-                    venue="1st Innings - Over 11.2"
-                    
-                    homeTeam="Mumbai"
-                    homeScore={106}
-                    homeSubText="2 WKTS"
-                    isHomeActive={true}
-                    
-                    awayTeam="Kolkata"
-                    awayScore={0}
-                    awaySubText="0 WKTS"
-                    
-                    stats={[
-                        { label: "RUN RATE", homeValue: 8.4, awayValue: 7.1, maxValue: 15 },
-                        { label: "BOUNDARIES", homeValue: 14, awayValue: 11, maxValue: 30 },
-                        { label: "DOT BALLS", homeValue: 38, awayValue: 47, maxValue: 60 }
-                    ]}
-                    />
-            </div>
 
         </main>
 
