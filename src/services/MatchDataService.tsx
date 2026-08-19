@@ -1,6 +1,8 @@
 import axios from "axios";
 import type { CricbuzzMatchDetailsResponse } from "../components/types/CricbuzzLiveMatchInfo";
 import type { FixtureDetailsDto, TopPerformerDto} from "../components/types/FixtureDetails";
+import type { FixtureScorecard } from "../components/MatchDetails/FixtureScorecard";
+import api from "./fixturesservice";
 
 
 const API_BASE_URL = "https://localhost:62965/api";
@@ -40,6 +42,13 @@ export const getCricbuzzScorecard = async (matchId: number) => {
   return response.data;
 };
 
+
+export async function getFixtureScorecard(
+  fixtureId: string
+): Promise<FixtureScorecard> {
+  const { data } = await api.get<FixtureScorecard>(`api/fixtures/${fixtureId}`);
+  return data;
+}
 
 
 export const getLiveFixtures = async () => {

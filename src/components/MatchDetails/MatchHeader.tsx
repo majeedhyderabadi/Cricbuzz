@@ -1,6 +1,7 @@
 import "./MatchHeader.css";
 import type { CricbuzzMatchHeader } from "../types/CricbuzzLiveMatchInfo";
 import type { MatchHeaderModel } from "../types/MatchDetailsModel";
+import Header from "../Header/Header";
 
 // type MatchHeaderProps = {
 //   matchHeader: CricbuzzMatchHeader;
@@ -11,8 +12,11 @@ type MatchHeaderProps = {
 
 function MatchHeader({ header }: MatchHeaderProps) {
   return (
+  <>
+  {/* <main className="container"> */}
+    <Header />
+    {/* </main> */}
     <section className="match-header">
-
       <div className="match-header__top">
         <span className="match-header__sport">
           {header.matchFormat.toUpperCase()}
@@ -42,6 +46,8 @@ function MatchHeader({ header }: MatchHeaderProps) {
       </div>
 
     </section>
+    
+  </>
   );
 }
 

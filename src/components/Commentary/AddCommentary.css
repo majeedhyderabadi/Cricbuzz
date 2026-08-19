@@ -634,3 +634,164 @@
     cursor: not-allowed;
     box-shadow: none;
 }
+
+
+/* Score Control */
+.score-control {
+  margin-top: 1rem;
+}
+
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.score-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.feed-score {
+  font-size: 0.75rem;
+  color: #8d96aa;
+}
+
+.score-subtitle {
+  font-size: 0.8rem;
+  color: #8d96aa;
+  margin-bottom: 1rem;
+}
+
+/* Score Cards */
+.score-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.team-score-card {
+  background: #1e2634;
+  border: 1px solid #2b2f3d;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.team-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.team-name {
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #2b2f3d;
+  border-radius: 8px;
+  margin: 0 4px;
+  padding: 4px 8px;
+}
+
+.score-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  color: #8d96aa;
+  letter-spacing: 0.5px;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.overs-item {
+  flex: 1;
+}
+
+.overs-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 2px;
+}
+
+.stepper-btn {
+  background: #30384a;
+  border: none;
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: #4a536b;
+}
+
+.stepper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.overs-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.updating-indicator {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  margin-left: 0.3rem;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .score-cards {
+    grid-template-columns: 1fr;
+  }
+  .score-row {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.overs-limit {
+  font-size: 0.8rem;
+  color: #8d96aa;
+  margin-left: 2px;
+}
