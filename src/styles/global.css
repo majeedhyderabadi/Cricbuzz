@@ -22,9 +22,11 @@ body{
 
 .container{
 
-    width:min(1500px,95%);
+    /* width:min(1500px,95%); */
 
-    margin:auto;
+    /* margin:10%; */
+    margin-left: 3%;
+    margin-right: 3%;
 
 }
 
