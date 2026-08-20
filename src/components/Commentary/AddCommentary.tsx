@@ -658,12 +658,14 @@ function AddCommentary({
       playerId: selectedPlayerId,
       action: actionValue,
       note: `${selectedActionType.toUpperCase()}: ${note || ""}${extraNoteSuffix}`.trim(),
+      currentball: newOvers ?? overs[selectedTeamName] ?? "0.0",
     };
 
     setIsPosting(true);
     setPostStatus("idle");
 
     try {
+      debugger;
       // 1. Log the commentary entry (feed)
       await postCommentary(selectedFixtureId, commentaryPayload);
 
