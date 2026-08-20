@@ -19,6 +19,19 @@ function MatchCard({ match, isSelected, onClick }: MatchCardProps) {
   const route =
     match.source === "cricbuzz" ? `/match/${match.id}` : `/fixture/${match.id}`;
   const navigate = useNavigate();
+
+  const battingTeam =
+    (realtime as any)?.battingTeam ?? (match as any)?.battingTeam ?? "home";
+  const homeOvers = (realtime as any)?.homeOvers ?? match.homeOvers ?? null;
+  const awayOvers =
+    (realtime as any)?.awayOvers ?? (match as any)?.awayOvers ?? null;
+  const currentOvers =
+    battingTeam === "home"
+      ? homeOvers
+      : battingTeam === "away"
+        ? awayOvers
+        : (homeOvers ?? awayOvers);
+
   return (
     <article
       className={`match-card ${isSelected ? "match-card--selected" : ""}`}
@@ -79,7 +92,7 @@ function MatchCard({ match, isSelected, onClick }: MatchCardProps) {
       <div className="match-card__footer">
         <span>{match.shortStatus}</span>
 
-        {match.overs !== null && <span>{match.overs} Overs</span>}
+        {currentOvers !== null && <span>{currentOvers} Overs</span>}
       </div>
     </article>
   );

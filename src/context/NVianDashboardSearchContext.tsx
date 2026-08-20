@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import {
   getLiveFixtures,
@@ -13,7 +8,6 @@ import {
 import type { Fixture } from "../components/types/Fixture";
 
 interface NVianDashboardSearchContextType {
-
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 
@@ -31,7 +25,6 @@ export const NVianDashboardSearchProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-
   const [searchTerm, setSearchTerm] = useState("");
 
   const [matches, setMatches] = useState<Fixture[]>([]);
@@ -39,31 +32,24 @@ export const NVianDashboardSearchProvider = ({
   const [loading, setLoading] = useState(false);
 
   const loadMatches = async () => {
-
     setLoading(true);
 
     try {
-
       const response =
         searchTerm.trim() === ""
           ? await getLiveFixtures()
           : await searchLiveFixtures(searchTerm);
 
       setMatches(response);
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
   useEffect(() => {
-
     const timer = setTimeout(loadMatches, 500);
 
     return () => clearTimeout(timer);
-
   }, [searchTerm]);
 
   return (
@@ -82,14 +68,11 @@ export const NVianDashboardSearchProvider = ({
 };
 
 export const useNVianDashboardSearch = () => {
-
-  const context = useContext(
-    NVianDashboardSearchContext
-  );
+  const context = useContext(NVianDashboardSearchContext);
 
   if (!context) {
     throw new Error(
-      "useNVianDashboardSearch must be used inside NVianDashboardSearchProvider"
+      "useNVianDashboardSearch must be used inside NVianDashboardSearchProvider",
     );
   }
 

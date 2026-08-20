@@ -16,6 +16,7 @@ export interface MatchCardModel {
 
   team2Score: number | null;
   team2Wickets: number | null;
-
+  homeOvers?: string | null;
+  awayOvers?: string | null;
   overs: number | null;
 }

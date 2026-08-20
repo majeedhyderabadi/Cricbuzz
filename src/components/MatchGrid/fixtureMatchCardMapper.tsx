@@ -1,15 +1,8 @@
-import type {
-  Fixture
-} from "../types/Fixture";
+import type { Fixture } from "../types/Fixture";
 
-import type {
-  MatchCardModel
-} from "../types/MatchCardModel";
+import type { MatchCardModel } from "../types/MatchCardModel";
 
-export function mapFixtureToMatchCard(
-  fixture: Fixture
-): MatchCardModel {
-
+export function mapFixtureToMatchCard(fixture: Fixture): MatchCardModel {
   return {
     id: fixture.id,
     source: "internal",
@@ -26,7 +19,8 @@ export function mapFixtureToMatchCard(
 
     team2Score: fixture.awayScore,
     team2Wickets: fixture.awayWickets,
-
-    overs: null
+    homeOvers: fixture.homeOvers,
+    awayOvers: fixture.awayOvers,
+    overs: null,
   };
 }

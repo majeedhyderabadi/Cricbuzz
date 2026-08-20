@@ -26,10 +26,9 @@ function LiveMatchDetails({ live, fixtureId }: LiveMatchDetailsProps) {
   } = live;
 
   const { scoreByMatch } = useScoreUpdateFeed(fixtureId ?? "");
-
   // If we have a realtime score for this fixture, prefer it for display.
   const realtime = fixtureId ? scoreByMatch[fixtureId] : undefined;
-
+  debugger;
   return (
     <section className="live-match-details">
       {/* Current Score */}
@@ -43,7 +42,20 @@ function LiveMatchDetails({ live, fixtureId }: LiveMatchDetailsProps) {
               : `${batTeam?.teamScore ?? 0}/${batTeam?.teamWkts ?? 0}`}
           </h2>
 
-          <span>{realtime ? "" : `${overs} Overs`}</span>
+          <span>
+            {/* Prefer overs from live dashboard if provided */}
+            {overs
+              ? `${overs} Overs`
+              : realtime
+                ? `${realtime.homeOvers ?? 0} Overs`
+                : (() => {
+                    // If batTeam indicates which side is batting use that, otherwise default to homeOvers
+                    const isHomeBatting = (batTeam as any)?.isHome ?? true;
+                    return isHomeBatting
+                      ? `${batTeam?.homeOvers ?? 0} Overs`
+                      : `${(batTeam as any)?.awayOvers ?? 0} Overs`;
+                  })()}
+          </span>
         </div>
 
         <div className="live-match-details__rates">

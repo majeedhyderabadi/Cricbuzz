@@ -1,5 +1,5 @@
 export interface MatchDetailsModel {
-      source: MatchSource;
+  source: MatchSource;
   header: MatchHeaderModel;
   live: MatchLiveModel | null;
   commentary: Record<string, MatchCommentaryModel>;
@@ -13,9 +13,7 @@ export interface MatchDetailsModel {
 // ======================================================
 // HEADER
 // ======================================================
-export type MatchSource =
-  | "cricbuzz"
-  | "fixture";
+export type MatchSource = "cricbuzz" | "fixture";
 
 export interface MatchHeaderModel {
   matchId: string;
@@ -97,7 +95,8 @@ export interface MatchTeamModel {
   id: string;
   name: string;
   shortName: string;
-
+  homeOvers?: string | null;
+  awayOvers?: string | null;
   playerDetails: unknown[];
 }
 
@@ -153,6 +152,8 @@ export interface MatchBatTeamModel {
   teamId: string;
   teamScore: number;
   teamWkts: number;
+  homeOvers?: string | null;
+  awayOvers?: string | null;
 }
 
 export interface MatchPartnershipModel {
@@ -288,4 +289,3 @@ export interface MatchOverPlayerModel {
   playerName: string;
   playerScore: string;
 }
-

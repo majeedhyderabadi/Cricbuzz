@@ -1,25 +1,20 @@
 import type { FixtureDetailsDto } from "../../components/types/FixtureDetails";
 import type {
   MatchCommentaryModel,
-  MatchDetailsModel
+  MatchDetailsModel,
 } from "../../components/types/MatchDetailsModel";
 
 export function mapFixtureMatchDetails(
-  response: FixtureDetailsDto
+  response: FixtureDetailsDto,
 ): MatchDetailsModel {
-
   const commentary: Record<string, MatchCommentaryModel> = {};
 
-  response.commentary?.forEach(item => {
-
+  response.commentary?.forEach((item) => {
     commentary[item.id] = {
       matchId: response.id,
 
       commType: item.action,
-      commText:
-  item.note && item.note.trim() !== ""
-    ? item.note
-    : item.action,
+      commText: item.note && item.note.trim() !== "" ? item.note : item.action,
 
       inningsId: 1,
 
@@ -35,23 +30,20 @@ export function mapFixtureMatchDetails(
 
       batsmanDetails: {
         playerId: item.playerId,
-        playerName: item.playerName
+        playerName: item.playerName,
       },
 
       bowlerDetails: {
         playerId: "",
-        playerName: ""
-      }
+        playerName: "",
+      },
     };
-
   });
-console.log("Mapped Commentary", commentary);
+  console.log("Mapped Commentary", commentary);
   return {
-
     source: "fixture",
 
     header: {
-
       matchId: response.id,
 
       matchDescription: `${response.homeTeamName} vs ${response.awayTeamName}`,
@@ -60,13 +52,11 @@ console.log("Mapped Commentary", commentary);
 
       matchType: "",
 
-      complete:
-        response.status.toLowerCase() === "completed",
+      complete: response.status.toLowerCase() === "completed",
 
       domestic: false,
 
-      matchStartTimestamp:
-        new Date(response.scheduledAtUtc).getTime(),
+      matchStartTimestamp: new Date(response.scheduledAtUtc).getTime(),
 
       matchStartTimeIST: "",
       matchStartTimeGMT: "",
@@ -78,8 +68,7 @@ console.log("Mapped Commentary", commentary);
 
       dayNight: false,
 
-      year:
-        new Date(response.scheduledAtUtc).getFullYear(),
+      year: new Date(response.scheduledAtUtc).getFullYear(),
 
       state: response.phase ?? "",
 
@@ -88,7 +77,7 @@ console.log("Mapped Commentary", commentary);
       tossResults: {
         tossWinnerId: "",
         tossWinnerName: "",
-        decision: ""
+        decision: "",
       },
 
       result: {
@@ -97,13 +86,13 @@ console.log("Mapped Commentary", commentary);
         winningTeamId: null,
         winningMargin: null,
         winByRuns: null,
-        winByInnings: null
+        winByInnings: null,
       },
 
       revisedTarget: {
         reason: null,
         revisedTarget: null,
-        revisedOvers: null
+        revisedOvers: null,
       },
 
       playersOfTheMatch: [],
@@ -116,14 +105,14 @@ console.log("Mapped Commentary", commentary);
         id: response.homeTeamId,
         name: response.homeTeamName,
         shortName: response.homeTeamName,
-        playerDetails: []
+        playerDetails: [],
       },
 
       team2: {
         id: response.awayTeamId,
         name: response.awayTeamName,
         shortName: response.awayTeamName,
-        playerDetails: []
+        playerDetails: [],
       },
 
       seriesDesc: "",
@@ -136,17 +125,18 @@ console.log("Mapped Commentary", commentary);
 
       isMatchNotCovered: false,
 
-      livestreamEnabled: false
+      livestreamEnabled: false,
     },
 
     live: {
-
       inningsId: 1,
 
       batTeam: {
         teamId: response.homeTeamId,
         teamScore: response.homeScore,
-        teamWkts: response.homeWickets ?? 0
+        homeOvers: response.homeOvers,
+        awayOvers: response.awayOvers,
+        teamWkts: response.homeWickets ?? 0,
       },
 
       status: response.status,
@@ -182,7 +172,7 @@ console.log("Mapped Commentary", commentary);
 
         customStatus: "",
 
-        state: response.status
+        state: response.status,
       },
 
       lastWicket: "",
@@ -201,15 +191,15 @@ console.log("Mapped Commentary", commentary);
 
       batTeamScoreObj: {
         teamName: response.homeTeamName,
-        teamInningsArray: []
+        teamInningsArray: [],
       },
 
       bowlTeamScoreObj: {
         teamName: response.awayTeamName,
-        teamInningsArray: []
+        teamInningsArray: [],
       },
 
-      matchUdrs: null
+      matchUdrs: null,
     },
 
     commentary,
@@ -220,8 +210,6 @@ console.log("Mapped Commentary", commentary);
 
     page: "",
 
-    responseLastUpdated: Date.now()
-     
+    responseLastUpdated: Date.now(),
   };
- 
 }

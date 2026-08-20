@@ -21,7 +21,6 @@ function NVianCommentary({ fixtureId, title }: Props) {
   const { commentaryByMatch } = useCommentaryFeed(fixtureId ?? "");
 
   const liveComment = fixtureId ? commentaryByMatch[fixtureId] : undefined;
-
   useEffect(() => {
     if (!fixtureId) return;
     setComments([]);
@@ -37,6 +36,7 @@ function NVianCommentary({ fixtureId, title }: Props) {
   }, [fixtureId]);
 
   // Load initial commentary from API
+
   useEffect(() => {
     if (!fixtureDetails) return;
     const apiComments: Comment[] = fixtureDetails.commentary.map((item) => ({

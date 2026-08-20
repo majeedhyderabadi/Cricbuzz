@@ -38,22 +38,30 @@ function MatchSummary({ header, live }: MatchSummaryProps) {
             : undefined
           : undefined;
 
+    // Prefer realtime overs if available, otherwise fall back to live data
+    const homeOvers =
+      realtime?.homeOvers ?? live?.batTeam?.homeOvers ?? live?.overs ?? null;
+    const awayOvers = realtime?.awayOvers ?? (live as any)?.awayOvers ?? null;
+    const currentOversForTeam =
+      teamId === header.team1.id ? homeOvers : awayOvers;
+
+    // If we have a realtime score for this team, show it immediately
+    if (liveScoreForTeam) {
+      return `${liveScoreForTeam} (${currentOversForTeam ?? 0})`;
+    }
+
     if (teamInnings.length === 0) {
       const battingTeamId = live?.batTeam?.teamId;
 
       if (battingTeamId === teamId && liveScoreForTeam) {
-        return `${liveScoreForTeam} (${live?.overs ?? 0})`;
+        return `${liveScoreForTeam} (${currentOversForTeam ?? 0})`;
       }
 
       if (battingTeamId === teamId) {
-        return `${live?.batTeam?.teamScore ?? 0}/${live?.batTeam?.teamWkts ?? 0} (${live?.overs ?? 0})`;
+        return `${live?.batTeam?.teamScore ?? 0}/${live?.batTeam?.teamWkts ?? 0} (${homeOvers ?? 0})`;
       }
 
       return "Yet to bat";
-    }
-
-    if (liveScoreForTeam) {
-      return `${liveScoreForTeam} (${live?.overs ?? 0})`;
     }
 
     return teamInnings

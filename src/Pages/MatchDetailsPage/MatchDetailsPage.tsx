@@ -65,8 +65,7 @@ function MatchDetailsPage() {
 
   const [scorecardError, setScorecardError] = useState<string | null>(null);
 
-  const [fixtureScorecardLoading, setFixtureScorecardLoading] =
-    useState(false);
+  const [fixtureScorecardLoading, setFixtureScorecardLoading] = useState(false);
 
   const [fixtureScorecardError, setFixtureScorecardError] = useState<
     string | null
@@ -128,6 +127,29 @@ function MatchDetailsPage() {
     };
   }, [matchId, source]);
 
+  // When user switches to Live tab, fetch latest match details immediately
+  useEffect(() => {
+    if (activeTab !== "Live") return;
+    if (!matchId) return;
+
+    let ignore = false;
+
+    const refresh = async () => {
+      try {
+        const response = await getMatchDetails(matchId, source);
+        if (!ignore) setMatchDetails(response);
+      } catch (err) {
+        console.error("Failed to refresh match details on tab switch", err);
+      }
+    };
+
+    refresh();
+
+    return () => {
+      ignore = true;
+    };
+  }, [activeTab, matchId, source]);
+
   // LOAD SCORECARD Only when Scorecard tab is opened (Cricbuzz matches)
 
   useEffect(() => {
@@ -138,11 +160,6 @@ function MatchDetailsPage() {
 
     // Scorecard sirf Cricbuzz ke liye hai
     if (source !== "cricbuzz") {
-      return;
-    }
-
-    // Already loaded
-    if (scorecard) {
       return;
     }
 
@@ -181,7 +198,7 @@ function MatchDetailsPage() {
     return () => {
       ignore = true;
     };
-  }, [activeTab, matchId, source, scorecard]);
+  }, [activeTab, matchId, source]);
 
   // LOAD SCORECARD Only when Scorecard tab is opened (Fixture matches)
 
@@ -193,11 +210,6 @@ function MatchDetailsPage() {
 
     // Scorecard sirf fixture matches ke liye
     if (source !== "fixture") {
-      return;
-    }
-
-    // Already loaded
-    if (fixtureScorecard) {
       return;
     }
 
@@ -235,7 +247,7 @@ function MatchDetailsPage() {
     return () => {
       ignore = true;
     };
-  }, [activeTab, matchId, source, fixtureScorecard]);
+  }, [activeTab, matchId, source]);
 
   // PAGE STATES
 

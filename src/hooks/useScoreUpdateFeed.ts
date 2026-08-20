@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  HubConnectionState,
-  type HubConnection,
-} from "@microsoft/signalr";
+import { HubConnectionState, type HubConnection } from "@microsoft/signalr";
 import { createCommentaryHubConnection } from "../lib/signalrClient";
 
 // Shape used by UI
@@ -10,6 +7,8 @@ export interface ScoreUpdate {
   fixtureId: string;
   homeScore: number;
   homeWickets?: number;
+  homeOvers?: string;
+  awayOvers?: string;
   awayScore: number;
   awayWickets?: number;
   updatedAtUtc?: string;
@@ -19,6 +18,8 @@ export interface ScoreUpdate {
 interface BackendScoreUpdate {
   fixtureId: string;
   homeRuns: number;
+  homeOvers?: string;
+  awayOvers?: string;
   homeWickets?: number;
   awayRuns: number;
   awayWickets?: number;
@@ -28,14 +29,13 @@ interface BackendScoreUpdate {
 const SCORE_EVENT = "ScoreUpdated";
 
 export function useScoreUpdateFeed(fixtureId: string) {
-  const [scoreByMatch, setScoreByMatch] = useState<
-    Record<string, ScoreUpdate>
-  >({});
+  const [scoreByMatch, setScoreByMatch] = useState<Record<string, ScoreUpdate>>(
+    {},
+  );
 
-  const [connectionState, setConnectionState] =
-    useState<HubConnectionState>(
-      HubConnectionState.Disconnected,
-    );
+  const [connectionState, setConnectionState] = useState<HubConnectionState>(
+    HubConnectionState.Disconnected,
+  );
 
   const connectionRef = useRef<HubConnection | null>(null);
   const joinedFixtureRef = useRef<string | null>(null);
@@ -55,32 +55,28 @@ export function useScoreUpdateFeed(fixtureId: string) {
     // RECEIVE SCORE UPDATE
     // ==================================================
 
-    connection.on(
-      SCORE_EVENT,
-      (update: BackendScoreUpdate) => {
-        if (cancelled) return;
+    connection.on(SCORE_EVENT, (update: BackendScoreUpdate) => {
+      if (cancelled) return;
 
-        console.log(
-          "ScoreUpdated received from SignalR:",
-          update,
-        );
+      console.log("ScoreUpdated received from SignalR:", update);
 
-        // Backend DTO -> Frontend UI model
-        const scoreUpdate: ScoreUpdate = {
-          fixtureId: update.fixtureId,
-          homeScore: update.homeRuns,
-          homeWickets: update.homeWickets,
-          awayScore: update.awayRuns,
-          awayWickets: update.awayWickets,
-          updatedAtUtc: update.updatedAtUtc,
-        };
+      // Backend DTO -> Frontend UI model
+      const scoreUpdate: ScoreUpdate = {
+        fixtureId: update.fixtureId,
+        homeScore: update.homeRuns,
+        homeWickets: update.homeWickets,
+        awayScore: update.awayRuns,
+        awayWickets: update.awayWickets,
+        homeOvers: update.homeOvers,
+        awayOvers: update.awayOvers,
+        updatedAtUtc: update.updatedAtUtc,
+      };
 
-        setScoreByMatch((previous) => ({
-          ...previous,
-          [scoreUpdate.fixtureId]: scoreUpdate,
-        }));
-      },
-    );
+      setScoreByMatch((previous) => ({
+        ...previous,
+        [scoreUpdate.fixtureId]: scoreUpdate,
+      }));
+    });
 
     // ==================================================
     // RECONNECTING
@@ -91,9 +87,7 @@ export function useScoreUpdateFeed(fixtureId: string) {
 
       console.log("Score SignalR reconnecting...");
 
-      setConnectionState(
-        HubConnectionState.Reconnecting,
-      );
+      setConnectionState(HubConnectionState.Reconnecting);
     });
 
     // ==================================================
@@ -105,9 +99,7 @@ export function useScoreUpdateFeed(fixtureId: string) {
 
       console.log("Score SignalR reconnected");
 
-      setConnectionState(
-        HubConnectionState.Connected,
-      );
+      setConnectionState(HubConnectionState.Connected);
     });
 
     // ==================================================
@@ -119,9 +111,7 @@ export function useScoreUpdateFeed(fixtureId: string) {
 
       console.log("Score SignalR disconnected");
 
-      setConnectionState(
-        HubConnectionState.Disconnected,
-      );
+      setConnectionState(HubConnectionState.Disconnected);
     });
 
     // ==================================================
@@ -135,21 +125,14 @@ export function useScoreUpdateFeed(fixtureId: string) {
 
         console.log("Score SignalR connected");
 
-        setConnectionState(
-          HubConnectionState.Connected,
-        );
+        setConnectionState(HubConnectionState.Connected);
       })
       .catch((error) => {
         if (cancelled) return;
 
-        console.error(
-          "Failed to connect to score hub",
-          error,
-        );
+        console.error("Failed to connect to score hub", error);
 
-        setConnectionState(
-          HubConnectionState.Disconnected,
-        );
+        setConnectionState(HubConnectionState.Disconnected);
       });
 
     // ==================================================
@@ -164,10 +147,7 @@ export function useScoreUpdateFeed(fixtureId: string) {
 
       connection.off(SCORE_EVENT);
 
-      if (
-        connection.state !==
-        HubConnectionState.Disconnected
-      ) {
+      if (connection.state !== HubConnectionState.Disconnected) {
         connection.stop();
       }
     };
@@ -183,50 +163,30 @@ export function useScoreUpdateFeed(fixtureId: string) {
     if (
       !connection ||
       !fixtureId ||
-      connectionState !==
-        HubConnectionState.Connected
+      connectionState !== HubConnectionState.Connected
     ) {
       return;
     }
 
-    const previousFixtureId =
-      joinedFixtureRef.current;
+    const previousFixtureId = joinedFixtureRef.current;
 
     const switchGroup = async () => {
       try {
         // Leave previous fixture group
-        if (
-          previousFixtureId &&
-          previousFixtureId !== fixtureId
-        ) {
-          await connection.invoke(
-            "LeaveFixtureGroup",
-            previousFixtureId,
-          );
+        if (previousFixtureId && previousFixtureId !== fixtureId) {
+          await connection.invoke("LeaveFixtureGroup", previousFixtureId);
 
-          console.log(
-            "Left score fixture group:",
-            previousFixtureId,
-          );
+          console.log("Left score fixture group:", previousFixtureId);
         }
 
         // Join current fixture group
-        await connection.invoke(
-          "JoinFixtureGroup",
-          fixtureId,
-        );
+        await connection.invoke("JoinFixtureGroup", fixtureId);
 
         joinedFixtureRef.current = fixtureId;
 
-        console.log(
-          "Joined score fixture group:",
-          fixtureId,
-        );
+        console.log("Joined score fixture group:", fixtureId);
       } catch (error) {
-        console.error(
-          "Failed to switch fixture group for score feed",
-          error,
-        );
+        console.error("Failed to switch fixture group for score feed", error);
       }
     };
 
