@@ -7,6 +7,7 @@ export interface FixtureDetailsDto {
   awayTeamId: string;
   awayTeamName: string;
   sport: string;
+  ball?: string;
   scheduledAtUtc: string;
   status: string;
   phase: string | null;
